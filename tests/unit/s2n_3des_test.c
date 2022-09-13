@@ -67,9 +67,9 @@ int main(int argc, char **argv)
 
 
     // ------------------ encrypt
-    EXPECT_EQUAL(EVP_CIPHER_CTX_set_padding(evp_cipher_ctx, 0), 1);
-    /* EXPECT_EQUAL(EVP_CIPHER_CTX_set_padding(evp_cipher_ctx, 1), 1); */
     EXPECT_EQUAL(EVP_EncryptInit_ex(evp_cipher_ctx, EVP_des_ede3_cbc(), NULL, des3.data, NULL), 1);
+    /* EXPECT_EQUAL(EVP_CIPHER_CTX_set_padding(evp_cipher_ctx, 0), 1); */
+    EXPECT_EQUAL(EVP_CIPHER_CTX_set_padding(evp_cipher_ctx, 1), 1);
 
     EXPECT_EQUAL(EVP_EncryptInit_ex(evp_cipher_ctx, NULL, NULL, NULL, iv.data), 1);
     int out_len = 0;
@@ -87,11 +87,11 @@ int main(int argc, char **argv)
 
 
     // ------------------ decrypt
-    /* EXPECT_EQUAL(EVP_CIPHER_CTX_set_padding(evp_cipher_ctx, 0), 1); */
-    /* EXPECT_EQUAL(EVP_CIPHER_CTX_set_padding(evp_cipher_ctx, 1), 1); */
-    EXPECT_EQUAL(EVP_DecryptInit_ex(evp_cipher_ctx, EVP_des_ede3_cbc(), NULL, des3.data, NULL), 1);
-
+    /* EXPECT_EQUAL(EVP_DecryptInit_ex(evp_cipher_ctx, EVP_des_ede3_cbc(), NULL, des3.data, NULL), 1); */
     EXPECT_EQUAL(EVP_DecryptInit_ex(evp_cipher_ctx, NULL, NULL, NULL, iv.data), 1);
+
+    /* EXPECT_EQUAL(EVP_CIPHER_CTX_set_padding(evp_cipher_ctx, 0), 1); */
+    EXPECT_EQUAL(EVP_CIPHER_CTX_set_padding(evp_cipher_ctx, 1), 1);
 
     int len = 0;
     EXPECT_EQUAL(EVP_DecryptUpdate(evp_cipher_ctx, in.data, &len, in.data, data_size), 1);
