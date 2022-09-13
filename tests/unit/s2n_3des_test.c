@@ -50,51 +50,44 @@ int main(int argc, char **argv)
     EXPECT_EQUAL(des3.size, 192 / 8);
 
     // ------------------ data
-    //
+    int data_size = 16;
     uint8_t plaintext[100] = { 0 };
     struct s2n_blob in = {.data = plaintext, .size = sizeof(plaintext)};
-    in.size = 11;
-    int data_size = 16;
 
-    for( int i = 0 ; i < in.size; i++ ) {
-        in.data[i] = 1;
+    for( int i = 0 ; i < 11; i++ ) {
+        in.data[i] = i;
     }
-    in.data[data_size] = 101; // marker
+    in.data[data_size] = 111; // marker
 
     printf("\n------before----\n");
     for( int i = 0 ; i < 32; i++ ) {
-        printf("%d ", in.data[i]);
+        printf("%03d ", in.data[i]);
     }
-    printf("\n----------\n");
 
 
 
     // ------------------ encrypt
-    /* EXPECT_EQUAL(EVP_CIPHER_CTX_set_padding(evp_cipher_ctx, 1), 0); */
+    EXPECT_EQUAL(EVP_CIPHER_CTX_set_padding(evp_cipher_ctx, 0), 1);
+    /* EXPECT_EQUAL(EVP_CIPHER_CTX_set_padding(evp_cipher_ctx, 1), 1); */
     EXPECT_EQUAL(EVP_EncryptInit_ex(evp_cipher_ctx, EVP_des_ede3_cbc(), NULL, des3.data, NULL), 1);
 
     EXPECT_EQUAL(EVP_EncryptInit_ex(evp_cipher_ctx, NULL, NULL, NULL, iv.data), 1);
     int out_len = 0;
-    EXPECT_EQUAL(EVP_EncryptUpdate(evp_cipher_ctx, in.data, &out_len, in.data, data_size), 1);
-    /* EXPECT_EQUAL(EVP_EncryptUpdate(evp_cipher_ctx, in.data, &out_len, in.data, data_size), 1); */
-    EXPECT_EQUAL(out_len, data_size);
+    EXPECT_EQUAL(EVP_EncryptUpdate(evp_cipher_ctx, in.data, &out_len, in.data, 16), 1);
+    /* EXPECT_EQUAL(EVP_EncryptFinal_ex(evp_cipher_ctx, in.data, &out_len), 1); */
+    /* EXPECT_EQUAL(out_len, data_size); */
 
     printf("\n----encrypt------\n");
     printf("out_len %d \n", out_len);
     for( int i = 0 ; i < 32; i++ ) {
-        printf("%d ", in.data[i]);
+        printf("%03d ", in.data[i]);
     }
-
-    printf("\n----------\n");
-    for( int i = 0 ; i < out_len; i++ ) {
-        printf("%d ", in.data[i]);
-    }
-    printf("\n----------\n");
 
 
 
 
     // ------------------ decrypt
+    /* EXPECT_EQUAL(EVP_CIPHER_CTX_set_padding(evp_cipher_ctx, 0), 1); */
     /* EXPECT_EQUAL(EVP_CIPHER_CTX_set_padding(evp_cipher_ctx, 1), 1); */
     EXPECT_EQUAL(EVP_DecryptInit_ex(evp_cipher_ctx, EVP_des_ede3_cbc(), NULL, des3.data, NULL), 1);
 
@@ -102,12 +95,11 @@ int main(int argc, char **argv)
 
     int len = 0;
     EXPECT_EQUAL(EVP_DecryptUpdate(evp_cipher_ctx, in.data, &len, in.data, data_size), 1);
-    /* EXPECT_EQUAL(EVP_DecryptUpdate(evp_cipher_ctx, in.data, &len, in.data, data_size), 1); */
 
     printf("\n-----decrypt-----\n");
     printf("decrypt_out_len %d \n", len);
     for( int i = 0 ; i < 32; i++ ) {
-        printf("%d ", in.data[i]);
+        printf("%03d ", in.data[i]);
     }
     printf("\n----------\n");
 
