@@ -24,3 +24,4 @@ S2N_RESULT s2n_ktls_enable(struct s2n_connection *conn, s2n_ktls_mode mode)
 
     return S2N_RESULT_OK;
 }
+
