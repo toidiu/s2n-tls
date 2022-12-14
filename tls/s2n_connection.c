@@ -1526,6 +1526,7 @@ S2N_RESULT s2n_connection_dynamic_free_in_buffer(struct s2n_connection *conn)
 S2N_RESULT s2n_connection_mark_ktls_enabled(struct s2n_connection *conn, s2n_ktls_mode ktls_mode)
 {
     RESULT_ENSURE_REF(conn);
+    RESULT_ENSURE_NE(ktls_mode, S2N_KTLS_MODE_DISABLED);
 
     /* kTLS I/O functionality is managed by s2n-tls. kTLS cannot be enabled
      * if the application sets custom I/O. */
@@ -1535,6 +1536,8 @@ S2N_RESULT s2n_connection_mark_ktls_enabled(struct s2n_connection *conn, s2n_ktl
     if ((ktls_mode == S2N_KTLS_MODE_RECV || ktls_mode == S2N_KTLS_MODE_DUPLEX) && !conn->managed_recv_io) {
         return S2N_RESULT_ERROR;
     }
+    /* perform sanity check. */
+    RESULT_GUARD(s2n_ktls_validate(conn, ktls_mode));
 
     conn->ktls_mode_enabled |= ktls_mode;
 

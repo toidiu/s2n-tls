@@ -49,4 +49,5 @@ bool s2n_connection_matches_ktls_mode(struct s2n_connection *conn, s2n_ktls_mode
 
 /* --- unstable API --- */
 
-S2N_RESULT s2n_ktls_enable(struct s2n_connection *conn, s2n_ktls_mode mode);
+S2N_RESULT s2n_ktls_enable(struct s2n_connection *conn, s2n_ktls_mode ktls_mode);
+S2N_RESULT s2n_ktls_validate(struct s2n_connection *conn, s2n_ktls_mode ktls_mode);
