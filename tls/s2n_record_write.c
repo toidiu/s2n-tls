@@ -227,6 +227,8 @@ static inline int s2n_record_encrypt(
 
 int s2n_record_writev(struct s2n_connection *conn, uint8_t content_type, const struct iovec *in, int in_count, size_t offs, size_t to_write)
 {
+    /* TODO: handle kTLS write */
+
     struct s2n_blob iv = { 0 };
     uint8_t padding = 0;
     uint16_t block_size = 0;

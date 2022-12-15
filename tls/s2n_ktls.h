@@ -51,3 +51,16 @@ bool s2n_connection_matches_ktls_mode(struct s2n_connection *conn, s2n_ktls_mode
 
 S2N_RESULT s2n_ktls_enable(struct s2n_connection *conn, s2n_ktls_mode ktls_mode);
 S2N_RESULT s2n_ktls_validate(struct s2n_connection *conn, s2n_ktls_mode ktls_mode);
+int s2n_ktls_write_fn(void *io_context, const uint8_t *buf, uint32_t len);
+int s2n_ktls_read_fn(void *io_context, uint8_t *buf, uint32_t len);
+
+/* The default write I/O context for communication over a ktls socket */
+struct s2n_ktls_write_io_context {
+    /* The send fd */
+    int fd;
+};
+
+struct s2n_ktls_read_io_context {
+    /* The recv fd */
+    int fd;
+};

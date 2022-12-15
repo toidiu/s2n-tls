@@ -835,6 +835,64 @@ int s2n_connection_get_write_fd(struct s2n_connection *conn, int *writefd)
     *writefd = peer_socket_ctx->fd;
     return S2N_SUCCESS;
 }
+
+S2N_RESULT s2n_connection_set_ktls_write_fd(struct s2n_connection *conn, int wfd)
+{
+    RESULT_ENSURE_REF(conn);
+    struct s2n_blob ctx_mem = { 0 };
+    struct s2n_ktls_write_io_context *peer_ktls_ctx;
+
+    RESULT_GUARD_POSIX(s2n_alloc(&ctx_mem, sizeof(struct s2n_ktls_write_io_context)));
+
+    peer_ktls_ctx = (struct s2n_ktls_write_io_context *) (void *) ctx_mem.data;
+    peer_ktls_ctx->fd = wfd;
+
+    RESULT_GUARD_POSIX(s2n_connection_set_send_cb(conn, s2n_ktls_write_fn));
+    RESULT_GUARD_POSIX(s2n_connection_set_send_ctx(conn, peer_ktls_ctx));
+    conn->managed_send_io = true;
+
+    /* TODO: Invesgigate if necessary
+     * This is only needed if the user is using corked I/O.
+     * Take the snapshot in case optimized I/O is enabled after setting the fd.
+     */
+    /* RESULT_GUARD_POSIX(s2n_socket_write_snapshot(conn)); */
+
+    uint8_t ipv6;
+    if (0 == s2n_socket_is_ipv6(wfd, &ipv6)) {
+        conn->ipv6 = (ipv6 ? 1 : 0);
+    }
+
+    conn->write_fd_broken = 0;
+
+    return S2N_RESULT_OK;
+}
+
+S2N_RESULT s2n_connection_set_ktls_read_fd(struct s2n_connection *conn, int rfd)
+{
+    RESULT_ENSURE_REF(conn);
+
+    struct s2n_blob ctx_mem = { 0 };
+    struct s2n_ktls_read_io_context *peer_ktls_ctx;
+
+    RESULT_GUARD_POSIX(s2n_alloc(&ctx_mem, sizeof(struct s2n_ktls_read_io_context)));
+    RESULT_GUARD_POSIX(s2n_blob_zero(&ctx_mem));
+
+    peer_ktls_ctx = (struct s2n_ktls_read_io_context *) (void *) ctx_mem.data;
+    peer_ktls_ctx->fd = rfd;
+
+    RESULT_GUARD_POSIX(s2n_connection_set_recv_cb(conn, s2n_ktls_read_fn));
+    RESULT_GUARD_POSIX(s2n_connection_set_recv_ctx(conn, peer_ktls_ctx));
+    conn->managed_recv_io = true;
+
+    /* TODO: investigate if necessary
+     * This is only needed if the user is using corked io.
+     * Take the snapshot in case optimized io is enabled after setting the fd.
+     */
+    /* RESULT_GUARD_POSIX(s2n_ktls_read_snapshot(conn)); */
+
+    return S2N_RESULT_OK;
+}
+
 int s2n_connection_set_fd(struct s2n_connection *conn, int fd)
 {
     POSIX_GUARD(s2n_connection_set_read_fd(conn, fd));

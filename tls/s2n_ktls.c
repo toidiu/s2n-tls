@@ -18,6 +18,7 @@
 #include <linux/tls.h>
 #include <netinet/tcp.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #include "error/s2n_errno.h"
 #include "tls/s2n_config.h"
@@ -99,7 +100,9 @@ S2N_RESULT s2n_ktls_enable_impl(struct s2n_connection *conn, s2n_ktls_mode ktls_
     /* Note: kTLS has been enabled on the socket. Errors must be handled appropriately and
      * are likely to be fatal. */
 
-    /* TODO configure kTLS specific I/O callback and context. */
+    /* configure kTLS specific I/O callback and context. */
+    RESULT_GUARD(s2n_connection_set_ktls_write_fd(conn, fd));
+    RESULT_GUARD(s2n_connection_set_ktls_read_fd(conn, fd));
 
     /* mark kTLS enabled on the connection */
     RESULT_GUARD(s2n_connection_mark_ktls_enabled(conn, ktls_mode));
@@ -160,4 +163,39 @@ S2N_RESULT s2n_ktls_enable(struct s2n_connection *conn, s2n_ktls_mode ktls_mode)
     }
 
     return S2N_RESULT_OK;
+}
+
+int s2n_ktls_write_fn(void *io_context, const uint8_t *buf, uint32_t len)
+{
+    POSIX_ENSURE_REF(io_context);
+    POSIX_ENSURE_REF(buf);
+
+    int wfd = ((struct s2n_ktls_write_io_context *) io_context)->fd;
+    if (wfd < 0) {
+        errno = EBADF;
+        POSIX_BAIL(S2N_ERR_BAD_FD);
+    }
+
+    /* On success, the number of bytes written is returned. On failure, -1 is
+     * returned and errno is set appropriately. */
+    ssize_t result = write(wfd, buf, len);
+    POSIX_ENSURE_INCLUSIVE_RANGE(INT_MIN, result, INT_MAX);
+    return result;
+}
+
+int s2n_ktls_read_fn(void *io_context, uint8_t *buf, uint32_t len)
+{
+    POSIX_ENSURE_REF(io_context);
+    POSIX_ENSURE_REF(buf);
+    int rfd = ((struct s2n_ktls_read_io_context *) io_context)->fd;
+    if (rfd < 0) {
+        errno = EBADF;
+        POSIX_BAIL(S2N_ERR_BAD_FD);
+    }
+
+    /* On success, the number of bytes read is returned. On failure, -1 is
+     * returned and errno is set appropriately. */
+    ssize_t result = read(rfd, buf, len);
+    POSIX_ENSURE_INCLUSIVE_RANGE(INT_MIN, result, INT_MAX);
+    return result;
 }

@@ -91,7 +91,9 @@ struct s2n_connection {
     unsigned write_fd_broken : 1;
 
     /* Has the user set their own I/O callbacks or is this connection using the
-     * default socket-based I/O set by s2n */
+     * default socket-based I/O set by s2n.
+     *
+     * True means that s2n has configured the I/O and is managing it. */
     unsigned managed_send_io : 1;
     unsigned managed_recv_io : 1;
 
@@ -132,6 +134,16 @@ struct s2n_connection {
     /* Indicates protocol negotiation will be done through the NPN extension
      * instead of the ALPN extension */
     unsigned npn_negotiated : 1;
+
+    /* ktls is enabled for this connection.
+     *
+     * This means that UPL has been enabled, transport keys have been set
+     * and ktls specific IO callback/context has been set.
+     */
+    /* unsigned ktls_enabled_send_io : 1; */
+    /* unsigned ktls_enabled_recv_io : 1; */
+    /* Marks if kTLS has been enabled for this connection. */
+    s2n_ktls_mode ktls_mode_enabled;
 
     /* The configuration (cert, key .. etc ) */
     struct s2n_config *config;
@@ -385,9 +397,6 @@ struct s2n_connection {
     uint32_t server_keying_material_lifetime;
 
     struct s2n_post_handshake post_handshake;
-
-    /* Marks if kTLS has been enabled for this connection. */
-    s2n_ktls_mode ktls_mode_enabled;
 };
 
 S2N_CLEANUP_RESULT s2n_connection_ptr_free(struct s2n_connection **s2n_connection);
@@ -421,3 +430,5 @@ int s2n_connection_get_peer_cert_chain(const struct s2n_connection *conn, struct
 uint8_t s2n_connection_get_protocol_version(const struct s2n_connection *conn);
 S2N_RESULT s2n_connection_set_max_fragment_length(struct s2n_connection *conn, uint16_t length);
 S2N_RESULT s2n_connection_mark_ktls_enabled(struct s2n_connection *conn, s2n_ktls_mode mode);
+S2N_RESULT s2n_connection_set_ktls_write_fd(struct s2n_connection *conn, int wfd);
+S2N_RESULT s2n_connection_set_ktls_read_fd(struct s2n_connection *conn, int rfd);
