@@ -33,15 +33,14 @@
 /* value declared in netinet/tcp.h */
 #define SOL_TCP 6 /* TCP level */
 
-bool s2n_ktls_is_ktls_mode_eq(s2n_ktls_mode a, s2n_ktls_mode b)
+bool s2n_ktls_is_ktls_mode_send(s2n_ktls_mode ktls_mode)
 {
-    if (b == S2N_KTLS_MODE_DUPLEX) {
-        return a == S2N_KTLS_MODE_DUPLEX;
-    }
-    if (b == S2N_KTLS_MODE_DISABLED) {
-        return a == S2N_KTLS_MODE_DISABLED;
-    }
-    return a & b;
+    return ktls_mode & S2N_KTLS_MODE_SEND;
+}
+
+bool s2n_ktls_is_ktls_mode_recv(s2n_ktls_mode ktls_mode)
+{
+    return ktls_mode & S2N_KTLS_MODE_RECV;
 }
 
 S2N_RESULT s2n_ktls_set_crypto_info(
@@ -66,12 +65,12 @@ S2N_RESULT s2n_ktls_set_crypto_info(
 
     int tls_mode;
     /* configure socket and enable kTLS */
-    if (s2n_ktls_is_ktls_mode_eq(ktls_mode, S2N_KTLS_MODE_RECV)) {
+    if (s2n_ktls_is_ktls_mode_send(ktls_mode)) {
         tls_mode = TLS_RX;
-    } else if (s2n_ktls_is_ktls_mode_eq(ktls_mode, S2N_KTLS_MODE_SEND)) {
+    } else if (s2n_ktls_is_ktls_mode_send(ktls_mode)) {
         tls_mode = TLS_RX;
     } else {
-        /* unreachable */
+        /* unreachable: ktls_mode should only be S2N_KTLS_MODE_SEND or S2N_KTLS_MODE_RECV */
         return S2N_RESULT_ERROR;
     }
 
@@ -83,7 +82,7 @@ S2N_RESULT s2n_ktls_set_crypto_info(
 S2N_RESULT s2n_ktls_enable_impl(struct s2n_connection *conn, s2n_ktls_mode ktls_mode, int fd)
 {
     RESULT_ENSURE_REF(conn);
-    RESULT_ENSURE(ktls_mode == S2N_KTLS_MODE_RECV || ktls_mode == S2N_KTLS_MODE_SEND, S2N_ERR_SAFETY);
+    RESULT_ENSURE(s2n_ktls_is_ktls_mode_recv(ktls_mode) || s2n_ktls_is_ktls_mode_send(ktls_mode), S2N_ERR_SAFETY);
 
     /* register the tls ULP */
     RESULT_GUARD_POSIX(setsockopt(fd, SOL_TCP, TCP_ULP, TLS_ULP, TLS_ULP_SIZE));
@@ -130,10 +129,10 @@ S2N_RESULT s2n_ktls_validate(struct s2n_connection *conn, s2n_ktls_mode ktls_mod
     /* kTLS I/O functionality is managed by s2n-tls. kTLS cannot be enabled
      * if the application sets custom I/O.
      */
-    if (s2n_ktls_is_ktls_mode_eq(ktls_mode, S2N_KTLS_MODE_SEND) && !conn->managed_send_io) {
+    if (s2n_ktls_is_ktls_mode_send(ktls_mode) && !conn->managed_send_io) {
         return S2N_RESULT_ERROR;
     }
-    if (s2n_ktls_is_ktls_mode_eq(ktls_mode, S2N_KTLS_MODE_RECV) && !conn->managed_recv_io) {
+    if (s2n_ktls_is_ktls_mode_recv(ktls_mode) && !conn->managed_recv_io) {
         return S2N_RESULT_ERROR;
     }
 
@@ -148,14 +147,14 @@ S2N_RESULT s2n_ktls_enable(struct s2n_connection *conn, s2n_ktls_mode ktls_mode)
     RESULT_ENSURE_REF(conn);
     RESULT_GUARD(s2n_ktls_validate(conn, ktls_mode));
 
-    if (s2n_ktls_is_ktls_mode_eq(ktls_mode, S2N_KTLS_MODE_RECV)) {
+    if (s2n_ktls_is_ktls_mode_recv(ktls_mode)) {
         /* retrieve the recv fd */
         const struct s2n_socket_write_io_context *peer_socket_ctx = conn->recv_io_context;
         int fd = peer_socket_ctx->fd;
         RESULT_GUARD(s2n_ktls_enable_impl(conn, S2N_KTLS_MODE_RECV, fd));
     }
 
-    if (s2n_ktls_is_ktls_mode_eq(ktls_mode, S2N_KTLS_MODE_SEND)) {
+    if (s2n_ktls_is_ktls_mode_send(ktls_mode)) {
         /* retrieve the send fd */
         const struct s2n_socket_write_io_context *peer_socket_ctx = conn->send_io_context;
         int fd = peer_socket_ctx->fd;

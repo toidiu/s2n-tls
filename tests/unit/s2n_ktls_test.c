@@ -200,5 +200,17 @@ int main(int argc, char **argv)
         EXPECT_TRUE(s2n_connection_matches_ktls_mode(conn, S2N_KTLS_MODE_DUPLEX));
     };
 
+    {
+        EXPECT_TRUE(s2n_ktls_is_ktls_mode_send(S2N_KTLS_MODE_SEND));
+        EXPECT_FALSE(s2n_ktls_is_ktls_mode_send(S2N_KTLS_MODE_RECV));
+        EXPECT_TRUE(s2n_ktls_is_ktls_mode_send(S2N_KTLS_MODE_DUPLEX));
+        EXPECT_FALSE(s2n_ktls_is_ktls_mode_send(S2N_KTLS_MODE_DISABLED));
+
+        EXPECT_FALSE(s2n_ktls_is_ktls_mode_recv(S2N_KTLS_MODE_SEND));
+        EXPECT_TRUE(s2n_ktls_is_ktls_mode_recv(S2N_KTLS_MODE_RECV));
+        EXPECT_TRUE(s2n_ktls_is_ktls_mode_recv(S2N_KTLS_MODE_DUPLEX));
+        EXPECT_FALSE(s2n_ktls_is_ktls_mode_recv(S2N_KTLS_MODE_DISABLED));
+    }
+
     END_TEST();
 }
