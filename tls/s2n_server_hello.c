@@ -241,6 +241,10 @@ static int s2n_server_hello_parse(struct s2n_connection *conn)
             POSIX_CHECKED_MEMCPY(conn->session_id, session_id, session_id_len);
             conn->actual_protocol_version = actual_protocol_version;
             POSIX_GUARD(s2n_set_cipher_as_client(conn, cipher_suite_wire));
+
+            /* TODO re-derive key and enable kTLS for TLS12 */
+            POSIX_GUARD_RESULT(s2n_ktls_enable(conn, conn->config->ktls_mode_requested));
+
             /* Erase master secret which might have been set for session resumption */
             POSIX_CHECKED_MEMSET((uint8_t *) conn->secrets.tls12.master_secret, 0, S2N_TLS_SECRET_LEN);
 

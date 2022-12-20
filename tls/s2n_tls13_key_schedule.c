@@ -128,6 +128,12 @@ static S2N_RESULT s2n_set_key(struct s2n_connection *conn, s2n_extract_secret_ty
     RESULT_GUARD_POSIX(s2n_hkdf_expand_label(&hmac, hmac_alg,
             &secret, iv_purpose, &s2n_zero_length_context, &iv));
 
+    /* TODO enable kTLS for TLS13 */
+    if (secret_type == S2N_APPLICATION_SECRET) {
+        RESULT_GUARD(s2n_ktls_enable(conn, conn->config->ktls_mode_requested));
+    }
+
+
     bool is_sending_secret = (mode == conn->mode);
     if (is_sending_secret) {
         RESULT_GUARD_POSIX(cipher->set_encryption_key(session_key, &key));
