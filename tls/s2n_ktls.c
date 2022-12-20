@@ -33,6 +33,14 @@
 /* value declared in netinet/tcp.h */
 #define SOL_TCP 6 /* TCP level */
 
+/* Depending on OS and configuration it might not be possible to enable kTLS. This
+ * however is not fatal and s2n can continue to operate.
+ *
+ * This macro captures the non-fatal nature of a kTLS operation failing by
+ * returning S2N_RESULT_OK on failure.
+ */
+#define RESULT_GUARD_KTLS_OK(result) __S2N_ENSURE(s2n_result_is_ok(result), return S2N_RESULT_OK)
+
 bool s2n_ktls_is_ktls_mode_send(s2n_ktls_mode ktls_mode)
 {
     return ktls_mode & S2N_KTLS_MODE_SEND;
@@ -96,16 +104,6 @@ S2N_RESULT s2n_ktls_enable_impl(struct s2n_connection *conn, s2n_ktls_mode ktls_
     }
     RESULT_GUARD(s2n_ktls_set_crypto_info(ktls_mode, fd, crypto_param->server_implicit_iv, crypto_param->server_sequence_number));
 
-    /* Note: kTLS has been enabled on the socket. Errors must be handled appropriately and
-     * are likely to be fatal. */
-
-    /* configure kTLS specific I/O callback and context. */
-    RESULT_GUARD(s2n_connection_set_ktls_write_fd(conn, fd));
-    RESULT_GUARD(s2n_connection_set_ktls_read_fd(conn, fd));
-
-    /* mark kTLS enabled on the connection */
-    RESULT_GUARD(s2n_connection_mark_ktls_enabled(conn, ktls_mode));
-
     return S2N_RESULT_OK;
 }
 
@@ -145,21 +143,31 @@ S2N_RESULT s2n_ktls_validate(struct s2n_connection *conn, s2n_ktls_mode ktls_mod
 S2N_RESULT s2n_ktls_enable(struct s2n_connection *conn, s2n_ktls_mode ktls_mode)
 {
     RESULT_ENSURE_REF(conn);
-    RESULT_GUARD(s2n_ktls_validate(conn, ktls_mode));
+    RESULT_GUARD_KTLS_OK(s2n_ktls_validate(conn, ktls_mode));
 
+    int fd;
     if (s2n_ktls_is_ktls_mode_recv(ktls_mode)) {
         /* retrieve the recv fd */
         const struct s2n_socket_write_io_context *peer_socket_ctx = conn->recv_io_context;
-        int fd = peer_socket_ctx->fd;
-        RESULT_GUARD(s2n_ktls_enable_impl(conn, S2N_KTLS_MODE_RECV, fd));
+        fd = peer_socket_ctx->fd;
+        RESULT_GUARD_KTLS_OK(s2n_ktls_enable_impl(conn, S2N_KTLS_MODE_RECV, fd));
     }
 
     if (s2n_ktls_is_ktls_mode_send(ktls_mode)) {
         /* retrieve the send fd */
         const struct s2n_socket_write_io_context *peer_socket_ctx = conn->send_io_context;
-        int fd = peer_socket_ctx->fd;
-        RESULT_GUARD(s2n_ktls_enable_impl(conn, S2N_KTLS_MODE_SEND, fd));
+        fd = peer_socket_ctx->fd;
+        RESULT_GUARD_KTLS_OK(s2n_ktls_enable_impl(conn, S2N_KTLS_MODE_SEND, fd));
     }
+
+    /* Note: kTLS has been enabled on the socket. Any subsequent errors are likely to be fatal. */
+
+    /* configure kTLS specific I/O callback and context. */
+    RESULT_GUARD(s2n_connection_set_ktls_write_fd(conn, fd));
+    RESULT_GUARD(s2n_connection_set_ktls_read_fd(conn, fd));
+
+    /* mark kTLS enabled on the connection */
+    RESULT_GUARD(s2n_connection_mark_ktls_enabled(conn, ktls_mode));
 
     return S2N_RESULT_OK;
 }

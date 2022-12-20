@@ -135,13 +135,6 @@ struct s2n_connection {
      * instead of the ALPN extension */
     unsigned npn_negotiated : 1;
 
-    /* ktls is enabled for this connection.
-     *
-     * This means that UPL has been enabled, transport keys have been set
-     * and ktls specific IO callback/context has been set.
-     */
-    /* unsigned ktls_enabled_send_io : 1; */
-    /* unsigned ktls_enabled_recv_io : 1; */
     /* Marks if kTLS has been enabled for this connection. */
     s2n_ktls_mode ktls_mode_enabled;
 
