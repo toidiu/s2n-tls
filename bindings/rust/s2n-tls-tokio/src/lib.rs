@@ -49,11 +49,13 @@ where
         TlsAcceptor { builder }
     }
 
-    pub async fn accept<S>(&self, stream: S) -> Result<TlsStream<S, B::Output>, Error>
+    pub async fn accept<S>(&self, stream: S, fd: i32) -> Result<TlsStream<S, B::Output>, Error>
     where
         S: AsyncRead + AsyncWrite + Unpin,
     {
-        let conn = self.builder.build_connection(Mode::Server)?;
+        let mut conn = self.builder.build_connection(Mode::Server)?;
+        // FIXME set fd to support ktls
+        conn.as_mut().set_fd(fd)?;
         TlsStream::open(conn, stream).await
     }
 }
@@ -78,11 +80,14 @@ where
         &self,
         domain: &str,
         stream: S,
+        fd: i32,
     ) -> Result<TlsStream<S, B::Output>, Error>
     where
         S: AsyncRead + AsyncWrite + Unpin,
     {
         let mut conn = self.builder.build_connection(Mode::Client)?;
+        // FIXME set fd to support ktls
+        conn.as_mut().set_fd(fd)?;
         conn.as_mut().set_server_name(domain)?;
         TlsStream::open(conn, stream).await
     }
@@ -165,7 +170,17 @@ where
             error: None,
         }
         .await?;
+        println!("----------handshake done");
+
+        match tls.is_ktls_enabled() {
+            Ok(enabled) => println!("enable check---------: {}", enabled),
+            Err(err) => println!("FAIL while trying to check ktls status--------- {:}", err),
+        }
         Ok(tls)
+    }
+
+    pub fn is_ktls_enabled(&self) -> Result<bool, Error> {
+        self.conn.as_ref().is_ktls_enabled()
     }
 
     fn with_io<F, R>(&mut self, ctx: &mut Context, action: F) -> Poll<Result<R, Error>>

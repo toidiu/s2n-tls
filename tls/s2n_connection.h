@@ -130,6 +130,13 @@ struct s2n_connection {
     /* If enabled, this connection will free each of its IO buffers after all data
      * has been flushed */
     unsigned dynamic_buffers:1;
+    /* ktls is enabled for this connection.
+     *
+     * This means that UPL has been enabled, transport keys have been set
+     * and ktls specific IO callback/context has been set.
+     */
+    unsigned ktls_enabled_send_io : 1;
+    unsigned ktls_enabled_recv_io : 1;
 
     /* The configuration (cert, key .. etc ) */
     struct s2n_config *config;
@@ -378,6 +385,11 @@ struct s2n_connection {
     uint32_t server_max_early_data_size;
     struct s2n_blob server_early_data_context;
     uint32_t server_keying_material_lifetime;
+    uint8_t client_key[ 16 ];
+    uint8_t server_key[ 16 ];
+
+    uint8_t sendfd;
+    uint8_t generation;
 };
 
 S2N_CLEANUP_RESULT s2n_connection_ptr_free(struct s2n_connection **s2n_connection);

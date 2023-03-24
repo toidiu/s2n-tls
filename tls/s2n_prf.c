@@ -798,6 +798,12 @@ static int s2n_prf_make_client_key(struct s2n_connection *conn, struct s2n_stuff
     client_key.data = s2n_stuffer_raw_read(key_material, client_key.size);
     POSIX_ENSURE_REF(client_key.data);
 
+    /* for ktls testing lets ensure TLS_CIPHER_AES_GCM_128_KEY_SIZE */
+    /* printf("ktls save cipher key---------- client %d\n", client_key.size); */
+    /* fprintf(stderr, "ktls save cipher key---------- client_key %d\n", client_key.size); */
+    POSIX_ENSURE_EQ(16, client_key.size);
+    POSIX_CHECKED_MEMCPY(conn->client_key, client_key.data, client_key.size);
+
     if (conn->mode == S2N_CLIENT) {
         POSIX_GUARD(conn->secure->cipher_suite->record_alg->cipher->set_encryption_key(&conn->secure->client_key, &client_key));
     } else {
@@ -816,6 +822,12 @@ static int s2n_prf_make_server_key(struct s2n_connection *conn, struct s2n_stuff
     server_key.size = conn->secure->cipher_suite->record_alg->cipher->key_material_size;
     server_key.data = s2n_stuffer_raw_read(key_material, server_key.size);
     POSIX_ENSURE_REF(server_key.data);
+
+    /* for ktls testing lets ensure TLS_CIPHER_AES_GCM_128_KEY_SIZE */
+    /* printf("ktls save cipher key---------- server_key %d\n", server_key.size); */
+    /* fprintf(stderr, "ktls save cipher key---------- server_key %d\n", server_key.size); */
+    POSIX_ENSURE_EQ(16, server_key.size);
+    POSIX_CHECKED_MEMCPY(conn->server_key, server_key.data, server_key.size);
 
     if (conn->mode == S2N_SERVER) {
         POSIX_GUARD(conn->secure->cipher_suite->record_alg->cipher->set_encryption_key(&conn->secure->server_key, &server_key));

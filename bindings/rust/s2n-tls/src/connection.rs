@@ -586,6 +586,23 @@ impl Connection {
         // are static and immutable since they are const fields on static const structs
         static_const_str!(cipher)
     }
+
+    pub fn is_ktls_enabled(&self) -> Result<bool, Error> {
+        let mut enabled = false;
+        unsafe {
+            s2n_tls_sys::s2n_connection_is_ktls_enabled(self.connection.as_ptr(), &mut enabled)
+                .into_result()
+        }?;
+
+        Ok(enabled)
+    }
+
+    pub fn set_fd(&mut self, fd: i32) -> Result<(), Error> {
+        unsafe {
+            s2n_connection_set_fd(self.connection.as_ptr(), fd).into_result()?;
+        }
+        Ok(())
+    }
 }
 
 #[derive(Default)]

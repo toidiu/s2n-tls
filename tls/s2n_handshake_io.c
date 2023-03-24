@@ -25,6 +25,7 @@
 #include "tls/s2n_async_pkey.h"
 #include "tls/s2n_cipher_suites.h"
 #include "tls/s2n_connection.h"
+#include "tls/s2n_ktls.h"
 #include "tls/s2n_record.h"
 #include "tls/s2n_resume.h"
 #include "tls/s2n_alerts.h"
@@ -1461,6 +1462,21 @@ int s2n_negotiate_impl(struct s2n_connection *conn, s2n_blocked_status *blocked)
             POSIX_GUARD(s2n_stuffer_resize(&conn->handshake.io, 0));
         }
     }
+
+    /* POSIX_ENSURE_EQ(conn->config->ktls_requested, true); */
+    /* POSIX_ENSURE_EQ(conn->managed_send_io, true); */
+
+    /* ensure that user requested ktls, and has not set custom IO */
+    /* if (conn->config->ktls_requested && conn->managed_send_io) { */
+    if (conn->config->ktls_requested) {
+        if (s2n_result_is_ok(s2n_ktls_enable(conn))) {
+            /* ktls has been enabled */
+        } else {
+            /* do we need to de-register the ULP? */
+        }
+    }
+
+    /* POSIX_ENSURE_EQ(conn->ktls_enabled_send_io, true); */
 
     *blocked = S2N_NOT_BLOCKED;
 

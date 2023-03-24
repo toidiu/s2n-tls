@@ -110,6 +110,8 @@ struct s2n_connection *s2n_connection_new(s2n_mode mode)
     PTR_GUARD_POSIX(s2n_stuffer_growable_alloc(&conn->handshake.io, 0));
     PTR_GUARD_RESULT(s2n_timer_start(conn->config, &conn->write_timer));
 
+    conn->generation = 0;
+
     /* NOTE: s2n_connection_wipe MUST be called last in this function.
      *
      * s2n_connection_wipe is used for initializing values but also used by customers to
@@ -833,11 +835,14 @@ int s2n_connection_get_write_fd(struct s2n_connection *conn, int *writefd)
     POSIX_ENSURE((conn->managed_send_io && conn->send_io_context), S2N_ERR_INVALID_STATE);
 
     const struct s2n_socket_write_io_context *peer_socket_ctx = conn->send_io_context;
-    *writefd = peer_socket_ctx->fd;
+    *writefd                                                  = peer_socket_ctx->fd;
     return S2N_SUCCESS;
 }
 int s2n_connection_set_fd(struct s2n_connection *conn, int fd)
 {
+    // FIXME ktls hack
+    conn->sendfd = fd;
+
     POSIX_GUARD(s2n_connection_set_read_fd(conn, fd));
     POSIX_GUARD(s2n_connection_set_write_fd(conn, fd));
     return 0;
@@ -1505,6 +1510,17 @@ S2N_RESULT s2n_connection_dynamic_free_out_buffer(struct s2n_connection *conn)
     }
 
     return S2N_RESULT_OK;
+}
+
+int s2n_connection_is_ktls_enabled(struct s2n_connection *s2n_connection, bool *enable)
+{
+    POSIX_ENSURE_REF(s2n_connection);
+
+    /* ktls IO functionality is managed by s2n-tls. ktls cannot be enabled
+     * if the application sets custom io. */
+    /* return (s2n_connection->managed_send_io && s2n_connection->ktls_enabled_send_io); */
+    *enable = s2n_connection->ktls_enabled_send_io == 1;
+    return S2N_SUCCESS;
 }
 
 S2N_RESULT s2n_connection_dynamic_free_in_buffer(struct s2n_connection *conn)
