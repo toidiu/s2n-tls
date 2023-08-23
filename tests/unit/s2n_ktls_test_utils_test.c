@@ -310,7 +310,7 @@ int main(int argc, char **argv)
     /* Test the recvmsg mock IO stuffer implementation */
     {
         /* Happy case: test send/recv non-zero values. Sending 0 is a special case and tested separately */
-        for (size_t to_send = 1; to_send < S2N_TLS_MAXIMUM_FRAGMENT_LENGTH; to_send++) {
+        for (size_t to_send = 1; to_send < S2N_TEST_KTLS_MOCK_MAX_FRAG_SIZE; to_send++) {
             DEFER_CLEANUP(struct s2n_connection *server = s2n_connection_new(S2N_SERVER),
                     s2n_connection_ptr_free);
             DEFER_CLEANUP(struct s2n_connection *client = s2n_connection_new(S2N_CLIENT),
