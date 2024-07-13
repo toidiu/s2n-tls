@@ -39,6 +39,14 @@
 
 #define S2N_CLOCK_SYS CLOCK_REALTIME
 
+bool basic_test_init_done = false;
+
+int s2n_mark_basic_test_init_done()
+{
+    basic_test_init_done = true;
+    return S2N_SUCCESS;
+}
+
 static int monotonic_clock(void *data, uint64_t *nanoseconds)
 {
     struct timespec current_time = { 0 };
@@ -69,7 +77,9 @@ static struct s2n_config s2n_default_tls13_config = { 0 };
 
 static int s2n_config_setup_default(struct s2n_config *config)
 {
-    printf("\n----------------- setup default");
+    if (basic_test_init_done) {
+        printf("\n----------------- setup default");
+    }
     POSIX_GUARD(s2n_config_set_cipher_preferences(config, "default"));
     return S2N_SUCCESS;
 }
@@ -106,7 +116,9 @@ static int s2n_config_init(struct s2n_config *config)
     } else if (s2n_is_in_fips_mode()) {
         POSIX_GUARD(s2n_config_setup_fips(config));
     } else {
-        printf("\n----------------- use default policy");
+        if (basic_test_init_done) {
+            printf("\n----------------- use default policy");
+        }
         POSIX_GUARD(s2n_config_setup_default(config));
         /* POSIX_GUARD(s2n_config_load_system_certs(&s2n_default_config)); */
     }
