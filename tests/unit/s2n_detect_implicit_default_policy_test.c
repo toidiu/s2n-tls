@@ -27,8 +27,8 @@
 
 static S2N_RESULT test_connection(struct s2n_connection *server, struct s2n_connection *client)
 {
-    EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(server, "default_tls13"));
-    EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(client, "default_tls13"));
+    EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(server, "default"));
+    EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(client, "default"));
 
     DEFER_CLEANUP(struct s2n_stuffer input, s2n_stuffer_free);
     DEFER_CLEANUP(struct s2n_stuffer output, s2n_stuffer_free);
@@ -40,8 +40,8 @@ static S2N_RESULT test_connection(struct s2n_connection *server, struct s2n_conn
 
     EXPECT_SUCCESS(s2n_negotiate_test_server_and_client(server, client));
 
-    RESULT_ENSURE_EQ(server->actual_protocol_version, S2N_TLS13);
-    RESULT_ENSURE_EQ(client->actual_protocol_version, S2N_TLS13);
+    RESULT_ENSURE_EQ(server->actual_protocol_version, S2N_TLS12);
+    RESULT_ENSURE_EQ(client->actual_protocol_version, S2N_TLS12);
 
     return S2N_RESULT_OK;
 }
