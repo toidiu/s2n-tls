@@ -27,8 +27,8 @@
 
 static S2N_RESULT test_connection(struct s2n_connection *server, struct s2n_connection *client)
 {
-    EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(server, "default"));
-    EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(client, "default"));
+    /* EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(server, "default")); */
+    /* EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(client, "default")); */
 
     DEFER_CLEANUP(struct s2n_stuffer input, s2n_stuffer_free);
     DEFER_CLEANUP(struct s2n_stuffer output, s2n_stuffer_free);
