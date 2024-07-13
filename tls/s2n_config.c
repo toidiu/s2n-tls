@@ -69,6 +69,7 @@ static struct s2n_config s2n_default_tls13_config = { 0 };
 
 static int s2n_config_setup_default(struct s2n_config *config)
 {
+    printf("\n----------------- setup default");
     POSIX_GUARD(s2n_config_set_cipher_preferences(config, "default"));
     return S2N_SUCCESS;
 }
@@ -100,11 +101,14 @@ static int s2n_config_init(struct s2n_config *config)
 
     config->client_hello_cb_mode = S2N_CLIENT_HELLO_CB_BLOCKING;
 
-    POSIX_GUARD(s2n_config_setup_default(config));
     if (s2n_use_default_tls13_config()) {
         POSIX_GUARD(s2n_config_setup_tls13(config));
     } else if (s2n_is_in_fips_mode()) {
         POSIX_GUARD(s2n_config_setup_fips(config));
+    } else {
+        printf("\n----------------- use default policy");
+        POSIX_GUARD(s2n_config_setup_default(config));
+        /* POSIX_GUARD(s2n_config_load_system_certs(&s2n_default_config)); */
     }
 
     POSIX_GUARD_PTR(config->domain_name_to_cert_map = s2n_map_new_with_initial_capacity(1));
