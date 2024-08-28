@@ -52,8 +52,6 @@ int main(int argc, char **argv)
 
     EXPECT_SUCCESS(s2n_init());
 
-    EXPECT_SUCCESS(s2n_testing_mark_init_done());
-
     /* Test for s2n_config_new() and tls 1.3 behavior */
     {
         printf("\n----------------- STARTING TEST ------------");
