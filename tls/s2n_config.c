@@ -41,11 +41,12 @@
 
 // track s2n_init during tests and ignore "default" security policy usage
 bool testing_init_done = false;
-bool dprint = false;
+bool dprint = true;
+/* bool dprint = false; */
 
-int s2n_testing_mark_init_done()
+int s2n_testing_mark_init_done(bool done)
 {
-    testing_init_done = true;
+    testing_init_done = done;
     return S2N_SUCCESS;
 }
 

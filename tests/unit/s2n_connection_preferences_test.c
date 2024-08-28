@@ -257,9 +257,15 @@ int main(int argc, char **argv)
 
         EXPECT_SUCCESS(s2n_connection_free(conn));
 
+        /* THIS IS THE ONLY TEST that calls s2n_config_defaults_init() after
+         * init. Ideally we fix this. One way might be to move the move this
+         * test to be the last one in the file but that still doesnt prevent
+         * other tests from being added. */
+        EXPECT_SUCCESS(s2n_testing_mark_init_done(false));
         /* The static configs were mutated. Reset them to allow following unit tests to use them. */
         s2n_wipe_static_configs();
         EXPECT_SUCCESS(s2n_config_defaults_init());
+        EXPECT_SUCCESS(s2n_testing_mark_init_done(true));
     };
 
     /* s2n_connection_get_curve */

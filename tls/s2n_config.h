@@ -48,7 +48,7 @@
 
 // track s2n_init during tests and ignore "default" security policy usage
 extern bool testing_init_done;
-int s2n_testing_mark_init_done();
+int s2n_testing_mark_init_done(bool done);
 extern bool dprint;
 
 struct s2n_cipher_preferences;

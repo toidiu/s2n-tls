@@ -86,7 +86,7 @@ int test_count;
     do {                                                            \
         BEGIN_TEST_NO_INIT();                                       \
         EXPECT_SUCCESS_WITHOUT_COUNT(s2n_init());                   \
-        EXPECT_SUCCESS(s2n_testing_mark_init_done());               \
+        EXPECT_SUCCESS(s2n_testing_mark_init_done(true));           \
     } while(0)
 
 #define END_TEST()                                                  \
