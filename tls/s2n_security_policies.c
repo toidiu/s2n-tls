@@ -1276,6 +1276,14 @@ int s2n_find_security_policy_from_version(const char *version, const struct s2n_
         }
     }
 
+    // TODO to audit "default" usage we only need to check usage of the array security_policy_selection
+    // - match version == "default"
+    // - check direct usage of that array in this file
+    // - check direct usage of that array in tests
+    //
+    // PR
+    // - make the detection as clean as possible. then the remaining changes will be automated changes
+
     POSIX_BAIL(S2N_ERR_INVALID_SECURITY_POLICY);
 }
 
