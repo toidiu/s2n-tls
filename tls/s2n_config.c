@@ -43,6 +43,7 @@
 bool testing_init_done = false;
 bool dprint = true;
 /* bool dprint = false; */
+bool dbail = true;
 
 int s2n_testing_mark_init_done(bool done)
 {
@@ -124,8 +125,14 @@ static int s2n_config_init(struct s2n_config *config)
         if (dprint && testing_init_done) {
             printf("\n----------------- s2n_config_init: use default policy");
         }
-        POSIX_GUARD(s2n_config_setup_default(config));
-        /* POSIX_GUARD(s2n_config_load_system_certs(&s2n_default_config)); */
+
+        /* dont initialize "default" policy in test. this should result in a
+         * NULL exception if tests attempt to use the "default" policy */
+        if (!s2n_in_unit_test()) {
+            /* printf("\nBAIL----------------- s2n_config_init: disallow 'default' policy"); */
+            /* POSIX_BAIL(S2N_ERR_INVALID_SECURITY_POLICY); */
+            POSIX_GUARD(s2n_config_setup_default(config));
+        }
     }
 
     POSIX_GUARD_PTR(config->domain_name_to_cert_map = s2n_map_new_with_initial_capacity(1));
@@ -248,7 +255,8 @@ int s2n_config_set_unsafe_for_testing(struct s2n_config *config)
 
 int s2n_config_defaults_init(void)
 {
-    if (testing_init_done) {
+    /* This should only be called once during s2n_init */
+    if (dbail && testing_init_done) {
         printf("\n----------------- s2n_config_defaults_init: should only be called during s2n_init ");
         POSIX_BAIL(S2N_ERR_INVALID_SECURITY_POLICY);
     }

@@ -136,6 +136,7 @@ int main(int argc, char **argv)
     for (int send_sct = 0; send_sct <= 1; send_sct++) {
         DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(), s2n_config_ptr_free);
         EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(config, chain_and_key));
+        EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "numbered_default"));
 
         /* The SCT extension is zero-length. */
         if (send_sct) {
@@ -315,6 +316,7 @@ int main(int argc, char **argv)
             EXPECT_NOT_NULL(conn = s2n_connection_new(S2N_CLIENT));
             struct s2n_stuffer *hello_stuffer = &conn->handshake.io;
             conn->actual_protocol_version = i;
+            EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(conn, "numbered_default"));
 
             conn->session_id_len = S2N_TLS_SESSION_ID_MAX_LEN;
             EXPECT_MEMCPY_SUCCESS(conn->session_id, test_session_id, S2N_TLS_SESSION_ID_MAX_LEN);
@@ -425,6 +427,7 @@ int main(int argc, char **argv)
                 struct s2n_connection *conn = NULL;
                 EXPECT_NOT_NULL(conn = s2n_connection_new(S2N_CLIENT));
                 struct s2n_stuffer *hello_stuffer = &conn->handshake.io;
+                EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(conn, "numbered_default"));
 
                 EXPECT_SUCCESS(s2n_client_hello_send(conn));
                 EXPECT_SUCCESS(s2n_stuffer_skip_read(hello_stuffer, LENGTH_TO_SESSION_ID));
@@ -441,6 +444,7 @@ int main(int argc, char **argv)
                 struct s2n_config *config = NULL;
                 EXPECT_NOT_NULL(config = s2n_config_new());
                 EXPECT_SUCCESS(s2n_config_set_session_tickets_onoff(config, true));
+                EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "numbered_default"));
 
                 struct s2n_connection *conn = NULL;
                 EXPECT_NOT_NULL(conn = s2n_connection_new(S2N_CLIENT));
@@ -468,6 +472,7 @@ int main(int argc, char **argv)
             {
                 struct s2n_connection *conn = NULL;
                 EXPECT_NOT_NULL(conn = s2n_connection_new(S2N_CLIENT));
+                EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(conn, "numbered_default"));
 
                 struct s2n_stuffer *hello_stuffer = &conn->handshake.io;
 
@@ -581,6 +586,7 @@ int main(int argc, char **argv)
             };
 
             for (size_t i = 0; i < s2n_array_len(test_cases); i++) {
+                dbail = false;
                 struct s2n_connection *conn = s2n_connection_new(S2N_CLIENT);
                 EXPECT_NOT_NULL(conn);
                 EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(conn, test_cases[i].security_policy));
@@ -602,6 +608,7 @@ int main(int argc, char **argv)
                 EXPECT_EQUAL(found_renegotiation_info, test_cases[i].expect_renegotiation_info);
 
                 EXPECT_SUCCESS(s2n_connection_free(conn));
+                dbail = true;
             }
         }
 
@@ -649,6 +656,7 @@ int main(int argc, char **argv)
 
         /* Error if no cipher suites written. */
         {
+            dbail = false;
             DEFER_CLEANUP(struct s2n_connection *conn = s2n_connection_new(S2N_CLIENT),
                     s2n_connection_ptr_free);
             EXPECT_NOT_NULL(conn);
@@ -672,6 +680,7 @@ int main(int argc, char **argv)
             /* cppcheck-suppress redundantAssignment */
             cipher_suite.available = true;
             EXPECT_SUCCESS(s2n_client_hello_send(conn));
+            dbail = true;
         };
     };
 

@@ -50,6 +50,7 @@
 extern bool testing_init_done;
 int s2n_testing_mark_init_done(bool done);
 extern bool dprint;
+extern bool dbail;
 
 struct s2n_cipher_preferences;
 

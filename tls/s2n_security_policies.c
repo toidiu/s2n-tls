@@ -33,6 +33,18 @@ const struct s2n_security_policy security_policy_20240501 = {
     },
 };
 
+/* TLS1.2 default as of 05/24 */
+const struct s2n_security_policy numbered_default = {
+    .minimum_protocol_version = S2N_TLS12,
+    .cipher_preferences = &cipher_preferences_20240331,
+    .kem_preferences = &kem_preferences_null,
+    .signature_preferences = &s2n_signature_preferences_20240501,
+    .ecc_preferences = &s2n_ecc_preferences_20240501,
+    .rules = {
+            [S2N_PERFECT_FORWARD_SECRECY] = true,
+    },
+};
+
 /* FIPS default as of 05/24 */
 const struct s2n_security_policy security_policy_20240502 = {
     .minimum_protocol_version = S2N_TLS12,
@@ -1122,6 +1134,7 @@ const struct s2n_security_policy security_policy_null = {
 };
 
 struct s2n_security_policy_selection security_policy_selection[] = {
+    { .version = "numbered_default", .security_policy = &numbered_default, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
     { .version = "default", .security_policy = &security_policy_20240501, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
     { .version = "default_tls13", .security_policy = &security_policy_20240503, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
     { .version = "default_fips", .security_policy = &security_policy_20240502, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
