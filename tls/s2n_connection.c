@@ -683,6 +683,10 @@ int s2n_connection_get_security_policy(struct s2n_connection *conn, const struct
     }
 
     POSIX_ENSURE_REF(*security_policy);
+    if (dprint && testing_init_done && (*security_policy)->id == 11) {
+        printf("\n----------------- s2n_connection_get_security_policy: retrieving 'default' policy");
+    }
+
     return 0;
 }
 

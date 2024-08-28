@@ -46,6 +46,11 @@
 #define S2N_MIN_SEND_BUFFER_FRAGMENT_SIZE MAX(S2N_KEY_UPDATE_MESSAGE_SIZE, S2N_ALERT_LENGTH)
 #define S2N_MIN_SEND_BUFFER_SIZE          S2N_TLS_MAX_RECORD_LEN_FOR(S2N_MIN_SEND_BUFFER_FRAGMENT_SIZE)
 
+// track s2n_init during tests and ignore "default" security policy usage
+extern bool testing_init_done;
+int s2n_testing_mark_init_done();
+extern bool dprint;
+
 struct s2n_cipher_preferences;
 
 typedef enum {
@@ -238,7 +243,6 @@ struct s2n_config {
 
 S2N_CLEANUP_RESULT s2n_config_ptr_free(struct s2n_config **config);
 
-int s2n_mark_basic_test_init_done();
 int s2n_config_defaults_init(void);
 S2N_RESULT s2n_config_testing_defaults_init_tls13_certs(void);
 struct s2n_config *s2n_fetch_default_config(void);

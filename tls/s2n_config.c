@@ -39,11 +39,13 @@
 
 #define S2N_CLOCK_SYS CLOCK_REALTIME
 
-bool basic_test_init_done = false;
+// track s2n_init during tests and ignore "default" security policy usage
+bool testing_init_done = false;
+bool dprint = false;
 
-int s2n_mark_basic_test_init_done()
+int s2n_testing_mark_init_done()
 {
-    basic_test_init_done = true;
+    testing_init_done = true;
     return S2N_SUCCESS;
 }
 
@@ -77,8 +79,8 @@ static struct s2n_config s2n_default_tls13_config = { 0 };
 
 static int s2n_config_setup_default(struct s2n_config *config)
 {
-    if (basic_test_init_done) {
-        printf("\n----------------- setup default");
+    if (dprint && testing_init_done) {
+        printf("\n----------------- s2n_config_setup_default: setup default");
     }
     POSIX_GUARD(s2n_config_set_cipher_preferences(config, "default"));
     return S2N_SUCCESS;
@@ -116,8 +118,10 @@ static int s2n_config_init(struct s2n_config *config)
     } else if (s2n_is_in_fips_mode()) {
         POSIX_GUARD(s2n_config_setup_fips(config));
     } else {
-        if (basic_test_init_done) {
-            printf("\n----------------- use default policy");
+        /* FIXME code changed to better detect 'default' usage. revert */
+        /* ONLY initialize the default policy if it will be used by the tests */
+        if (dprint && testing_init_done) {
+            printf("\n----------------- s2n_config_init: use default policy");
         }
         POSIX_GUARD(s2n_config_setup_default(config));
         /* POSIX_GUARD(s2n_config_load_system_certs(&s2n_default_config)); */
@@ -243,6 +247,11 @@ int s2n_config_set_unsafe_for_testing(struct s2n_config *config)
 
 int s2n_config_defaults_init(void)
 {
+    if (testing_init_done) {
+        printf("\n----------------- s2n_config_defaults_init: should only be called during s2n_init ");
+        POSIX_BAIL(S2N_ERR_INVALID_SECURITY_POLICY);
+    }
+
     /* Set up fips defaults */
     if (s2n_is_in_fips_mode()) {
         POSIX_GUARD(s2n_config_init(&s2n_default_fips_config));

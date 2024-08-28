@@ -1280,6 +1280,9 @@ int s2n_config_set_cipher_preferences(struct s2n_config *config, const char *ver
     POSIX_ENSURE((security_policy->minimum_protocol_version <= s2n_get_highest_fully_supported_tls_version()), S2N_ERR_PROTOCOL_VERSION_UNSUPPORTED);
 
     config->security_policy = security_policy;
+    if (dprint && testing_init_done && security_policy->id == 11) {
+        printf("\n========== set on config: 'default' policy");
+    }
     return 0;
 }
 
@@ -1302,6 +1305,9 @@ int s2n_connection_set_cipher_preferences(struct s2n_connection *conn, const cha
     POSIX_GUARD_RESULT(s2n_config_validate_loaded_certificates(conn->config, security_policy));
 
     conn->security_policy_override = security_policy;
+    if (dprint && security_policy->id == 11) {
+        printf("\n========== set on connection: 'default' policy");
+    }
     return 0;
 }
 
