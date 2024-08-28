@@ -37,6 +37,45 @@
  * certificates the certificate_signature_preferences field should be set in the
  * security policy.
  */
+
+/* s2n_security_policy usage:
+ *   https://github.com/search?q=repo%3Aaws%2Fs2n-tls+s2n_security_policy+path%3A%2F%5Etls%5C%2F%2F&type=code */
+/* x- s2n_security_rules.c: testing */
+/* x- s2n_security_rules.h: testing */
+/* x- s2n_x509_validator.c: validation */
+/* x- extensions/s2n_client_pq_kem.c: for detecting pq */
+/* x- extensions/s2n_supported_versions.c: used to get min version */
+/* x- extensions/s2n_client_supported_groups.c: used to check if ecc ext required */
+/* x- s2n_connection.h */
+/*  x- changes restricted to s2n_connection.c */
+/* x- s2n_config.c */
+/*  x- validate cert chain */
+/*  x- get supported groups */
+/* x- s2n_config.h */
+/*  x- only accessed by s2n_connection */
+/* x- s2n_cipher_suites.c: used to select cipher */
+/* ~- s2n_server_hello.c */
+/*  ~- s2n_connection_get_security_policy. calls into s2n_connection. used to verify protocol */
+/* ~- s2n_client_hello.c */
+/*  ~- s2n_connection_get_security_policy. calls into s2n_connection. used to verify protocol */
+
+/* ! s2n_security_policies.c */
+/*  !- s2n_connection_set_cipher_preferences: only called in tests */
+/*    !- check test usage */
+/*  !- s2n_config_set_cipher_preferences. */
+/*    !- CALLED by s2n_config_setup_default(). is this used outside of testing??? */
+
+/* ?- s2n_connection.c */
+/*  !- s2n_connection_set_config */
+/*    !- s2n_connection_new: sets the config sec policy */
+/*      - CALLS s2n_connection_set_config and passes in s2n_fetch_default_config() */
+/*    x- s2n_connection_zero: sets the config sec policy */
+/*  ~- s2n_connection_get_security_policy: this is the only entry point to retrieve sec policy */
+/*  x- s2n_connection_get_cipher_preferences */
+/*  x- s2n_connection_get_kem_preferences */
+/*  x- s2n_connection_get_signature_preferences */
+/*  x- s2n_connection_get_ecc_preferences */
+
 struct s2n_security_policy {
     uint8_t minimum_protocol_version;
     /* TLS 1.0 - 1.2 - cipher preference includes multiple elements such
@@ -82,6 +121,7 @@ struct s2n_security_policy {
      */
     bool certificate_preferences_apply_locally;
     bool rules[S2N_SECURITY_RULES_COUNT];
+    uint8_t id;
 };
 
 struct s2n_security_policy_selection {

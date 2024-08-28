@@ -22,6 +22,7 @@
 
 /* TLS1.2 default as of 05/24 */
 const struct s2n_security_policy security_policy_20240501 = {
+    .id = 11,
     .minimum_protocol_version = S2N_TLS12,
     .cipher_preferences = &cipher_preferences_20240331,
     .kem_preferences = &kem_preferences_null,
