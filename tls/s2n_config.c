@@ -115,11 +115,8 @@ static int s2n_config_init(struct s2n_config *config)
     if (dprint && testing_init_done) {
         printf("\n3)------ s2n_config_init: implicit use of 'default'");
     }
-    /* We can use the in_unit_test to disable initializing the default config */
-    if (!s2n_in_unit_test()) {
-        POSIX_GUARD(s2n_config_setup_default(config));
-        /* POSIX_BAIL(S2N_ERR_INVALID_SECURITY_POLICY); */
-    }
+    /* POSIX_GUARD(s2n_config_setup_default(config)); */
+
     if (s2n_use_default_tls13_config()) {
         POSIX_GUARD(s2n_config_setup_tls13(config));
     } else if (s2n_is_in_fips_mode()) {
@@ -248,7 +245,7 @@ int s2n_config_defaults_init(void)
 {
     /* This should only be called once during s2n_init */
     if (dbail && testing_init_done) {
-        printf("\n----------------- s2n_config_defaults_init: should only be called during s2n_init ");
+        printf("\nTODO remove-----sanity check: should only be called during s2n_init ");
         POSIX_BAIL(S2N_ERR_INVALID_SECURITY_POLICY);
     }
 
