@@ -22,19 +22,6 @@
 
 /* TLS1.2 default as of 05/24 */
 const struct s2n_security_policy security_policy_20240501 = {
-    .id = 11,
-    .minimum_protocol_version = S2N_TLS12,
-    .cipher_preferences = &cipher_preferences_20240331,
-    .kem_preferences = &kem_preferences_null,
-    .signature_preferences = &s2n_signature_preferences_20240501,
-    .ecc_preferences = &s2n_ecc_preferences_20240501,
-    .rules = {
-            [S2N_PERFECT_FORWARD_SECRECY] = true,
-    },
-};
-
-/* TLS1.2 default as of 05/24 */
-const struct s2n_security_policy numbered_default = {
     .minimum_protocol_version = S2N_TLS12,
     .cipher_preferences = &cipher_preferences_20240331,
     .kem_preferences = &kem_preferences_null,
@@ -1134,7 +1121,6 @@ const struct s2n_security_policy security_policy_null = {
 };
 
 struct s2n_security_policy_selection security_policy_selection[] = {
-    { .version = "numbered_default", .security_policy = &numbered_default, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
     { .version = "default", .security_policy = &security_policy_20240501, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
     { .version = "default_tls13", .security_policy = &security_policy_20240503, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
     { .version = "default_fips", .security_policy = &security_policy_20240502, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
@@ -1269,6 +1255,13 @@ int s2n_find_security_policy_from_version(const char *version, const struct s2n_
     POSIX_ENSURE_REF(version);
     POSIX_ENSURE_REF(security_policy);
 
+    bool matches_default = strcmp(version, "default") == 0;
+    if (dbail && testing_init_done && matches_default) {
+        printf("\nBail------- s2n_find_from_version: init_done: %d str: %s: matches: %d",
+                testing_init_done, version, matches_default);
+        POSIX_BAIL(S2N_ERR_INVALID_SECURITY_POLICY);
+    }
+
     for (int i = 0; security_policy_selection[i].version != NULL; i++) {
         if (!strcasecmp(version, security_policy_selection[i].version)) {
             *security_policy = security_policy_selection[i].security_policy;
@@ -1276,7 +1269,22 @@ int s2n_find_security_policy_from_version(const char *version, const struct s2n_
         }
     }
 
-    // TODO to audit "default" usage we only need to check usage of the array security_policy_selection
+    // TODO to audit "default" usage we only need to check usage of the array security_policy_selection.
+    // There are 3 cases we need to care about:
+    // 1) Explicit use via conn/config_set_cipher_preferences().
+    //   - These we can detect and fix.
+    //
+    // Use of 'static' configs:
+    //   - Could we disable all initializatio of 'static' configs and expect a
+    //   NULL?
+    //
+    // 2) The 'static' configs (default, fips, tls13) initialized from s2n_init()
+    //   - These we can ignore.
+    // 3) Implicit use via s2n_config_new/_minimal().
+    //   - We care only if there is no call to set_cipher_pref later.
+    //   - This will require manual auditing each test.
+    //   - Can we instead offer a new s2n_config_new_with_sec_policy()
+    //
     // - match version == "default"
     // - check direct usage of that array in this file
     // - check direct usage of that array in tests
@@ -1301,9 +1309,6 @@ int s2n_config_set_cipher_preferences(struct s2n_config *config, const char *ver
     POSIX_ENSURE((security_policy->minimum_protocol_version <= s2n_get_highest_fully_supported_tls_version()), S2N_ERR_PROTOCOL_VERSION_UNSUPPORTED);
 
     config->security_policy = security_policy;
-    if (dprint && testing_init_done && security_policy->id == 11) {
-        printf("\n========== set on config: 'default' policy");
-    }
     return 0;
 }
 
@@ -1326,9 +1331,6 @@ int s2n_connection_set_cipher_preferences(struct s2n_connection *conn, const cha
     POSIX_GUARD_RESULT(s2n_config_validate_loaded_certificates(conn->config, security_policy));
 
     conn->security_policy_override = security_policy;
-    if (dprint && security_policy->id == 11) {
-        printf("\n========== set on connection: 'default' policy");
-    }
     return 0;
 }
 

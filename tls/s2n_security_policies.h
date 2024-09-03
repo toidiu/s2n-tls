@@ -121,7 +121,6 @@ struct s2n_security_policy {
      */
     bool certificate_preferences_apply_locally;
     bool rules[S2N_SECURITY_RULES_COUNT];
-    uint8_t id;
 };
 
 struct s2n_security_policy_selection {
@@ -135,7 +134,6 @@ struct s2n_security_policy_selection {
 extern struct s2n_security_policy_selection security_policy_selection[];
 
 /* Defaults as of 05/24 */
-extern const struct s2n_security_policy numbered_default;
 extern const struct s2n_security_policy security_policy_20240501;
 extern const struct s2n_security_policy security_policy_20240502;
 extern const struct s2n_security_policy security_policy_20240503;

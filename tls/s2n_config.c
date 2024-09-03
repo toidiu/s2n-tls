@@ -81,9 +81,6 @@ static struct s2n_config s2n_default_tls13_config = { 0 };
 
 static int s2n_config_setup_default(struct s2n_config *config)
 {
-    if (dprint && testing_init_done) {
-        printf("\n----------------- s2n_config_setup_default: setup default");
-    }
     POSIX_GUARD(s2n_config_set_cipher_preferences(config, "default"));
     return S2N_SUCCESS;
 }
@@ -115,24 +112,18 @@ static int s2n_config_init(struct s2n_config *config)
 
     config->client_hello_cb_mode = S2N_CLIENT_HELLO_CB_BLOCKING;
 
+    if (dprint && testing_init_done) {
+        printf("\n3)------ s2n_config_init: implicit use of 'default'");
+    }
+    /* We can use the in_unit_test to disable initializing the default config */
+    if (!s2n_in_unit_test()) {
+        POSIX_GUARD(s2n_config_setup_default(config));
+        /* POSIX_BAIL(S2N_ERR_INVALID_SECURITY_POLICY); */
+    }
     if (s2n_use_default_tls13_config()) {
         POSIX_GUARD(s2n_config_setup_tls13(config));
     } else if (s2n_is_in_fips_mode()) {
         POSIX_GUARD(s2n_config_setup_fips(config));
-    } else {
-        /* FIXME code changed to better detect 'default' usage. revert */
-        /* ONLY initialize the default policy if it will be used by the tests */
-        if (dprint && testing_init_done) {
-            printf("\n----------------- s2n_config_init: use default policy");
-        }
-
-        /* dont initialize "default" policy in test. this should result in a
-         * NULL exception if tests attempt to use the "default" policy */
-        if (!s2n_in_unit_test()) {
-            /* printf("\nBAIL----------------- s2n_config_init: disallow 'default' policy"); */
-            /* POSIX_BAIL(S2N_ERR_INVALID_SECURITY_POLICY); */
-            POSIX_GUARD(s2n_config_setup_default(config));
-        }
     }
 
     POSIX_GUARD_PTR(config->domain_name_to_cert_map = s2n_map_new_with_initial_capacity(1));

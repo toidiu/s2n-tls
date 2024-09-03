@@ -25,6 +25,30 @@
 #include "tls/s2n_security_policies.h"
 #include "tls/s2n_tls13.h"
 
+// To audit "default" usage we only need to check usage of the array
+// security_policy_selection. There are 3 cases we need to care about:
+//
+// 1) Explicit use via conn/config_set_cipher_preferences().
+//   - Can detect and fix.
+//
+// 2) The 'static' config (default, fips, tls13) initialized from s2n_init()
+//   - Can detect and fix.
+//   - Confirm only a single call to s2n_config_defaults_init()
+//
+// 3) Implicit use via s2n_config_new/_minimal().
+//   - TODO: disable all initialization of 'static' config and expect NULL?
+//   - Permanaent code?: Do not set default `if (!s2n_in_unit_test())` -> expect NULL
+//   - Other alternatives:
+//   - Hard. Used only if there is no call to set_cipher_preferences() later.
+//   - Clutter. Add another API for tests: s2n_config_new_with_policy()
+//
+// Other audit:
+// - check usage of `security_policy_selection` array in s2n_security_policies.c
+// - check usage of `security_policy_selection` array in tests
+//
+// PR
+// - make the detection as clean as possible. then the remaining changes will be automated changes
+
 static S2N_RESULT test_connection(struct s2n_connection *server, struct s2n_connection *client)
 {
     /* EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(server, "default")); */
@@ -48,11 +72,55 @@ static S2N_RESULT test_connection(struct s2n_connection *server, struct s2n_conn
 
 int main(int argc, char **argv)
 {
-    BEGIN_TEST_NO_INIT();
+    BEGIN_TEST();
 
-    EXPECT_SUCCESS(s2n_init());
+    /* // 1) Explicit use via config_set_cipher_preferences(). */
+    /* { */
+    /*     DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(), */
+    /*             s2n_config_ptr_free); */
+    /*     EXPECT_NOT_NULL(config); */
 
-    /* Test for s2n_config_new() and tls 1.3 behavior */
+    /*     EXPECT_FAILURE_WITH_ERRNO(s2n_config_set_cipher_preferences(config, "default"), S2N_ERR_INVALID_SECURITY_POLICY); */
+    /* }; */
+
+    /* // 1) Explicit use via connection_set_cipher_preferences(). */
+    /* { */
+    /*     DEFER_CLEANUP(struct s2n_connection *conn = s2n_connection_new(S2N_SERVER), */
+    /*             s2n_connection_ptr_free); */
+    /*     EXPECT_NOT_NULL(conn); */
+    /*     EXPECT_FAILURE_WITH_ERRNO(s2n_connection_set_cipher_preferences(conn, "default"), S2N_ERR_INVALID_SECURITY_POLICY); */
+    /* }; */
+
+    /* // 2) The 'static' config (default, fips, tls13) initialized from s2n_init() */
+    /* { */
+    /*     s2n_wipe_static_configs(); */
+    /*     EXPECT_FAILURE_WITH_ERRNO(s2n_config_defaults_init(), S2N_ERR_INVALID_SECURITY_POLICY); */
+    /* }; */
+
+    // 3) The 'static' config (default, fips, tls13) initialized from s2n_init()
+    {
+        dbail = false;
+        DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(),
+                s2n_config_ptr_free);
+        dbail = true;
+        EXPECT_NOT_NULL(config);
+
+        EXPECT_NULL(config->security_policy);
+    };
+
+    // 3) The 'static' config (default, fips, tls13) initialized from s2n_init()
+    {
+        dbail = false;
+        DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(),
+                s2n_config_ptr_free);
+        dbail = true;
+        EXPECT_NOT_NULL(config);
+        EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "20240501"));
+
+        EXPECT_NOT_NULL(config->security_policy);
+    };
+
+    // 3) The 'static' config (default, fips, tls13) initialized from s2n_init()
     {
         printf("\n----------------- STARTING TEST ------------");
 
@@ -60,37 +128,100 @@ int main(int argc, char **argv)
         DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(),
                 s2n_config_ptr_free);
         EXPECT_NOT_NULL(config);
-        EXPECT_NOT_NULL(config->security_policy);
-        struct s2n_cert_chain_and_key *chain_and_key = NULL;
-        EXPECT_SUCCESS(s2n_test_cert_chain_and_key_new(&chain_and_key,
-                S2N_DEFAULT_ECDSA_TEST_CERT_CHAIN, S2N_DEFAULT_ECDSA_TEST_PRIVATE_KEY));
-        EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(config, chain_and_key));
-        EXPECT_SUCCESS(s2n_config_disable_x509_verification(config));
 
         /* connection */
-        DEFER_CLEANUP(struct s2n_connection *client = s2n_connection_new(S2N_CLIENT),
-                s2n_connection_ptr_free);
         DEFER_CLEANUP(struct s2n_connection *server = s2n_connection_new(S2N_SERVER),
                 s2n_connection_ptr_free);
         EXPECT_NOT_NULL(server);
-        EXPECT_NOT_NULL(client);
-        EXPECT_SUCCESS(s2n_connection_set_blinding(client, S2N_SELF_SERVICE_BLINDING));
+        EXPECT_SUCCESS(s2n_connection_set_blinding(server, S2N_SELF_SERVICE_BLINDING));
+
+        EXPECT_FAILURE(s2n_connection_set_config(server, config));
+    };
+
+    // 3) The 'static' config (default, fips, tls13) initialized from s2n_init()
+    {
+        printf("\n----------------- STARTING TEST ------------");
+
+        /* config */
+        DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(),
+                s2n_config_ptr_free);
+        EXPECT_NOT_NULL(config);
+        EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "20240501"));
+
+        /* connection */
+        DEFER_CLEANUP(struct s2n_connection *server = s2n_connection_new(S2N_SERVER),
+                s2n_connection_ptr_free);
+        EXPECT_NOT_NULL(server);
         EXPECT_SUCCESS(s2n_connection_set_blinding(server, S2N_SELF_SERVICE_BLINDING));
 
         EXPECT_SUCCESS(s2n_connection_set_config(server, config));
-        EXPECT_SUCCESS(s2n_connection_set_config(client, config));
-
-        EXPECT_OK(test_connection(server, client));
     };
 
-    {
-        /* EXPECT_SUCCESS(s2n_disable_tls13_in_test()); */
-        /* EXPECT_SUCCESS(s2n_enable_tls13_in_test()); */
-        /* EXPECT_NOT_NULL(config = s2n_config_new()); */
-        /* /1* EXPECT_EQUAL(config->security_policy, tls13_security_policy); *1/ */
-        /* EXPECT_SUCCESS(s2n_config_free(config)); */
-    };
+    /* // 3) The 'static' config (default, fips, tls13) initialized from s2n_init() */
+    /* { */
+    /*     printf("\n----------------- STARTING TEST ------------"); */
+
+    /*     /1* config *1/ */
+    /*     DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(), */
+    /*             s2n_config_ptr_free); */
+    /*     EXPECT_NOT_NULL(config); */
+    /*     /1* EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "20240501")); *1/ */
+    /*     /1* EXPECT_NOT_NULL(config->security_policy); *1/ */
+
+    /*     struct s2n_cert_chain_and_key *chain_and_key = NULL; */
+    /*     EXPECT_SUCCESS(s2n_test_cert_chain_and_key_new(&chain_and_key, */
+    /*             S2N_DEFAULT_ECDSA_TEST_CERT_CHAIN, S2N_DEFAULT_ECDSA_TEST_PRIVATE_KEY)); */
+    /*     EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(config, chain_and_key)); */
+    /*     EXPECT_SUCCESS(s2n_config_disable_x509_verification(config)); */
+
+    /*     /1* connection *1/ */
+    /*     DEFER_CLEANUP(struct s2n_connection *client = s2n_connection_new(S2N_CLIENT), */
+    /*             s2n_connection_ptr_free); */
+    /*     EXPECT_NOT_NULL(client); */
+    /*     DEFER_CLEANUP(struct s2n_connection *server = s2n_connection_new(S2N_SERVER), */
+    /*             s2n_connection_ptr_free); */
+    /*     EXPECT_NOT_NULL(server); */
+    /*     EXPECT_SUCCESS(s2n_connection_set_blinding(client, S2N_SELF_SERVICE_BLINDING)); */
+    /*     EXPECT_SUCCESS(s2n_connection_set_blinding(server, S2N_SELF_SERVICE_BLINDING)); */
+
+    /*     /1* EXPECT_SUCCESS(s2n_connection_set_config(server, config)); *1/ */
+    /*     /1* EXPECT_SUCCESS(s2n_connection_set_config(client, config)); *1/ */
+
+    /*     EXPECT_OK(test_connection(server, client)); */
+    /* }; */
+
+    /* // 3) The 'static' config (default, fips, tls13) initialized from s2n_init() */
+    /* { */
+    /*     printf("\n----------------- STARTING TEST ------------"); */
+
+    /*     /1* config *1/ */
+    /*     DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(), */
+    /*             s2n_config_ptr_free); */
+    /*     EXPECT_NOT_NULL(config); */
+    /*     /1* EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "20240501")); *1/ */
+    /*     EXPECT_NOT_NULL(config->security_policy); */
+    /*     struct s2n_cert_chain_and_key *chain_and_key = NULL; */
+    /*     EXPECT_SUCCESS(s2n_test_cert_chain_and_key_new(&chain_and_key, */
+    /*             S2N_DEFAULT_ECDSA_TEST_CERT_CHAIN, S2N_DEFAULT_ECDSA_TEST_PRIVATE_KEY)); */
+    /*     EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(config, chain_and_key)); */
+    /*     EXPECT_SUCCESS(s2n_config_disable_x509_verification(config)); */
+
+    /*     /1* connection *1/ */
+    /*     DEFER_CLEANUP(struct s2n_connection *client = s2n_connection_new(S2N_CLIENT), */
+    /*             s2n_connection_ptr_free); */
+    /*     EXPECT_NOT_NULL(client); */
+    /*     DEFER_CLEANUP(struct s2n_connection *server = s2n_connection_new(S2N_SERVER), */
+    /*             s2n_connection_ptr_free); */
+    /*     EXPECT_NOT_NULL(server); */
+    /*     EXPECT_SUCCESS(s2n_connection_set_blinding(client, S2N_SELF_SERVICE_BLINDING)); */
+    /*     EXPECT_SUCCESS(s2n_connection_set_blinding(server, S2N_SELF_SERVICE_BLINDING)); */
+
+    /*     EXPECT_SUCCESS(s2n_connection_set_config(server, config)); */
+    /*     EXPECT_SUCCESS(s2n_connection_set_config(client, config)); */
+
+    /*     EXPECT_OK(test_connection(server, client)); */
+    /* }; */
 
     EXPECT_SUCCESS(s2n_cleanup());
-    END_TEST_NO_INIT();
+    END_TEST();
 }
