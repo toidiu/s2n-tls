@@ -115,7 +115,7 @@ static int s2n_config_init(struct s2n_config *config)
     if (dprint && testing_init_done) {
         printf("\n3)------ s2n_config_init: implicit use of 'default'");
     }
-    /* POSIX_GUARD(s2n_config_setup_default(config)); */
+    POSIX_GUARD(s2n_config_setup_default(config));
 
     if (s2n_use_default_tls13_config()) {
         POSIX_GUARD(s2n_config_setup_tls13(config));

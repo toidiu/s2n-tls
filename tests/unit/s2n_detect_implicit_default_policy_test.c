@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 {
     BEGIN_TEST();
 
-    if (false) {
+    if (true) {
         // 1) Explicit use via config_set_cipher_preferences().
         {
             dbail = false;
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
     };
 
     // Requires commenting out `s2n_config_setup_default(config)` from s2n_config_init()
-    if (true) {
+    if (false) {
         // 3) The 'static' config (default, fips, tls13) initialized from s2n_init()
         {
             DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(),

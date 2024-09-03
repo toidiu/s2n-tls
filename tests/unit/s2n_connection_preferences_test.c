@@ -31,7 +31,11 @@ int main(int argc, char **argv)
     const struct s2n_security_policy *default_security_policy = NULL, *tls13_security_policy = NULL, *fips_security_policy = NULL;
     EXPECT_SUCCESS(s2n_find_security_policy_from_version("default_tls13", &tls13_security_policy));
     EXPECT_SUCCESS(s2n_find_security_policy_from_version("default_fips", &fips_security_policy));
+    /* TODO: remove */
+    dbail = false;
     EXPECT_SUCCESS(s2n_find_security_policy_from_version("default", &default_security_policy));
+    /* TODO: remove */
+    dbail = true;
 
     /* Test default TLS1.2 */
     if (!s2n_is_in_fips_mode()) {
@@ -243,11 +247,21 @@ int main(int argc, char **argv)
         EXPECT_FAILURE(s2n_connection_get_signature_preferences(conn, &signature_preferences));
         EXPECT_FAILURE(s2n_connection_get_ecc_preferences(conn, &ecc_preferences));
 
+        /* initialize config */
+        /* TODO: remove */
+        dbail = false;
+        DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(),
+                s2n_config_ptr_free);
+        EXPECT_NOT_NULL(config);
+        /* TODO: remove */
+        dbail = true;
+
         EXPECT_NOT_NULL(conn = s2n_connection_new(S2N_CLIENT));
+        EXPECT_SUCCESS(s2n_connection_set_config(conn, config));
         EXPECT_NOT_NULL(conn->config->security_policy);
         EXPECT_NULL(conn->security_policy_override);
 
-        conn->config->security_policy = NULL;
+        config->security_policy = NULL;
 
         EXPECT_FAILURE_WITH_ERRNO(s2n_connection_get_cipher_preferences(conn, &cipher_preferences), S2N_ERR_INVALID_CIPHER_PREFERENCES);
         EXPECT_FAILURE_WITH_ERRNO(s2n_connection_get_security_policy(conn, &security_policy), S2N_ERR_INVALID_SECURITY_POLICY);
@@ -256,16 +270,6 @@ int main(int argc, char **argv)
         EXPECT_FAILURE_WITH_ERRNO(s2n_connection_get_ecc_preferences(conn, &ecc_preferences), S2N_ERR_INVALID_ECC_PREFERENCES);
 
         EXPECT_SUCCESS(s2n_connection_free(conn));
-
-        /* THIS IS THE ONLY TEST that calls s2n_config_defaults_init() after
-         * init. Ideally we fix this. One way might be to move the move this
-         * test to be the last one in the file but that still doesnt prevent
-         * other tests from being added. */
-        EXPECT_SUCCESS(s2n_testing_mark_init_done(false));
-        /* The static configs were mutated. Reset them to allow following unit tests to use them. */
-        s2n_wipe_static_configs();
-        EXPECT_SUCCESS(s2n_config_defaults_init());
-        EXPECT_SUCCESS(s2n_testing_mark_init_done(true));
     };
 
     /* s2n_connection_get_curve */
