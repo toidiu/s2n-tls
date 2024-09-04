@@ -112,10 +112,14 @@ static int s2n_config_init(struct s2n_config *config)
 
     config->client_hello_cb_mode = S2N_CLIENT_HELLO_CB_BLOCKING;
 
-    if (dprint && testing_init_done) {
-        printf("\n3)------ s2n_config_init: implicit use of 'default'");
-    }
+    /* if (dprint && testing_init_done) { */
+    /*     printf("\n3)------ s2n_config_init: implicit use of 'default'"); */
+    /* } */
+    /* FIXME enable after removing "default" usage */
+    dbail = false;
     POSIX_GUARD(s2n_config_setup_default(config));
+    /* FIXME enable after removing "default" usage */
+    dbail = true;
 
     if (s2n_use_default_tls13_config()) {
         POSIX_GUARD(s2n_config_setup_tls13(config));

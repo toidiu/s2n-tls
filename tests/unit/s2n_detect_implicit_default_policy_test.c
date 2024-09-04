@@ -74,22 +74,19 @@ int main(int argc, char **argv)
 {
     BEGIN_TEST();
 
+    // Requires `dbail = false` in s2n_config_init()
     if (true) {
         // 1) Explicit use via config_set_cipher_preferences().
         {
-            dbail = false;
             DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(),
                     s2n_config_ptr_free);
-            dbail = true;
             EXPECT_NOT_NULL(config);
         };
 
         // 1) Explicit use via config_set_cipher_preferences().
         {
-            dbail = false;
             DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(),
                     s2n_config_ptr_free);
-            dbail = true;
             EXPECT_NOT_NULL(config);
 
             EXPECT_FAILURE_WITH_ERRNO(s2n_config_set_cipher_preferences(config, "default"), S2N_ERR_INVALID_SECURITY_POLICY);

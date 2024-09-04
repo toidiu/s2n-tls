@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     EXPECT_NOT_NULL(server_config);
     EXPECT_SUCCESS(s2n_config_set_protocol_preferences(server_config, protocols,
             s2n_array_len(protocols)));
-    EXPECT_SUCCESS(s2n_config_set_cipher_preferences(server_config, "default"));
+    EXPECT_SUCCESS(s2n_config_set_cipher_preferences(server_config, "20240501"));
 
     DEFER_CLEANUP(struct s2n_cert_chain_and_key *chain_and_key = NULL,
             s2n_cert_chain_and_key_ptr_free);
@@ -139,7 +139,7 @@ int main(int argc, char **argv)
         EXPECT_SUCCESS(s2n_negotiate_test_server_and_client(server, client));
 
         /* despite being least preferred for the server_config and client, the
-         * connection override correctly caused h2 to be negotiated 
+         * connection override correctly caused h2 to be negotiated
          */
         EXPECT_STRING_EQUAL(s2n_get_application_protocol(server), protocols[2]);
     }

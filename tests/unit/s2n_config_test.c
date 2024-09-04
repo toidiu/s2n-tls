@@ -72,6 +72,7 @@ int main(int argc, char **argv)
     const struct s2n_security_policy *default_security_policy = NULL, *tls13_security_policy = NULL, *fips_security_policy = NULL;
     EXPECT_SUCCESS(s2n_find_security_policy_from_version("default_tls13", &tls13_security_policy));
     EXPECT_SUCCESS(s2n_find_security_policy_from_version("default_fips", &fips_security_policy));
+    /* TODO add exception for "default" */
     EXPECT_SUCCESS(s2n_find_security_policy_from_version("default", &default_security_policy));
 
     char cert[S2N_MAX_TEST_PEM_SIZE] = { 0 };
@@ -1109,7 +1110,7 @@ int main(int argc, char **argv)
         struct s2n_security_policy rfc9151_applied_locally = security_policy_rfc9151;
         rfc9151_applied_locally.certificate_preferences_apply_locally = true;
 
-        /* rfc9151 doesn't allow SHA256 signatures, but does allow SHA384 signatures, 
+        /* rfc9151 doesn't allow SHA256 signatures, but does allow SHA384 signatures,
          * so ecdsa_p384_sha256 is invalid and ecdsa_p384_sha384 is valid */
 
         /* valid certs are accepted */
@@ -1136,8 +1137,8 @@ int main(int argc, char **argv)
 
         /* certs in default_certs_by_type are validated */
         {
-            /* s2n_config_set_cert_chain_and_key_defaults populates default_certs_by_type 
-             * but doesn't populate domain_name_to_cert_map 
+            /* s2n_config_set_cert_chain_and_key_defaults populates default_certs_by_type
+             * but doesn't populate domain_name_to_cert_map
              */
             DEFER_CLEANUP(struct s2n_config *config = s2n_config_new_minimal(), s2n_config_ptr_free);
             EXPECT_SUCCESS(s2n_config_set_cert_chain_and_key_defaults(config, &invalid_cert, 1));

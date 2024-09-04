@@ -136,7 +136,7 @@ int main(int argc, char **argv)
     for (int send_sct = 0; send_sct <= 1; send_sct++) {
         DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(), s2n_config_ptr_free);
         EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(config, chain_and_key));
-        EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "numbered_default"));
+        EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "20240501"));
 
         /* The SCT extension is zero-length. */
         if (send_sct) {
@@ -316,7 +316,7 @@ int main(int argc, char **argv)
             EXPECT_NOT_NULL(conn = s2n_connection_new(S2N_CLIENT));
             struct s2n_stuffer *hello_stuffer = &conn->handshake.io;
             conn->actual_protocol_version = i;
-            EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(conn, "numbered_default"));
+            EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(conn, "20240501"));
 
             conn->session_id_len = S2N_TLS_SESSION_ID_MAX_LEN;
             EXPECT_MEMCPY_SUCCESS(conn->session_id, test_session_id, S2N_TLS_SESSION_ID_MAX_LEN);
@@ -427,7 +427,7 @@ int main(int argc, char **argv)
                 struct s2n_connection *conn = NULL;
                 EXPECT_NOT_NULL(conn = s2n_connection_new(S2N_CLIENT));
                 struct s2n_stuffer *hello_stuffer = &conn->handshake.io;
-                EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(conn, "numbered_default"));
+                EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(conn, "20240501"));
 
                 EXPECT_SUCCESS(s2n_client_hello_send(conn));
                 EXPECT_SUCCESS(s2n_stuffer_skip_read(hello_stuffer, LENGTH_TO_SESSION_ID));
@@ -444,7 +444,7 @@ int main(int argc, char **argv)
                 struct s2n_config *config = NULL;
                 EXPECT_NOT_NULL(config = s2n_config_new());
                 EXPECT_SUCCESS(s2n_config_set_session_tickets_onoff(config, true));
-                EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "numbered_default"));
+                EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "20240501"));
 
                 struct s2n_connection *conn = NULL;
                 EXPECT_NOT_NULL(conn = s2n_connection_new(S2N_CLIENT));
@@ -472,7 +472,7 @@ int main(int argc, char **argv)
             {
                 struct s2n_connection *conn = NULL;
                 EXPECT_NOT_NULL(conn = s2n_connection_new(S2N_CLIENT));
-                EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(conn, "numbered_default"));
+                EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(conn, "20240501"));
 
                 struct s2n_stuffer *hello_stuffer = &conn->handshake.io;
 
@@ -768,7 +768,7 @@ int main(int argc, char **argv)
             struct s2n_connection *conn = NULL;
             EXPECT_NOT_NULL(conn = s2n_connection_new(S2N_CLIENT));
             EXPECT_SUCCESS(s2n_connection_set_config(conn, config));
-            EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(conn, "default"));
+            EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(conn, "20240501"));
 
             const struct s2n_security_policy *security_policy = NULL;
             POSIX_GUARD(s2n_connection_get_security_policy(conn, &security_policy));
@@ -1562,6 +1562,7 @@ int main(int argc, char **argv)
      * use JA3 fingerprints as an approximation. See s2n_fingerprint_ja3_test.c
      */
     {
+        /* TODO add exception for "default" */
         const char *security_policies[] = { "default", "default_tls13", "test_all" };
 
         DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(), s2n_config_ptr_free);
