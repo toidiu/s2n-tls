@@ -36,11 +36,13 @@ int main(int argc, char **argv)
         DEFER_CLEANUP(struct s2n_config *client_config = s2n_config_new_minimal(), s2n_config_ptr_free);
         EXPECT_NOT_NULL(client_config);
         EXPECT_SUCCESS(s2n_config_set_unsafe_for_testing(client_config));
+        EXPECT_SUCCESS(s2n_config_set_cipher_preferences(client_config, "20240501"));
 
         DEFER_CLEANUP(struct s2n_config *server_config = s2n_config_new_minimal(), s2n_config_ptr_free);
         EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(server_config, rsa_chain_and_key));
         EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(server_config, ecdsa_chain_and_key));
         EXPECT_SUCCESS(s2n_config_add_dhparams(server_config, dhparams_pem));
+        EXPECT_SUCCESS(s2n_config_set_cipher_preferences(server_config, "20240501"));
 
         /* Test both composite and non-composite CBC ciphers for all CBC cipher suites. */
         size_t record_algs_tested = 0;

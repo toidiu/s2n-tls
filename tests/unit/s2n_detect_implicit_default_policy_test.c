@@ -74,8 +74,11 @@ int main(int argc, char **argv)
 {
     BEGIN_TEST();
 
-    // Requires `dbail = false` in s2n_config_init()
-    if (true) {
+    // Requires `dbail = false/true` in s2n_config_init()
+    // This is so that the call to s2n_config_new() doesn't fail
+    //
+    // Then only explicit calls via set_cipher_preferences will bail
+    if (false) {
         // 1) Explicit use via config_set_cipher_preferences().
         {
             DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(),
@@ -102,6 +105,7 @@ int main(int argc, char **argv)
 
         // 2) The 'static' config (default, fips, tls13) initialized from s2n_init()
         //   - Confirm only a single call to s2n_config_defaults_init()
+        //   - Fixed: removing static config usage in s2n_connection_preference_test.c
         {
             s2n_wipe_static_configs();
             EXPECT_FAILURE_WITH_ERRNO(s2n_config_defaults_init(), S2N_ERR_INVALID_SECURITY_POLICY);
@@ -109,7 +113,10 @@ int main(int argc, char **argv)
     };
 
     // Requires commenting out `s2n_config_setup_default(config)` from s2n_config_init()
-    if (false) {
+    //
+    // Then the static configs and default configs will be NULL and result in a
+    // NULL exception.
+    if (true) {
         // 3) The 'static' config (default, fips, tls13) initialized from s2n_init()
         {
             DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(),
