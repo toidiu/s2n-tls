@@ -113,6 +113,8 @@ int main(int argc, char **argv)
 
     /* s2n_signature_algorithms_supported_list_send */
     {
+        // QUESTION: this is modifying the static config. Is there a reason why
+        // this cant be changed to not use static config?
         struct s2n_security_policy test_security_policy = *s2n_fetch_default_config()->security_policy;
         test_security_policy.signature_preferences = &test_preferences;
 

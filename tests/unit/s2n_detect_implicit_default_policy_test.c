@@ -78,7 +78,7 @@ int main(int argc, char **argv)
     // This is so that the call to s2n_config_new() doesn't fail
     //
     // Then only explicit calls via set_cipher_preferences will bail
-    if (false) {
+    if (true) {
         // 1) Explicit use via config_set_cipher_preferences().
         {
             DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(),
@@ -116,13 +116,21 @@ int main(int argc, char **argv)
     //
     // Then the static configs and default configs will be NULL and result in a
     // NULL exception.
+
+    // TODO: QUESTION
+    // A connections can be setup with default config (s2n_fetch_default_config
+    // called in s2n_connection_new).
     //
+    // Q: Do we need to worry about connection being initialized with 'static'
+    // default config (s2n_fetch_default_config)?
     //
-    // TODO: also dont initialize static configs: s2n_config_defaults_init(void)
-    // This is because connections can be setup with default config
-    // (s2n_fetch_default_config called in s2n_connection_new) and we want to
-    // detect this usage
-    if (true) {
+    // If we don't initialize the static configs, all s2n_connection_new() calls
+    // fail. This will result in a massive change/audit. Is there a better way
+    // to detect this?
+    //
+    // A: Seems like not since negotiate doesnt work if a config is not set.
+    //
+    if (false) {
         // 3) The 'static' config (default, fips, tls13) initialized from s2n_init()
         {
             DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(),
