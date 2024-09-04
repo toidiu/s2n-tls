@@ -116,6 +116,12 @@ int main(int argc, char **argv)
     //
     // Then the static configs and default configs will be NULL and result in a
     // NULL exception.
+    //
+    //
+    // TODO: also dont initialize static configs: s2n_config_defaults_init(void)
+    // This is because connections can be setup with default config
+    // (s2n_fetch_default_config called in s2n_connection_new) and we want to
+    // detect this usage
     if (true) {
         // 3) The 'static' config (default, fips, tls13) initialized from s2n_init()
         {
