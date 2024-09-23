@@ -19,7 +19,12 @@ fn main() {
         let is_file = test_file.file_type().unwrap().is_file();
         // filter on .c files. eg. exclude "valgrind.suppressions"
         let is_c_file = test_file_path.extension().unwrap_or(OsStr::new("not_c")) == "c";
-        if is_file && is_c_file {
+        let filter_files = test_file_path.to_str().unwrap().contains("config_test")
+            || test_file_path
+                .to_str()
+                .unwrap()
+                .contains("security_policies_test");
+        if is_file && is_c_file && filter_files {
             let lines = read_file_to_vec(&test_file_path);
             process_test_file(test_file_path, lines);
         }
@@ -80,7 +85,7 @@ fn process_test_file(test_file_path: PathBuf, lines: Vec<String>) {
 // agressively match all instance of "s2n_config_new()" to avoid missing
 // any instances
 fn match_config_new(line: &str) -> bool {
-    line.contains("s2n_config_new()")
+    line.contains("s2n_config_new_minimal()")
 }
 
 // Extract the config name used in tests.

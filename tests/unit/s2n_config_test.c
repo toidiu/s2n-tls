@@ -773,6 +773,8 @@ int main(int argc, char **argv)
         /* s2n_config_new_minimal should not load system certs */
         {
             DEFER_CLEANUP(struct s2n_config *config = s2n_config_new_minimal(), s2n_config_ptr_free);
+            // TODO remove
+            /* EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, s2n_auto_gen_old_default_security_policy())); */
             EXPECT_NOT_NULL(config);
             EXPECT_NULL(config->trust_store.trust_store);
             EXPECT_FALSE(config->trust_store.loaded_system_certs);
@@ -838,6 +840,8 @@ int main(int argc, char **argv)
 #if S2N_OPENSSL_VERSION_AT_LEAST(1, 1, 0)
         {
             DEFER_CLEANUP(struct s2n_config *config = s2n_config_new_minimal(), s2n_config_ptr_free);
+            // TODO remove
+            /* EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, s2n_auto_gen_old_default_security_policy())); */
             EXPECT_NOT_NULL(config);
             EXPECT_NULL(config->trust_store.trust_store);
             EXPECT_FALSE(config->trust_store.loaded_system_certs);
@@ -890,6 +894,8 @@ int main(int argc, char **argv)
             /* Ensure a handshake succeeds with a minimal server config and no mutual auth */
             {
                 DEFER_CLEANUP(struct s2n_config *server_config = s2n_config_new_minimal(), s2n_config_ptr_free);
+                // TODO remove
+                /* EXPECT_SUCCESS(s2n_config_set_cipher_preferences(server_config, s2n_auto_gen_old_default_security_policy())); */
                 EXPECT_NOT_NULL(server_config);
                 EXPECT_SUCCESS(s2n_config_set_cipher_preferences(server_config, "20240501"));
                 EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(server_config, chain_and_key));
@@ -900,6 +906,8 @@ int main(int argc, char **argv)
                 EXPECT_SUCCESS(s2n_connection_set_config(server_conn, server_config));
 
                 DEFER_CLEANUP(struct s2n_config *client_config = s2n_config_new_minimal(), s2n_config_ptr_free);
+                // TODO remove
+                /* EXPECT_SUCCESS(s2n_config_set_cipher_preferences(client_config, s2n_auto_gen_old_default_security_policy())); */
                 EXPECT_NOT_NULL(client_config);
                 EXPECT_SUCCESS(s2n_config_set_cipher_preferences(client_config, "20240501"));
                 EXPECT_SUCCESS(s2n_config_set_verification_ca_location(client_config, S2N_DEFAULT_TEST_CERT_CHAIN, NULL));
@@ -926,6 +934,8 @@ int main(int argc, char **argv)
             /* Ensure a handshake fails gracefully with an uninitialized trust store */
             {
                 DEFER_CLEANUP(struct s2n_config *server_config = s2n_config_new_minimal(), s2n_config_ptr_free);
+                // TODO remove
+                /* EXPECT_SUCCESS(s2n_config_set_cipher_preferences(server_config, s2n_auto_gen_old_default_security_policy())); */
                 EXPECT_NOT_NULL(server_config);
                 EXPECT_SUCCESS(s2n_config_set_cipher_preferences(server_config, "20240501"));
                 EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(server_config, chain_and_key));
@@ -936,6 +946,8 @@ int main(int argc, char **argv)
                 EXPECT_SUCCESS(s2n_connection_set_config(server_conn, server_config));
 
                 DEFER_CLEANUP(struct s2n_config *client_config = s2n_config_new_minimal(), s2n_config_ptr_free);
+                // TODO remove
+                /* EXPECT_SUCCESS(s2n_config_set_cipher_preferences(client_config, s2n_auto_gen_old_default_security_policy())); */
                 EXPECT_SUCCESS(s2n_config_set_cipher_preferences(client_config, "20240501"));
                 EXPECT_NOT_NULL(client_config);
 
@@ -1123,6 +1135,8 @@ int main(int argc, char **argv)
              * but doesn't populate domain_name_to_cert_map
              */
             DEFER_CLEANUP(struct s2n_config *config = s2n_config_new_minimal(), s2n_config_ptr_free);
+            // TODO remove
+            /* EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, s2n_auto_gen_old_default_security_policy())); */
             EXPECT_SUCCESS(s2n_config_set_cert_chain_and_key_defaults(config, &invalid_cert, 1));
 
             /* domain certs is empty */
