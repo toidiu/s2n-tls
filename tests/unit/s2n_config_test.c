@@ -87,8 +87,8 @@ int main(int argc, char **argv)
         EXPECT_NOT_NULL(default_config = s2n_fetch_default_config());
 
         /* s2n_config_new matches s2n_fetch_default_config() */
-        EXPECT_EQUAL(default_config->security_policy, config->security_policy);
-        EXPECT_EQUAL(default_config->security_policy->signature_preferences, config->security_policy->signature_preferences);
+        EXPECT_EQUAL(default_config->bla_security_policy, config->bla_security_policy);
+        EXPECT_EQUAL(default_config->bla_security_policy->signature_preferences, config->bla_security_policy->signature_preferences);
         EXPECT_EQUAL(default_config->client_cert_auth_type, config->client_cert_auth_type);
 
         /* Calling s2n_fetch_default_config() repeatedly returns the same object */
@@ -155,12 +155,12 @@ int main(int argc, char **argv)
         if (!s2n_is_in_fips_mode()) {
             struct s2n_config *config = NULL;
             EXPECT_NOT_NULL(config = s2n_config_new());
-            EXPECT_EQUAL(config->security_policy, default_security_policy);
+            EXPECT_EQUAL(config->bla_security_policy, default_security_policy);
             EXPECT_SUCCESS(s2n_config_free(config));
 
             EXPECT_SUCCESS(s2n_enable_tls13_in_test());
             EXPECT_NOT_NULL(config = s2n_config_new());
-            EXPECT_EQUAL(config->security_policy, tls13_security_policy);
+            EXPECT_EQUAL(config->bla_security_policy, tls13_security_policy);
             EXPECT_SUCCESS(s2n_config_free(config));
             EXPECT_SUCCESS(s2n_disable_tls13_in_test());
         }
@@ -1027,9 +1027,9 @@ int main(int argc, char **argv)
                 EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, policies[i]));
 
                 uint32_t policy_groups_count = 0;
-                EXPECT_OK(s2n_kem_preferences_groups_available(config->security_policy->kem_preferences,
+                EXPECT_OK(s2n_kem_preferences_groups_available(config->bla_security_policy->kem_preferences,
                         &policy_groups_count));
-                policy_groups_count += config->security_policy->ecc_preferences->count;
+                policy_groups_count += config->bla_security_policy->ecc_preferences->count;
                 EXPECT_TRUE(policy_groups_count > 0);
 
                 uint16_t supported_groups[S2N_TEST_MAX_SUPPORTED_GROUPS_COUNT] = { 0 };
@@ -1060,7 +1060,7 @@ int main(int argc, char **argv)
 
             DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(), s2n_config_ptr_free);
             EXPECT_NOT_NULL(config);
-            config->security_policy = security_policy;
+            config->bla_security_policy = security_policy;
 
             uint16_t supported_groups[S2N_TEST_MAX_SUPPORTED_GROUPS_COUNT] = { 0 };
             uint16_t supported_groups_count = 0;

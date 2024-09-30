@@ -249,11 +249,11 @@ int main(int argc, char **argv)
 
         EXPECT_NOT_NULL(conn = s2n_connection_new(S2N_CLIENT));
         EXPECT_SUCCESS(s2n_connection_set_config(conn, config));
-        EXPECT_NOT_NULL(conn->config->security_policy);
+        EXPECT_NOT_NULL(conn->config->bla_security_policy);
         EXPECT_NULL(conn->security_policy_override);
 
         /* Invalidate the security policy and expect failure. */
-        config->security_policy = NULL;
+        config->bla_security_policy = NULL;
 
         EXPECT_FAILURE_WITH_ERRNO(s2n_connection_get_cipher_preferences(conn, &cipher_preferences), S2N_ERR_INVALID_CIPHER_PREFERENCES);
         EXPECT_FAILURE_WITH_ERRNO(s2n_connection_get_security_policy(conn, &security_policy), S2N_ERR_INVALID_SECURITY_POLICY);

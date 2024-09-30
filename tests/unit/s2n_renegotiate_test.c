@@ -505,7 +505,7 @@ int main(int argc, char *argv[])
         EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(server_config, ecdsa_chain_and_key));
         EXPECT_SUCCESS(s2n_config_add_dhparams(server_config, dh_params));
         EXPECT_SUCCESS(s2n_config_accept_max_fragment_length(server_config));
-        server_config->security_policy = &one_cipher_policy;
+        server_config->bla_security_policy = &one_cipher_policy;
 
         /* Setting the max fragment length will require modifying the client config */
         DEFER_CLEANUP(struct s2n_config *client_config = s2n_config_new(), s2n_config_ptr_free);

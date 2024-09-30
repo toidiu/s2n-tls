@@ -31,6 +31,8 @@
 #include "utils/s2n_blob.h"
 #include "utils/s2n_set.h"
 
+extern bool modifying_default_policy;
+
 #define S2N_MAX_TICKET_KEYS       48
 #define S2N_MAX_TICKET_KEY_HASHES 500 /* 10KB */
 
@@ -119,7 +121,9 @@ struct s2n_config {
     s2n_clock_time_nanoseconds wall_clock;
     s2n_clock_time_nanoseconds monotonic_clock;
 
-    const struct s2n_security_policy *security_policy;
+    const struct s2n_security_policy *bla_security_policy;
+    bool accessed_security_policy;
+    bool default_policy_overridden;
 
     void *sys_clock_ctx;
     void *monotonic_clock_ctx;

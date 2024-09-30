@@ -72,7 +72,7 @@ int main(int argc, char **argv)
     EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(config, chain_and_key));
 
     EXPECT_SUCCESS(s2n_config_add_dhparams(config, dhparams_pem));
-    EXPECT_NOT_NULL(default_security_policy = config->security_policy);
+    EXPECT_NOT_NULL(default_security_policy = config->bla_security_policy);
     EXPECT_NOT_NULL(default_cipher_preferences = default_security_policy->cipher_preferences);
 
     struct host_verify_data verify_data = { .allow = 1, .callback_invoked = 0 };
@@ -104,7 +104,7 @@ int main(int argc, char **argv)
         EXPECT_MEMCPY_SUCCESS(&server_security_policy, default_security_policy, sizeof(server_security_policy));
         server_security_policy.cipher_preferences = &server_cipher_preferences;
 
-        config->security_policy = &server_security_policy;
+        config->bla_security_policy = &server_security_policy;
 
         EXPECT_NOT_NULL(server_conn = s2n_connection_new(S2N_SERVER));
         EXPECT_SUCCESS(s2n_connection_set_client_auth_type(server_conn, S2N_CERT_AUTH_REQUIRED));
@@ -161,7 +161,7 @@ int main(int argc, char **argv)
         server_cipher_preferences.suites = &cur_cipher;
         EXPECT_MEMCPY_SUCCESS(&server_security_policy, default_security_policy, sizeof(server_security_policy));
         server_security_policy.cipher_preferences = &server_cipher_preferences;
-        config->security_policy = &server_security_policy;
+        config->bla_security_policy = &server_security_policy;
 
         EXPECT_NOT_NULL(server_conn = s2n_connection_new(S2N_SERVER));
         EXPECT_SUCCESS(s2n_connection_set_config(server_conn, config));
@@ -217,7 +217,7 @@ int main(int argc, char **argv)
         EXPECT_MEMCPY_SUCCESS(&server_security_policy, default_security_policy, sizeof(server_security_policy));
         server_security_policy.cipher_preferences = &server_cipher_preferences;
 
-        config->security_policy = &server_security_policy;
+        config->bla_security_policy = &server_security_policy;
 
         EXPECT_NOT_NULL(server_conn = s2n_connection_new(S2N_SERVER));
         EXPECT_SUCCESS(s2n_connection_set_config(server_conn, config));
@@ -277,7 +277,7 @@ int main(int argc, char **argv)
         EXPECT_MEMCPY_SUCCESS(&server_security_policy, default_security_policy, sizeof(server_security_policy));
         server_security_policy.cipher_preferences = &server_cipher_preferences;
 
-        config->security_policy = &server_security_policy;
+        config->bla_security_policy = &server_security_policy;
 
         EXPECT_NOT_NULL(server_conn = s2n_connection_new(S2N_SERVER));
         EXPECT_SUCCESS(s2n_connection_set_config(server_conn, config));

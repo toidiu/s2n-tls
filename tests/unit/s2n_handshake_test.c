@@ -125,14 +125,14 @@ static int try_handshake(struct s2n_connection *server_conn, struct s2n_connecti
 int test_cipher_preferences(struct s2n_config *server_config, struct s2n_config *client_config,
         struct s2n_cert_chain_and_key *expected_cert_chain, s2n_signature_algorithm expected_sig_alg)
 {
-    const struct s2n_security_policy *security_policy = server_config->security_policy;
+    const struct s2n_security_policy *security_policy = server_config->bla_security_policy;
     EXPECT_NOT_NULL(security_policy);
 
     if (s2n_is_in_fips_mode()) {
         /* Override default client config ciphers when in FIPS mode to ensure all FIPS
          * default ciphers are tested.
          */
-        client_config->security_policy = security_policy;
+        client_config->bla_security_policy = security_policy;
     }
 
     const struct s2n_cipher_preferences *cipher_preferences = security_policy->cipher_preferences;
@@ -370,11 +370,11 @@ int main(int argc, char **argv)
             EXPECT_SUCCESS(s2n_config_set_cipher_preferences(server_config, "20170210"));
 
             struct s2n_security_policy security_policy = {
-                .minimum_protocol_version = server_config->security_policy->minimum_protocol_version,
-                .cipher_preferences = server_config->security_policy->cipher_preferences,
-                .kem_preferences = server_config->security_policy->kem_preferences,
+                .minimum_protocol_version = server_config->bla_security_policy->minimum_protocol_version,
+                .cipher_preferences = server_config->bla_security_policy->cipher_preferences,
+                .kem_preferences = server_config->bla_security_policy->kem_preferences,
                 .signature_preferences = &sig_prefs,
-                .ecc_preferences = server_config->security_policy->ecc_preferences,
+                .ecc_preferences = server_config->bla_security_policy->ecc_preferences,
             };
 
             EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(server_config, chain_and_key));
@@ -382,12 +382,12 @@ int main(int argc, char **argv)
             if (test_type == TEST_TYPE_ASYNC) {
                 EXPECT_SUCCESS(s2n_config_set_async_pkey_callback(server_config, async_pkey_fn));
             }
-            server_config->security_policy = &security_policy;
+            server_config->bla_security_policy = &security_policy;
 
             EXPECT_NOT_NULL(client_config = s2n_config_new());
             client_config->check_ocsp = 0;
             client_config->disable_x509_validation = 1;
-            client_config->security_policy = &security_policy;
+            client_config->bla_security_policy = &security_policy;
 
             EXPECT_SUCCESS(s2n_config_set_verification_ca_location(client_config, S2N_DEFAULT_TEST_CERT_CHAIN, NULL));
 
@@ -447,8 +447,8 @@ int main(int argc, char **argv)
                 close((int) fd);
             }
 
-            /* use a nested scope to force the DEFER_CLEANUP statements to 
-             * execute before the exit() call. 
+            /* use a nested scope to force the DEFER_CLEANUP statements to
+             * execute before the exit() call.
              */
             {
                 DEFER_CLEANUP(struct s2n_cert_chain_and_key *chain_and_key = NULL, s2n_cert_chain_and_key_ptr_free);

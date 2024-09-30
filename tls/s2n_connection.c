@@ -665,8 +665,9 @@ int s2n_connection_get_cipher_preferences(struct s2n_connection *conn, const str
 
     if (conn->security_policy_override != NULL) {
         *cipher_preferences = conn->security_policy_override->cipher_preferences;
-    } else if (conn->config->security_policy != NULL) {
-        *cipher_preferences = conn->config->security_policy->cipher_preferences;
+    } else if (conn->config->bla_security_policy != NULL) {
+        *cipher_preferences = conn->config->bla_security_policy->cipher_preferences;
+        conn->config->accessed_security_policy = true;
     } else {
         POSIX_BAIL(S2N_ERR_INVALID_CIPHER_PREFERENCES);
     }
@@ -683,8 +684,9 @@ int s2n_connection_get_security_policy(struct s2n_connection *conn, const struct
 
     if (conn->security_policy_override != NULL) {
         *security_policy = conn->security_policy_override;
-    } else if (conn->config->security_policy != NULL) {
-        *security_policy = conn->config->security_policy;
+    } else if (conn->config->bla_security_policy != NULL) {
+        *security_policy = conn->config->bla_security_policy;
+        conn->config->accessed_security_policy = true;
     } else {
         POSIX_BAIL(S2N_ERR_INVALID_SECURITY_POLICY);
     }
@@ -701,8 +703,9 @@ int s2n_connection_get_kem_preferences(struct s2n_connection *conn, const struct
 
     if (conn->security_policy_override != NULL) {
         *kem_preferences = conn->security_policy_override->kem_preferences;
-    } else if (conn->config->security_policy != NULL) {
-        *kem_preferences = conn->config->security_policy->kem_preferences;
+    } else if (conn->config->bla_security_policy != NULL) {
+        *kem_preferences = conn->config->bla_security_policy->kem_preferences;
+        conn->config->accessed_security_policy = true;
     } else {
         POSIX_BAIL(S2N_ERR_INVALID_KEM_PREFERENCES);
     }
@@ -719,8 +722,9 @@ int s2n_connection_get_signature_preferences(struct s2n_connection *conn, const 
 
     if (conn->security_policy_override != NULL) {
         *signature_preferences = conn->security_policy_override->signature_preferences;
-    } else if (conn->config->security_policy != NULL) {
-        *signature_preferences = conn->config->security_policy->signature_preferences;
+    } else if (conn->config->bla_security_policy != NULL) {
+        *signature_preferences = conn->config->bla_security_policy->signature_preferences;
+        conn->config->accessed_security_policy = true;
     } else {
         POSIX_BAIL(S2N_ERR_INVALID_SIGNATURE_ALGORITHMS_PREFERENCES);
     }
@@ -737,8 +741,9 @@ int s2n_connection_get_ecc_preferences(struct s2n_connection *conn, const struct
 
     if (conn->security_policy_override != NULL) {
         *ecc_preferences = conn->security_policy_override->ecc_preferences;
-    } else if (conn->config->security_policy != NULL) {
-        *ecc_preferences = conn->config->security_policy->ecc_preferences;
+    } else if (conn->config->bla_security_policy != NULL) {
+        *ecc_preferences = conn->config->bla_security_policy->ecc_preferences;
+        conn->config->accessed_security_policy = true;
     } else {
         POSIX_BAIL(S2N_ERR_INVALID_ECC_PREFERENCES);
     }

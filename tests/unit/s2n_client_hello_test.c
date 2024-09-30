@@ -659,7 +659,7 @@ int main(int argc, char **argv)
                 .suites = &cipher_suites,
                 .count = 1,
             };
-            struct s2n_security_policy policy = *conn->config->security_policy;
+            struct s2n_security_policy policy = *conn->config->bla_security_policy;
             policy.cipher_preferences = &cipher_preferences;
             conn->security_policy_override = &policy;
 
@@ -1479,11 +1479,11 @@ int main(int argc, char **argv)
         EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(server_config, ecdsa_cert_chain));
 
         EXPECT_SUCCESS(s2n_config_add_dhparams(server_config, dhparams_pem));
-        server_config->security_policy = &security_policy_20190214;
+        server_config->bla_security_policy = &security_policy_20190214;
 
         EXPECT_NOT_NULL(client_config = s2n_config_new());
         EXPECT_SUCCESS(s2n_config_set_unsafe_for_testing(client_config));
-        client_config->security_policy = &client_security_policy;
+        client_config->bla_security_policy = &client_security_policy;
 
         EXPECT_SUCCESS(s2n_config_set_verification_ca_location(client_config, S2N_DEFAULT_TEST_CERT_CHAIN, NULL));
 
@@ -1508,7 +1508,7 @@ int main(int argc, char **argv)
          * So we need to change the security policy between sending and receiving.
          */
         EXPECT_OK(s2n_negotiate_test_server_and_client_until_message(server_conn, client_conn, SERVER_HELLO));
-        client_config->security_policy = &security_policy_20190214;
+        client_config->bla_security_policy = &security_policy_20190214;
         EXPECT_SUCCESS(s2n_negotiate_test_server_and_client(server_conn, client_conn));
 
         EXPECT_EQUAL(server_conn->secure->cipher_suite, &s2n_ecdhe_ecdsa_with_aes_128_cbc_sha);

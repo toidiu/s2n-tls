@@ -31,6 +31,8 @@
 #include "utils/s2n_map.h"
 #include "utils/s2n_safety.h"
 
+bool modifying_default_policy = false;
+
 #if defined(CLOCK_MONOTONIC_RAW)
     #define S2N_CLOCK_HW CLOCK_MONOTONIC_RAW
 #else
@@ -69,19 +71,25 @@ static struct s2n_config s2n_default_tls13_config = { 0 };
 
 static int s2n_config_setup_default(struct s2n_config *config)
 {
+    modifying_default_policy = true;
     POSIX_GUARD(s2n_config_set_cipher_preferences(config, "default"));
+    modifying_default_policy = false;
     return S2N_SUCCESS;
 }
 
 static int s2n_config_setup_tls13(struct s2n_config *config)
 {
+    modifying_default_policy = true;
     POSIX_GUARD(s2n_config_set_cipher_preferences(config, "default_tls13"));
+    modifying_default_policy = false;
     return S2N_SUCCESS;
 }
 
 static int s2n_config_setup_fips(struct s2n_config *config)
 {
+    modifying_default_policy = true;
     POSIX_GUARD(s2n_config_set_cipher_preferences(config, "default_fips"));
+    modifying_default_policy = false;
     return S2N_SUCCESS;
 }
 
@@ -115,8 +123,35 @@ static int s2n_config_init(struct s2n_config *config)
     return 0;
 }
 
-static int s2n_config_cleanup(struct s2n_config *config)
+static int s2n_config_cleanup(struct s2n_config *config, bool cleanup_default_policy)
 {
+    if (!cleanup_default_policy) {
+        printf("------- 1\n");
+
+        /* cnt_config_creation.txt: a config was created and cleanedup */
+        {
+            FILE *f = fopen("cnt_config_creation.txt", "a");
+            fprintf(f, "%s\n", "1");
+        }
+
+        /* cnt_accessed_security_policy.txt: calling code accessed the
+         * config->security_policy field */
+        if (config->accessed_security_policy) {
+            FILE *f = fopen("cnt_accessed_security_policy.txt", "a");
+            fprintf(f, "%s\n", "1");
+        }
+
+        /* cnt_default_policy_overridden.txt: if a config object's
+         * security_policy was overriden prior to cleanup */
+        if (config->default_policy_overridden) {
+            FILE *f = fopen("cnt_default_policy_overridden.txt", "a");
+            fprintf(f, "%s\n", "1");
+        } else {
+            FILE *f = fopen("cnt_default_policy_not_overridden.txt", "a");
+            fprintf(f, "%s\n", "1");
+        }
+    }
+
     s2n_x509_trust_store_wipe(&config->trust_store);
     config->check_ocsp = 0;
 
@@ -254,9 +289,9 @@ S2N_RESULT s2n_config_testing_defaults_init_tls13_certs(void)
 
 void s2n_wipe_static_configs(void)
 {
-    s2n_config_cleanup(&s2n_default_fips_config);
-    s2n_config_cleanup(&s2n_default_config);
-    s2n_config_cleanup(&s2n_default_tls13_config);
+    s2n_config_cleanup(&s2n_default_fips_config, true);
+    s2n_config_cleanup(&s2n_default_config, true);
+    s2n_config_cleanup(&s2n_default_tls13_config, true);
 }
 
 int s2n_config_load_system_certs(struct s2n_config *config)
@@ -394,7 +429,7 @@ S2N_CLEANUP_RESULT s2n_config_ptr_free(struct s2n_config **config)
 
 int s2n_config_free(struct s2n_config *config)
 {
-    s2n_config_cleanup(config);
+    s2n_config_cleanup(config, false);
 
     POSIX_GUARD(s2n_free_object((uint8_t **) &config, sizeof(struct s2n_config)));
     return 0;
@@ -532,7 +567,8 @@ static int s2n_config_add_cert_chain_and_key_impl(struct s2n_config *config, str
     POSIX_ENSURE_REF(config->domain_name_to_cert_map);
     POSIX_ENSURE_REF(cert_key_pair);
 
-    POSIX_GUARD_RESULT(s2n_security_policy_validate_certificate_chain(config->security_policy, cert_key_pair));
+    POSIX_GUARD_RESULT(s2n_security_policy_validate_certificate_chain(config->bla_security_policy, cert_key_pair));
+    config->accessed_security_policy = true;
 
     s2n_pkey_type cert_type = s2n_cert_chain_and_key_get_pkey_type(cert_key_pair);
     config->is_rsa_cert_configured |= (cert_type == S2N_PKEY_TYPE_RSA);
@@ -1211,7 +1247,8 @@ int s2n_config_get_supported_groups(struct s2n_config *config, uint16_t *groups,
     POSIX_ENSURE_REF(config);
     POSIX_ENSURE_REF(groups);
 
-    const struct s2n_security_policy *security_policy = config->security_policy;
+    const struct s2n_security_policy *security_policy = config->bla_security_policy;
+    config->accessed_security_policy = true;
     POSIX_ENSURE_REF(security_policy);
     const struct s2n_kem_preferences *kem_preferences = security_policy->kem_preferences;
     POSIX_ENSURE_REF(kem_preferences);

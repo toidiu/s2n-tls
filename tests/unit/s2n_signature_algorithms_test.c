@@ -113,7 +113,7 @@ int main(int argc, char **argv)
 
     /* s2n_signature_algorithms_supported_list_send */
     {
-        struct s2n_security_policy test_security_policy = *s2n_fetch_default_config()->security_policy;
+        struct s2n_security_policy test_security_policy = *s2n_fetch_default_config()->bla_security_policy;
         test_security_policy.signature_preferences = &test_preferences;
 
         /* Test: if all signatures supported, send all signatures */
@@ -904,7 +904,7 @@ int main(int argc, char **argv)
 
     /* s2n_signature_algorithm_recv */
     {
-        struct s2n_security_policy test_security_policy = *s2n_fetch_default_config()->security_policy;
+        struct s2n_security_policy test_security_policy = *s2n_fetch_default_config()->bla_security_policy;
         test_security_policy.signature_preferences = &test_preferences;
 
         /* Test: successfully choose valid server signature */
@@ -1125,9 +1125,9 @@ int main(int argc, char **argv)
         DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(), s2n_config_ptr_free);
         EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(config, rsa_cert_chain));
 
-        struct s2n_security_policy test_security_policy = *s2n_fetch_default_config()->security_policy;
+        struct s2n_security_policy test_security_policy = *s2n_fetch_default_config()->bla_security_policy;
         test_security_policy.signature_preferences = &pss_test_preferences,
-        config->security_policy = &test_security_policy;
+        config->bla_security_policy = &test_security_policy;
 
         /* Do not offer PSS signatures schemes if unsupported:
          * s2n_signature_algorithms_supported_list_send + PSS */
@@ -1452,7 +1452,7 @@ int main(int argc, char **argv)
         policy.cipher_preferences = &cipher_prefs;
         policy.signature_preferences = &sig_prefs;
         policy.ecc_preferences = &ecc_prefs;
-        config->security_policy = &policy;
+        config->bla_security_policy = &policy;
 
         for (uint8_t version = S2N_TLS12; version <= S2N_TLS13; version++) {
             if (version >= S2N_TLS13) {

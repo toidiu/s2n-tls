@@ -408,7 +408,7 @@ int main(int argc, char **argv)
             EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(server_config, chain_and_key));
             EXPECT_SUCCESS(s2n_config_add_dhparams(server_config, dhparams_pem));
             EXPECT_SUCCESS(s2n_config_set_async_pkey_callback(server_config, async_pkey_apply_in_callback));
-            server_config->security_policy = &server_security_policy;
+            server_config->bla_security_policy = &server_security_policy;
 
             EXPECT_NOT_NULL(client_config = s2n_config_new());
             EXPECT_SUCCESS(s2n_config_set_unsafe_for_testing(client_config));
@@ -449,7 +449,7 @@ int main(int argc, char **argv)
             EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(server_config, chain_and_key));
             EXPECT_SUCCESS(s2n_config_add_dhparams(server_config, dhparams_pem));
             EXPECT_SUCCESS(s2n_config_set_async_pkey_callback(server_config, async_pkey_store_callback));
-            server_config->security_policy = &server_security_policy;
+            server_config->bla_security_policy = &server_security_policy;
 
             EXPECT_NOT_NULL(client_config = s2n_config_new());
             EXPECT_SUCCESS(s2n_config_set_unsafe_for_testing(client_config));
@@ -490,7 +490,7 @@ int main(int argc, char **argv)
             EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(server_config, chain_and_key));
             EXPECT_SUCCESS(s2n_config_add_dhparams(server_config, dhparams_pem));
             EXPECT_SUCCESS(s2n_config_set_async_pkey_callback(server_config, async_pkey_store_callback));
-            server_config->security_policy = &server_security_policy;
+            server_config->bla_security_policy = &server_security_policy;
 
             EXPECT_NOT_NULL(client_config = s2n_config_new());
             EXPECT_SUCCESS(s2n_config_set_unsafe_for_testing(client_config));
@@ -532,7 +532,7 @@ int main(int argc, char **argv)
             EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(server_config, chain_and_key));
             EXPECT_SUCCESS(s2n_config_add_dhparams(server_config, dhparams_pem));
             EXPECT_SUCCESS(s2n_config_set_async_pkey_callback(server_config, async_pkey_store_callback));
-            server_config->security_policy = &server_security_policy;
+            server_config->bla_security_policy = &server_security_policy;
             /* Enable signature validation for async sign call */
             EXPECT_SUCCESS(s2n_config_set_async_pkey_validation_mode(server_config, S2N_ASYNC_PKEY_VALIDATION_STRICT));
 
@@ -575,7 +575,7 @@ int main(int argc, char **argv)
             EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(server_config, chain_and_key));
             EXPECT_SUCCESS(s2n_config_add_dhparams(server_config, dhparams_pem));
             EXPECT_SUCCESS(s2n_config_set_async_pkey_callback(server_config, async_pkey_store_callback));
-            server_config->security_policy = &server_security_policy;
+            server_config->bla_security_policy = &server_security_policy;
 
             DEFER_CLEANUP(struct s2n_config *client_config = s2n_config_new(), s2n_config_ptr_free);
             EXPECT_NOT_NULL(client_config);
@@ -642,7 +642,7 @@ int main(int argc, char **argv)
         EXPECT_SUCCESS(s2n_blob_init(&encrypted_data, test_encrypted_data, test_encrypted_size));
 
         struct s2n_blob decrypted_data = { 0 };
-        /* Re-use the encrypted data buffer to make sure that the data was actually transformed in the callback. 
+        /* Re-use the encrypted data buffer to make sure that the data was actually transformed in the callback.
          * If we filled this with the decrypted data, we would not know if the decryption happened in the callback. */
         EXPECT_SUCCESS(s2n_blob_init(&decrypted_data, test_encrypted_data, test_encrypted_size));
 

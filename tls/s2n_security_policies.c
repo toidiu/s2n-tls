@@ -1295,7 +1295,14 @@ int s2n_config_set_cipher_preferences(struct s2n_config *config, const char *ver
 
     /* If the config contains certificates violating the security policy cert preferences, return an error. */
     POSIX_GUARD_RESULT(s2n_config_validate_loaded_certificates(config, security_policy));
-    config->security_policy = security_policy;
+    config->bla_security_policy = security_policy;
+    config->accessed_security_policy = true;
+
+    bool matches_default = strcmp(version, "default") == 0;
+    if (!matches_default && !modifying_default_policy) {
+        config->default_policy_overridden = true;
+    }
+
     return 0;
 }
 

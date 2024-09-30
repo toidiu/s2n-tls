@@ -57,7 +57,7 @@ int main(int argc, char **argv)
     EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(server_config, ecdsa_chain));
 
     EXPECT_SUCCESS(s2n_config_add_dhparams(server_config, dhparams_pem));
-    EXPECT_NOT_NULL(default_security_policy = server_config->security_policy);
+    EXPECT_NOT_NULL(default_security_policy = server_config->bla_security_policy);
     EXPECT_NOT_NULL(default_cipher_preferences = default_security_policy->cipher_preferences);
 
     /*
@@ -95,8 +95,8 @@ int main(int argc, char **argv)
         EXPECT_MEMCPY_SUCCESS(&security_policy, default_security_policy, sizeof(security_policy));
         security_policy.cipher_preferences = &server_cipher_preferences;
 
-        client_config->security_policy = &security_policy;
-        server_config->security_policy = &security_policy;
+        client_config->bla_security_policy = &security_policy;
+        server_config->bla_security_policy = &security_policy;
 
         /* Create nonblocking pipes. */
         struct s2n_test_io_pair io_pair;
@@ -159,8 +159,8 @@ int main(int argc, char **argv)
         EXPECT_MEMCPY_SUCCESS(&security_policy, default_security_policy, sizeof(security_policy));
         security_policy.cipher_preferences = &server_cipher_preferences;
 
-        client_config->security_policy = &security_policy;
-        server_config->security_policy = &security_policy;
+        client_config->bla_security_policy = &security_policy;
+        server_config->bla_security_policy = &security_policy;
 
         /* Create nonblocking pipes. */
         struct s2n_test_io_pair io_pair;
@@ -222,8 +222,8 @@ int main(int argc, char **argv)
         EXPECT_MEMCPY_SUCCESS(&security_policy, default_security_policy, sizeof(security_policy));
         security_policy.cipher_preferences = &server_cipher_preferences;
 
-        client_config->security_policy = &security_policy;
-        server_config->security_policy = &security_policy;
+        client_config->bla_security_policy = &security_policy;
+        server_config->bla_security_policy = &security_policy;
 
         /* Create nonblocking pipes. */
         struct s2n_test_io_pair io_pair;
@@ -286,8 +286,8 @@ int main(int argc, char **argv)
         EXPECT_MEMCPY_SUCCESS(&security_policy, default_security_policy, sizeof(security_policy));
         security_policy.cipher_preferences = &server_cipher_preferences;
 
-        client_config->security_policy = &security_policy;
-        server_config->security_policy = &security_policy;
+        client_config->bla_security_policy = &security_policy;
+        server_config->bla_security_policy = &security_policy;
 
         /* Create nonblocking pipes. */
         struct s2n_test_io_pair io_pair;
@@ -355,8 +355,8 @@ int main(int argc, char **argv)
         EXPECT_MEMCPY_SUCCESS(&security_policy, default_security_policy, sizeof(security_policy));
         security_policy.cipher_preferences = &server_cipher_preferences;
 
-        client_config->security_policy = &security_policy;
-        server_config->security_policy = &security_policy;
+        client_config->bla_security_policy = &security_policy;
+        server_config->bla_security_policy = &security_policy;
 
         /* Create nonblocking pipes. */
         struct s2n_test_io_pair io_pair;
@@ -407,7 +407,7 @@ int main(int argc, char **argv)
     EXPECT_SUCCESS(s2n_read_test_pem(S2N_DEFAULT_TEST_DHPARAMS, dhparams_pem, S2N_MAX_TEST_PEM_SIZE));
     EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(server_config, chain_and_key));
     EXPECT_SUCCESS(s2n_config_add_dhparams(server_config, dhparams_pem));
-    EXPECT_NOT_NULL(default_security_policy = server_config->security_policy);
+    EXPECT_NOT_NULL(default_security_policy = server_config->bla_security_policy);
     EXPECT_SUCCESS(s2n_config_set_client_auth_type(server_config, S2N_CERT_AUTH_OPTIONAL));
 
     /* Verify that a handshake fails for every cipher in the default list. */
@@ -432,8 +432,8 @@ int main(int argc, char **argv)
         EXPECT_MEMCPY_SUCCESS(&security_policy, default_security_policy, sizeof(security_policy));
         security_policy.cipher_preferences = &server_cipher_preferences;
 
-        client_config->security_policy = &security_policy;
-        server_config->security_policy = &security_policy;
+        client_config->bla_security_policy = &security_policy;
+        server_config->bla_security_policy = &security_policy;
 
         /* Create nonblocking pipes. */
         struct s2n_test_io_pair io_pair;

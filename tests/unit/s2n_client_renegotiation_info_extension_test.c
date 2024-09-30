@@ -446,7 +446,7 @@ int main(int argc, char **argv)
             &s2n_ecdhe_rsa_with_aes_128_gcm_sha256
         };
         struct s2n_cipher_preferences cipher_preferences = { .suites = cipher_suites, .count = s2n_array_len(cipher_suites) };
-        struct s2n_security_policy security_policy = *config->security_policy;
+        struct s2n_security_policy security_policy = *config->bla_security_policy;
         security_policy.cipher_preferences = &cipher_preferences;
         client_conn->security_policy_override = &security_policy;
 

@@ -630,7 +630,7 @@ int main(int argc, char **argv)
     /* Test s2n_connection_set_config */
     {
         /* when the config is not compliant with the security policy override, then
-         * s2n_connection_set_config will fail 
+         * s2n_connection_set_config will fail
          */
         {
             struct s2n_security_policy rfc9151_applied_locally = security_policy_rfc9151;
@@ -650,7 +650,7 @@ int main(int argc, char **argv)
         };
 
         /* s2n_connection_set_config doesn't enforce cert preferences
-        * 
+        *
         * Customers may configure large numbers of certs on each config. This test
         * asserts that we don't do any validation on certificates as part of set_config,
         * because that would incur a potentially large performance penalty.
@@ -666,7 +666,7 @@ int main(int argc, char **argv)
             /* directly set the security policy to avoid the validation in "set_cipher_preferences" */
             const struct s2n_security_policy *security_policy = NULL;
             POSIX_GUARD(s2n_find_security_policy_from_version("rfc9151", &security_policy));
-            invalid_config->security_policy = security_policy;
+            invalid_config->bla_security_policy = security_policy;
 
             DEFER_CLEANUP(struct s2n_connection *conn = s2n_connection_new(S2N_SERVER), s2n_connection_ptr_free);
             POSIX_ENSURE_REF(conn);

@@ -1808,7 +1808,7 @@ int main(int argc, char **argv)
 
         /* Rearrange the cipher preference order so that a different cipher will be
           * picked by the server */
-        server_conn->config->security_policy->cipher_preferences->suites[0] = &s2n_tls13_aes_256_gcm_sha384;
+        server_conn->config->bla_security_policy->cipher_preferences->suites[0] = &s2n_tls13_aes_256_gcm_sha384;
 
         EXPECT_FAILURE_WITH_ERRNO(s2n_negotiate_test_server_and_client(server_conn, client_conn),
                 S2N_ERR_BAD_MESSAGE);

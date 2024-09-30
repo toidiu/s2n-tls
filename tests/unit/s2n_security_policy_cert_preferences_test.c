@@ -292,22 +292,22 @@ int main(int argc, char **argv)
         {
             DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(), s2n_config_ptr_free);
             EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(config, invalid_cert));
-            const struct s2n_security_policy *default_sp = config->security_policy;
+            const struct s2n_security_policy *default_sp = config->bla_security_policy;
             EXPECT_FAILURE_WITH_ERRNO(s2n_config_set_cipher_preferences(config, "rfc9151"),
                     S2N_ERR_SECURITY_POLICY_INCOMPATIBLE_CERT);
 
             /* assert that the security policy was not changed */
-            EXPECT_EQUAL(config->security_policy, default_sp);
+            EXPECT_EQUAL(config->bla_security_policy, default_sp);
         };
     };
 
-    /* default policy check: ensure that the default security policy doesn't 
+    /* default policy check: ensure that the default security policy doesn't
      * enforce certificate preferences.
-     * 
+     *
      * Adding certificate preferences to the default security policy would be a
-     * breaking change, because it would prevent customers from adding 
+     * breaking change, because it would prevent customers from adding
      * non-compliant certs unless they first set the security policy.
-     * 
+     *
      * This test ensures that such a breaking change would be visible and
      * deliberate.
      */

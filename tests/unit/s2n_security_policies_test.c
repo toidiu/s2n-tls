@@ -629,96 +629,96 @@ int main(int argc, char **argv)
         struct s2n_config *config = s2n_config_new();
 
         EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "20170210"));
-        EXPECT_EQUAL(config->security_policy, &security_policy_20170210);
-        EXPECT_EQUAL(config->security_policy->cipher_preferences, &cipher_preferences_20170210);
-        EXPECT_EQUAL(config->security_policy->kem_preferences, &kem_preferences_null);
-        EXPECT_EQUAL(config->security_policy->signature_preferences, &s2n_signature_preferences_20140601);
-        EXPECT_EQUAL(config->security_policy->ecc_preferences, &s2n_ecc_preferences_20140601);
+        EXPECT_EQUAL(config->bla_security_policy, &security_policy_20170210);
+        EXPECT_EQUAL(config->bla_security_policy->cipher_preferences, &cipher_preferences_20170210);
+        EXPECT_EQUAL(config->bla_security_policy->kem_preferences, &kem_preferences_null);
+        EXPECT_EQUAL(config->bla_security_policy->signature_preferences, &s2n_signature_preferences_20140601);
+        EXPECT_EQUAL(config->bla_security_policy->ecc_preferences, &s2n_ecc_preferences_20140601);
 
         EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "20190801"));
-        EXPECT_EQUAL(config->security_policy, &security_policy_20190801);
-        EXPECT_EQUAL(config->security_policy->cipher_preferences, &cipher_preferences_20190801);
-        EXPECT_EQUAL(config->security_policy->kem_preferences, &kem_preferences_null);
-        EXPECT_EQUAL(config->security_policy->signature_preferences, &s2n_signature_preferences_20200207);
-        EXPECT_EQUAL(config->security_policy->ecc_preferences, &s2n_ecc_preferences_20200310);
+        EXPECT_EQUAL(config->bla_security_policy, &security_policy_20190801);
+        EXPECT_EQUAL(config->bla_security_policy->cipher_preferences, &cipher_preferences_20190801);
+        EXPECT_EQUAL(config->bla_security_policy->kem_preferences, &kem_preferences_null);
+        EXPECT_EQUAL(config->bla_security_policy->signature_preferences, &s2n_signature_preferences_20200207);
+        EXPECT_EQUAL(config->bla_security_policy->ecc_preferences, &s2n_ecc_preferences_20200310);
 
         EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "null"));
-        EXPECT_EQUAL(config->security_policy, &security_policy_null);
-        EXPECT_EQUAL(config->security_policy->cipher_preferences, &cipher_preferences_null);
-        EXPECT_EQUAL(config->security_policy->kem_preferences, &kem_preferences_null);
-        EXPECT_EQUAL(config->security_policy->signature_preferences, &s2n_signature_preferences_null);
-        EXPECT_EQUAL(config->security_policy->ecc_preferences, &s2n_ecc_preferences_null);
+        EXPECT_EQUAL(config->bla_security_policy, &security_policy_null);
+        EXPECT_EQUAL(config->bla_security_policy->cipher_preferences, &cipher_preferences_null);
+        EXPECT_EQUAL(config->bla_security_policy->kem_preferences, &kem_preferences_null);
+        EXPECT_EQUAL(config->bla_security_policy->signature_preferences, &s2n_signature_preferences_null);
+        EXPECT_EQUAL(config->bla_security_policy->ecc_preferences, &s2n_ecc_preferences_null);
 
         EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "test_all"));
-        EXPECT_EQUAL(config->security_policy, &security_policy_test_all);
-        EXPECT_EQUAL(config->security_policy->cipher_preferences, &cipher_preferences_test_all);
-        EXPECT_EQUAL(config->security_policy->kem_preferences, &kem_preferences_all);
-        EXPECT_EQUAL(config->security_policy->signature_preferences, &s2n_signature_preferences_20201021);
-        EXPECT_EQUAL(config->security_policy->ecc_preferences, &s2n_ecc_preferences_test_all);
+        EXPECT_EQUAL(config->bla_security_policy, &security_policy_test_all);
+        EXPECT_EQUAL(config->bla_security_policy->cipher_preferences, &cipher_preferences_test_all);
+        EXPECT_EQUAL(config->bla_security_policy->kem_preferences, &kem_preferences_all);
+        EXPECT_EQUAL(config->bla_security_policy->signature_preferences, &s2n_signature_preferences_20201021);
+        EXPECT_EQUAL(config->bla_security_policy->ecc_preferences, &s2n_ecc_preferences_test_all);
 
         EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "test_all_tls12"));
-        EXPECT_EQUAL(config->security_policy, &security_policy_test_all_tls12);
-        EXPECT_EQUAL(config->security_policy->cipher_preferences, &cipher_preferences_test_all_tls12);
-        EXPECT_EQUAL(config->security_policy->kem_preferences, &kem_preferences_pq_tls_1_0_2021_05);
-        EXPECT_EQUAL(config->security_policy->signature_preferences, &s2n_signature_preferences_20201021);
-        EXPECT_EQUAL(config->security_policy->ecc_preferences, &s2n_ecc_preferences_20201021);
+        EXPECT_EQUAL(config->bla_security_policy, &security_policy_test_all_tls12);
+        EXPECT_EQUAL(config->bla_security_policy->cipher_preferences, &cipher_preferences_test_all_tls12);
+        EXPECT_EQUAL(config->bla_security_policy->kem_preferences, &kem_preferences_pq_tls_1_0_2021_05);
+        EXPECT_EQUAL(config->bla_security_policy->signature_preferences, &s2n_signature_preferences_20201021);
+        EXPECT_EQUAL(config->bla_security_policy->ecc_preferences, &s2n_ecc_preferences_20201021);
 
         EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "KMS-PQ-TLS-1-0-2020-07"));
-        EXPECT_EQUAL(config->security_policy, &security_policy_kms_pq_tls_1_0_2020_07);
-        EXPECT_EQUAL(config->security_policy->cipher_preferences, &cipher_preferences_kms_pq_tls_1_0_2020_07);
-        EXPECT_EQUAL(config->security_policy->kem_preferences, &kem_preferences_pq_tls_1_0_2021_05);
-        EXPECT_EQUAL(config->security_policy->signature_preferences, &s2n_signature_preferences_20140601);
-        EXPECT_EQUAL(config->security_policy->ecc_preferences, &s2n_ecc_preferences_20140601);
+        EXPECT_EQUAL(config->bla_security_policy, &security_policy_kms_pq_tls_1_0_2020_07);
+        EXPECT_EQUAL(config->bla_security_policy->cipher_preferences, &cipher_preferences_kms_pq_tls_1_0_2020_07);
+        EXPECT_EQUAL(config->bla_security_policy->kem_preferences, &kem_preferences_pq_tls_1_0_2021_05);
+        EXPECT_EQUAL(config->bla_security_policy->signature_preferences, &s2n_signature_preferences_20140601);
+        EXPECT_EQUAL(config->bla_security_policy->ecc_preferences, &s2n_ecc_preferences_20140601);
 
         EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "KMS-PQ-TLS-1-0-2020-02"));
-        EXPECT_EQUAL(config->security_policy, &security_policy_kms_pq_tls_1_0_2020_02);
-        EXPECT_EQUAL(config->security_policy->cipher_preferences, &cipher_preferences_kms_pq_tls_1_0_2020_02);
-        EXPECT_EQUAL(config->security_policy->kem_preferences, &kem_preferences_null);
-        EXPECT_EQUAL(config->security_policy->signature_preferences, &s2n_signature_preferences_20140601);
-        EXPECT_EQUAL(config->security_policy->ecc_preferences, &s2n_ecc_preferences_20140601);
+        EXPECT_EQUAL(config->bla_security_policy, &security_policy_kms_pq_tls_1_0_2020_02);
+        EXPECT_EQUAL(config->bla_security_policy->cipher_preferences, &cipher_preferences_kms_pq_tls_1_0_2020_02);
+        EXPECT_EQUAL(config->bla_security_policy->kem_preferences, &kem_preferences_null);
+        EXPECT_EQUAL(config->bla_security_policy->signature_preferences, &s2n_signature_preferences_20140601);
+        EXPECT_EQUAL(config->bla_security_policy->ecc_preferences, &s2n_ecc_preferences_20140601);
 
         EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "KMS-PQ-TLS-1-0-2019-06"));
-        EXPECT_EQUAL(config->security_policy, &security_policy_kms_pq_tls_1_0_2019_06);
-        EXPECT_EQUAL(config->security_policy->cipher_preferences, &cipher_preferences_kms_pq_tls_1_0_2019_06);
-        EXPECT_EQUAL(config->security_policy->kem_preferences, &kem_preferences_null);
-        EXPECT_EQUAL(config->security_policy->signature_preferences, &s2n_signature_preferences_20140601);
-        EXPECT_EQUAL(config->security_policy->ecc_preferences, &s2n_ecc_preferences_20140601);
+        EXPECT_EQUAL(config->bla_security_policy, &security_policy_kms_pq_tls_1_0_2019_06);
+        EXPECT_EQUAL(config->bla_security_policy->cipher_preferences, &cipher_preferences_kms_pq_tls_1_0_2019_06);
+        EXPECT_EQUAL(config->bla_security_policy->kem_preferences, &kem_preferences_null);
+        EXPECT_EQUAL(config->bla_security_policy->signature_preferences, &s2n_signature_preferences_20140601);
+        EXPECT_EQUAL(config->bla_security_policy->ecc_preferences, &s2n_ecc_preferences_20140601);
 
         EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "AWS-CRT-SDK-SSLv3.0"));
-        EXPECT_EQUAL(config->security_policy, &security_policy_aws_crt_sdk_ssl_v3);
-        EXPECT_EQUAL(config->security_policy->cipher_preferences, &cipher_preferences_aws_crt_sdk_ssl_v3);
-        EXPECT_EQUAL(config->security_policy->kem_preferences, &kem_preferences_null);
-        EXPECT_EQUAL(config->security_policy->signature_preferences, &s2n_signature_preferences_20200207);
-        EXPECT_EQUAL(config->security_policy->ecc_preferences, &s2n_ecc_preferences_20200310);
+        EXPECT_EQUAL(config->bla_security_policy, &security_policy_aws_crt_sdk_ssl_v3);
+        EXPECT_EQUAL(config->bla_security_policy->cipher_preferences, &cipher_preferences_aws_crt_sdk_ssl_v3);
+        EXPECT_EQUAL(config->bla_security_policy->kem_preferences, &kem_preferences_null);
+        EXPECT_EQUAL(config->bla_security_policy->signature_preferences, &s2n_signature_preferences_20200207);
+        EXPECT_EQUAL(config->bla_security_policy->ecc_preferences, &s2n_ecc_preferences_20200310);
 
         EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "AWS-CRT-SDK-TLSv1.0"));
-        EXPECT_EQUAL(config->security_policy, &security_policy_aws_crt_sdk_tls_10);
-        EXPECT_EQUAL(config->security_policy->cipher_preferences, &cipher_preferences_aws_crt_sdk_default);
-        EXPECT_EQUAL(config->security_policy->kem_preferences, &kem_preferences_null);
-        EXPECT_EQUAL(config->security_policy->signature_preferences, &s2n_signature_preferences_20200207);
-        EXPECT_EQUAL(config->security_policy->ecc_preferences, &s2n_ecc_preferences_20200310);
+        EXPECT_EQUAL(config->bla_security_policy, &security_policy_aws_crt_sdk_tls_10);
+        EXPECT_EQUAL(config->bla_security_policy->cipher_preferences, &cipher_preferences_aws_crt_sdk_default);
+        EXPECT_EQUAL(config->bla_security_policy->kem_preferences, &kem_preferences_null);
+        EXPECT_EQUAL(config->bla_security_policy->signature_preferences, &s2n_signature_preferences_20200207);
+        EXPECT_EQUAL(config->bla_security_policy->ecc_preferences, &s2n_ecc_preferences_20200310);
 
         EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "AWS-CRT-SDK-TLSv1.1"));
-        EXPECT_EQUAL(config->security_policy, &security_policy_aws_crt_sdk_tls_11);
-        EXPECT_EQUAL(config->security_policy->cipher_preferences, &cipher_preferences_aws_crt_sdk_default);
-        EXPECT_EQUAL(config->security_policy->kem_preferences, &kem_preferences_null);
-        EXPECT_EQUAL(config->security_policy->signature_preferences, &s2n_signature_preferences_20200207);
-        EXPECT_EQUAL(config->security_policy->ecc_preferences, &s2n_ecc_preferences_20200310);
+        EXPECT_EQUAL(config->bla_security_policy, &security_policy_aws_crt_sdk_tls_11);
+        EXPECT_EQUAL(config->bla_security_policy->cipher_preferences, &cipher_preferences_aws_crt_sdk_default);
+        EXPECT_EQUAL(config->bla_security_policy->kem_preferences, &kem_preferences_null);
+        EXPECT_EQUAL(config->bla_security_policy->signature_preferences, &s2n_signature_preferences_20200207);
+        EXPECT_EQUAL(config->bla_security_policy->ecc_preferences, &s2n_ecc_preferences_20200310);
 
         EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "AWS-CRT-SDK-TLSv1.2"));
-        EXPECT_EQUAL(config->security_policy, &security_policy_aws_crt_sdk_tls_12);
-        EXPECT_EQUAL(config->security_policy->cipher_preferences, &cipher_preferences_aws_crt_sdk_default);
-        EXPECT_EQUAL(config->security_policy->kem_preferences, &kem_preferences_null);
-        EXPECT_EQUAL(config->security_policy->signature_preferences, &s2n_signature_preferences_20200207);
-        EXPECT_EQUAL(config->security_policy->ecc_preferences, &s2n_ecc_preferences_20200310);
+        EXPECT_EQUAL(config->bla_security_policy, &security_policy_aws_crt_sdk_tls_12);
+        EXPECT_EQUAL(config->bla_security_policy->cipher_preferences, &cipher_preferences_aws_crt_sdk_default);
+        EXPECT_EQUAL(config->bla_security_policy->kem_preferences, &kem_preferences_null);
+        EXPECT_EQUAL(config->bla_security_policy->signature_preferences, &s2n_signature_preferences_20200207);
+        EXPECT_EQUAL(config->bla_security_policy->ecc_preferences, &s2n_ecc_preferences_20200310);
 
         if (s2n_is_tls13_fully_supported()) {
             EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "AWS-CRT-SDK-TLSv1.3"));
-            EXPECT_EQUAL(config->security_policy, &security_policy_aws_crt_sdk_tls_13);
-            EXPECT_EQUAL(config->security_policy->cipher_preferences, &cipher_preferences_aws_crt_sdk_tls_13);
-            EXPECT_EQUAL(config->security_policy->kem_preferences, &kem_preferences_null);
-            EXPECT_EQUAL(config->security_policy->signature_preferences, &s2n_signature_preferences_20200207);
-            EXPECT_EQUAL(config->security_policy->ecc_preferences, &s2n_ecc_preferences_20200310);
+            EXPECT_EQUAL(config->bla_security_policy, &security_policy_aws_crt_sdk_tls_13);
+            EXPECT_EQUAL(config->bla_security_policy->cipher_preferences, &cipher_preferences_aws_crt_sdk_tls_13);
+            EXPECT_EQUAL(config->bla_security_policy->kem_preferences, &kem_preferences_null);
+            EXPECT_EQUAL(config->bla_security_policy->signature_preferences, &s2n_signature_preferences_20200207);
+            EXPECT_EQUAL(config->bla_security_policy->ecc_preferences, &s2n_ecc_preferences_20200310);
         } else {
             EXPECT_FAILURE(s2n_config_set_cipher_preferences(config, "AWS-CRT-SDK-TLSv1.3"));
         }
