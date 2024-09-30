@@ -253,6 +253,42 @@ S2N_CLEANUP_RESULT s2n_connection_ptr_free(struct s2n_connection **conn)
 
 int s2n_connection_free(struct s2n_connection *conn)
 {
+    /* if (conn->accessed_security_policy_get_cipher_pref) { */
+    /*     FILE *f = fopen("cnt_conn_accessed_security_policy_get_cipher_pref.txt", "a"); */
+    /*     fprintf(f, "%s\n", "1"); */
+    /* } */
+
+    /* if (conn->accessed_security_policy_conn_get_sec_policy) { */
+    /*     FILE *f = fopen("cnt_conn_accessed_security_policy_conn_get_sec_policy.txt", "a"); */
+    /*     fprintf(f, "%s\n", "1"); */
+    /* } */
+
+    /* if (conn->accessed_security_policy_get_kem_pref) { */
+    /*     FILE *f = fopen("cnt_conn_accessed_security_policy_get_kem_pref.txt", "a"); */
+    /*     fprintf(f, "%s\n", "1"); */
+    /* } */
+    /* if (conn->accessed_security_policy_get_sig_pref) { */
+    /*     FILE *f = fopen("cnt_conn_accessed_security_policy_get_sig_pref.txt", "a"); */
+    /*     fprintf(f, "%s\n", "1"); */
+    /* } */
+    /* if (conn->accessed_security_policy_get_ecc_pref) { */
+    /*     FILE *f = fopen("cnt_conn_accessed_security_policy_get_ecc_pref.txt", "a"); */
+    /*     fprintf(f, "%s\n", "1"); */
+    /* } */
+
+    /* if (conn->override_config_policy) { */
+    /*     FILE *f = fopen("cnt_conn_override_config_policy.txt", "a"); */
+    /*     fprintf(f, "%s\n", "1"); */
+    /* } */
+    /* if (conn->override_config_and_use_default_policy) { */
+    /*     FILE *f = fopen("cnt_conn_override_config_and_use_default_policy.txt", "a"); */
+    /*     fprintf(f, "%s\n", "1"); */
+    /* } */
+    /* if (conn->conn_set_config) { */
+    /*     FILE *f = fopen("cnt_conn_conn_set_config.txt", "a"); */
+    /*     fprintf(f, "%s\n", "1"); */
+    /* } */
+
     POSIX_GUARD(s2n_connection_wipe_keys(conn));
     POSIX_GUARD_RESULT(s2n_psk_parameters_wipe(&conn->psk_params));
 
@@ -297,6 +333,7 @@ int s2n_connection_set_config(struct s2n_connection *conn, struct s2n_config *co
      * validate certificates here if the connection is using a security policy override.
      */
     const struct s2n_security_policy *security_policy_override = conn->security_policy_override;
+    conn->conn_set_config = true;
     if (security_policy_override) {
         POSIX_GUARD_RESULT(s2n_config_validate_loaded_certificates(config, security_policy_override));
     }
@@ -366,7 +403,7 @@ int s2n_connection_set_config(struct s2n_connection *conn, struct s2n_config *co
      * However, the s2n_config_set_verification_ca_location behavior predates client authentication
      * support for OCSP stapling, so could only affect whether clients requested OCSP stapling. We
      * therefore only have to maintain the legacy behavior for clients, not servers.
-     * 
+     *
      * Note: The Rust bindings do not maintain the legacy behavior.
      */
     conn->request_ocsp_status = config->ocsp_status_requested_by_user;
@@ -665,9 +702,10 @@ int s2n_connection_get_cipher_preferences(struct s2n_connection *conn, const str
 
     if (conn->security_policy_override != NULL) {
         *cipher_preferences = conn->security_policy_override->cipher_preferences;
+        conn->accessed_security_policy_get_cipher_pref = true;
     } else if (conn->config->bla_security_policy != NULL) {
         *cipher_preferences = conn->config->bla_security_policy->cipher_preferences;
-        conn->config->accessed_security_policy = true;
+        conn->config->accessed_security_policy_get_cipher_pref = true;
     } else {
         POSIX_BAIL(S2N_ERR_INVALID_CIPHER_PREFERENCES);
     }
@@ -684,9 +722,10 @@ int s2n_connection_get_security_policy(struct s2n_connection *conn, const struct
 
     if (conn->security_policy_override != NULL) {
         *security_policy = conn->security_policy_override;
+        conn->accessed_security_policy_conn_get_sec_policy = true;
     } else if (conn->config->bla_security_policy != NULL) {
         *security_policy = conn->config->bla_security_policy;
-        conn->config->accessed_security_policy = true;
+        conn->config->accessed_security_policy_conn_get_sec_policy = true;
     } else {
         POSIX_BAIL(S2N_ERR_INVALID_SECURITY_POLICY);
     }
@@ -703,9 +742,10 @@ int s2n_connection_get_kem_preferences(struct s2n_connection *conn, const struct
 
     if (conn->security_policy_override != NULL) {
         *kem_preferences = conn->security_policy_override->kem_preferences;
+        conn->accessed_security_policy_get_kem_pref = true;
     } else if (conn->config->bla_security_policy != NULL) {
         *kem_preferences = conn->config->bla_security_policy->kem_preferences;
-        conn->config->accessed_security_policy = true;
+        conn->config->accessed_security_policy_get_kem_pref = true;
     } else {
         POSIX_BAIL(S2N_ERR_INVALID_KEM_PREFERENCES);
     }
@@ -722,9 +762,10 @@ int s2n_connection_get_signature_preferences(struct s2n_connection *conn, const 
 
     if (conn->security_policy_override != NULL) {
         *signature_preferences = conn->security_policy_override->signature_preferences;
+        conn->accessed_security_policy_get_sig_pref = true;
     } else if (conn->config->bla_security_policy != NULL) {
         *signature_preferences = conn->config->bla_security_policy->signature_preferences;
-        conn->config->accessed_security_policy = true;
+        conn->config->accessed_security_policy_get_sig_pref = true;
     } else {
         POSIX_BAIL(S2N_ERR_INVALID_SIGNATURE_ALGORITHMS_PREFERENCES);
     }
@@ -741,9 +782,10 @@ int s2n_connection_get_ecc_preferences(struct s2n_connection *conn, const struct
 
     if (conn->security_policy_override != NULL) {
         *ecc_preferences = conn->security_policy_override->ecc_preferences;
+        conn->accessed_security_policy_get_ecc_pref = true;
     } else if (conn->config->bla_security_policy != NULL) {
         *ecc_preferences = conn->config->bla_security_policy->ecc_preferences;
-        conn->config->accessed_security_policy = true;
+        conn->config->accessed_security_policy_get_ecc_pref = true;
     } else {
         POSIX_BAIL(S2N_ERR_INVALID_ECC_PREFERENCES);
     }
@@ -1202,11 +1244,11 @@ uint64_t s2n_connection_get_delay(struct s2n_connection *conn)
 
 /* s2n-tls has a random delay that will trigger for sensitive errors. This is a mitigation
  * for possible timing sidechannels.
- * 
+ *
  * The historical sidechannel that inspired s2n-tls blinding was the Lucky 13 attack, which takes
  * advantage of potential timing differences when removing padding from a record encrypted in CBC mode.
- * The attack is only theoretical in TLS; the attack criteria is unlikely to ever occur 
- * (See: Fardan, N. J. A., & Paterson, K. G. (2013, May 1). Lucky Thirteen: Breaking the TLS and 
+ * The attack is only theoretical in TLS; the attack criteria is unlikely to ever occur
+ * (See: Fardan, N. J. A., & Paterson, K. G. (2013, May 1). Lucky Thirteen: Breaking the TLS and
  * DTLS Record Protocols.) However, we still include blinding to provide a defense in depth mitigation.
  */
 S2N_RESULT s2n_connection_calculate_blinding(struct s2n_connection *conn, int64_t *min, int64_t *max)

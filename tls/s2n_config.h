@@ -122,7 +122,26 @@ struct s2n_config {
     s2n_clock_time_nanoseconds monotonic_clock;
 
     const struct s2n_security_policy *bla_security_policy;
-    bool accessed_security_policy;
+
+    /* ============== access security_policy ============ */
+    /* s2n_security_policy_validate_certificate_chain(config->bla_security_policy, cert_key_pair); */
+    bool accessed_security_policy_validate_cert_chain;
+    /* s2n_config_get_supported_groups */
+    bool accessed_security_policy_get_supp_groups;
+    /* s2n_connection_get_cipher_preferences */
+    bool accessed_security_policy_get_cipher_pref;
+    /* s2n_connection_get_security_policy */
+    bool accessed_security_policy_conn_get_sec_policy;
+    /* s2n_connection_get_kem_preferences */
+    bool accessed_security_policy_get_kem_pref;
+    /* s2n_connection_get_signature_preferences */
+    bool accessed_security_policy_get_sig_pref;
+    /* s2n_connection_get_ecc_preferences */
+    bool accessed_security_policy_get_ecc_pref;
+    /* s2n_config_set_cipher_preferences */
+    bool accessed_security_policy_set_cipher_pref;
+    /* ============== access security_policy ============ */
+
     bool default_policy_overridden;
 
     void *sys_clock_ctx;

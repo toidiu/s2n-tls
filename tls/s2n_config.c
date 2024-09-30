@@ -125,29 +125,108 @@ static int s2n_config_init(struct s2n_config *config)
 
 static int s2n_config_cleanup(struct s2n_config *config, bool cleanup_default_policy)
 {
+    POSIX_ENSURE_REF(config);
+
     if (!cleanup_default_policy) {
-        printf("------- 1\n");
-
-        /* cnt_config_creation.txt: a config was created and cleanedup */
+        /* cnt_config_config_creation.txt: a config was created and cleanedup */
         {
-            FILE *f = fopen("cnt_config_creation.txt", "a");
+            FILE *f = fopen("cnt_config_config_creation.txt", "a");
             fprintf(f, "%s\n", "1");
         }
 
-        /* cnt_accessed_security_policy.txt: calling code accessed the
+        /* ============== access security_policy ============ */
+        /* cnt_config_accessed_security_policy.txt: calling code accessed the
          * config->security_policy field */
-        if (config->accessed_security_policy) {
-            FILE *f = fopen("cnt_accessed_security_policy.txt", "a");
+
+        bool accessed =
+                /* s2n_security_policy_validate_certificate_chain */
+                config->accessed_security_policy_validate_cert_chain ||
+                /* s2n_config_get_supported_groups */
+                config->accessed_security_policy_get_supp_groups ||
+                /* s2n_connection_get_cipher_preferences */
+                config->accessed_security_policy_get_cipher_pref ||
+                /* s2n_connection_get_security_policy */
+                config->accessed_security_policy_conn_get_sec_policy ||
+                /* s2n_connection_get_kem_preferences */
+                config->accessed_security_policy_get_kem_pref ||
+                /* s2n_connection_get_signature_preferences */
+                config->accessed_security_policy_get_sig_pref ||
+                /* s2n_connection_get_ecc_preferences */
+                config->accessed_security_policy_get_ecc_pref ||
+                /* s2n_config_set_cipher_preferences */
+                config->accessed_security_policy_set_cipher_pref;
+        if (accessed) {
+            FILE *f = fopen("cnt_config_accessed_security_policy.txt", "a");
+            if (errno != 0) {
+                printf("-- %d %s \n", accessed, strerror(errno));
+            }
             fprintf(f, "%s\n", "1");
         }
 
-        /* cnt_default_policy_overridden.txt: if a config object's
+        /* cnt_config_accessed_security_policy.txt: calling code accessed the
+         * config->security_policy field */
+        if (config->accessed_security_policy_validate_cert_chain) {
+            FILE *f = fopen("cnt_config_accessed_security_policy_validate_cert_chain.txt", "a");
+            fprintf(f, "%s\n", "1");
+        }
+
+        if (
+                /* s2n_config_get_supported_groups */
+                config->accessed_security_policy_get_supp_groups) {
+            FILE *f = fopen("cnt_config_accessed_security_policy_get_supp_groups.txt", "a");
+            fprintf(f, "%s\n", "1");
+        }
+
+        if (
+                /* s2n_connection_get_cipher_preferences */
+                config->accessed_security_policy_get_cipher_pref) {
+            FILE *f = fopen("cnt_config_accessed_security_policy_get_cipher_pref.txt", "a");
+            fprintf(f, "%s\n", "1");
+        }
+
+        if (
+                /* s2n_connection_get_security_policy */
+                config->accessed_security_policy_conn_get_sec_policy) {
+            FILE *f = fopen("cnt_config_accessed_security_policy_conn_get_sec_policy.txt", "a");
+            fprintf(f, "%s\n", "1");
+        }
+
+        if (
+                /* s2n_connection_get_kem_preferences */
+                config->accessed_security_policy_get_kem_pref) {
+            FILE *f = fopen("cnt_config_accessed_security_policy_get_kem_pref.txt", "a");
+            fprintf(f, "%s\n", "1");
+        }
+
+        if (
+                /* s2n_connection_get_signature_preferences */
+                config->accessed_security_policy_get_sig_pref) {
+            FILE *f = fopen("cnt_config_accessed_security_policy_get_sig_pref.txt", "a");
+            fprintf(f, "%s\n", "1");
+        }
+
+        if (
+                /* s2n_connection_get_ecc_preferences */
+                config->accessed_security_policy_get_ecc_pref) {
+            FILE *f = fopen("cnt_config_accessed_security_policy_get_ecc_pref.txt", "a");
+            fprintf(f, "%s\n", "1");
+        }
+
+        if (
+                /* s2n_config_set_cipher_preferences */
+                config->accessed_security_policy_set_cipher_pref) {
+            FILE *f = fopen("cnt_config_accessed_security_policy_set_cipher_pref.txt", "a");
+            fprintf(f, "%s\n", "1");
+        }
+        /* ============== access security_policy ============ */
+
+        /* cnt_config_default_policy_overridden.txt: if a config object's
          * security_policy was overriden prior to cleanup */
         if (config->default_policy_overridden) {
-            FILE *f = fopen("cnt_default_policy_overridden.txt", "a");
+            FILE *f = fopen("cnt_config_default_policy_overridden.txt", "a");
             fprintf(f, "%s\n", "1");
         } else {
-            FILE *f = fopen("cnt_default_policy_not_overridden.txt", "a");
+            FILE *f = fopen("cnt_config_default_policy_not_overridden.txt", "a");
             fprintf(f, "%s\n", "1");
         }
     }
@@ -329,6 +408,25 @@ struct s2n_config *s2n_config_new_minimal(void)
         s2n_free(&allocator);
         return NULL;
     }
+
+    /* s2n_security_policy_validate_certificate_chain */
+    new_config->accessed_security_policy_validate_cert_chain = false;
+    /* s2n_config_get_supported_groups */
+    new_config->accessed_security_policy_get_supp_groups = false;
+    /* s2n_connection_get_cipher_preferences */
+    new_config->accessed_security_policy_get_cipher_pref = false;
+    /* s2n_connection_get_security_policy */
+    new_config->accessed_security_policy_conn_get_sec_policy = false;
+    /* s2n_connection_get_kem_preferences */
+    new_config->accessed_security_policy_get_kem_pref = false;
+    /* s2n_connection_get_signature_preferences */
+    new_config->accessed_security_policy_get_sig_pref = false;
+    /* s2n_connection_get_ecc_preferences */
+    new_config->accessed_security_policy_get_ecc_pref = false;
+    /* s2n_config_set_cipher_preferences */
+    new_config->accessed_security_policy_set_cipher_pref = false;
+
+    new_config->default_policy_overridden = false;
 
     return new_config;
 }
@@ -568,7 +666,7 @@ static int s2n_config_add_cert_chain_and_key_impl(struct s2n_config *config, str
     POSIX_ENSURE_REF(cert_key_pair);
 
     POSIX_GUARD_RESULT(s2n_security_policy_validate_certificate_chain(config->bla_security_policy, cert_key_pair));
-    config->accessed_security_policy = true;
+    config->accessed_security_policy_validate_cert_chain = true;
 
     s2n_pkey_type cert_type = s2n_cert_chain_and_key_get_pkey_type(cert_key_pair);
     config->is_rsa_cert_configured |= (cert_type == S2N_PKEY_TYPE_RSA);
@@ -1248,7 +1346,7 @@ int s2n_config_get_supported_groups(struct s2n_config *config, uint16_t *groups,
     POSIX_ENSURE_REF(groups);
 
     const struct s2n_security_policy *security_policy = config->bla_security_policy;
-    config->accessed_security_policy = true;
+    config->accessed_security_policy_get_supp_groups = true;
     POSIX_ENSURE_REF(security_policy);
     const struct s2n_kem_preferences *kem_preferences = security_policy->kem_preferences;
     POSIX_ENSURE_REF(kem_preferences);

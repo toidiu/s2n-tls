@@ -154,6 +154,22 @@ struct s2n_connection {
     /* Overrides Security Policy in config if non-null */
     const struct s2n_security_policy *security_policy_override;
 
+    /* ============== access security_policy ============ */
+    /* s2n_connection_get_cipher_preferences */
+    bool accessed_security_policy_get_cipher_pref;
+    /* s2n_connection_get_security_policy */
+    bool accessed_security_policy_conn_get_sec_policy;
+    /* s2n_connection_get_kem_preferences */
+    bool accessed_security_policy_get_kem_pref;
+    /* s2n_connection_get_signature_preferences */
+    bool accessed_security_policy_get_sig_pref;
+    /* s2n_connection_get_ecc_preferences */
+    bool accessed_security_policy_get_ecc_pref;
+    /* ============== access security_policy ============ */
+    bool override_config_policy;
+    bool override_config_and_use_default_policy;
+    bool conn_set_config;
+
     /* The user defined context associated with connection */
     void *context;
 
