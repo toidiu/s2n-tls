@@ -1,0 +1,115 @@
+s2n_server_signature_algorithms_extension_test.c
+s2n_handshake_test.c
+s2n_send_key_update_test.c
+s2n_server_extensions_test.c
+s2n_server_hello_retry_test.c
+s2n_client_hello_test.c
+s2n_connection_preferences_test.c
+s2n_server_hello_test.c
+s2n_server_key_share_extension_test.c
+s2n_client_hello_recv_test.c
+s2n_client_hello_retry_test.c
+s2n_client_extensions_test.c
+s2n_client_cert_request_context_test.c
+s2n_tls13_cert_request_test.c
+s2n_tls13_server_cert_test.c
+s2n_tls13_support_test.c
+s2n_tls13_cert_request_extensions_test.c
+s2n_cipher_suite_match_test.c
+s2n_client_supported_groups_extension_test.c
+s2n_config_test.c
+
+
+tls13 only
+s2n_client_auth_handshake_test.c
+s2n_client_key_share_extension_pq_test.c
+s2n_client_key_share_extension_test.c
+s2n_client_supported_versions_extension_test.c
+s2n_extension_list_process_test.c
+s2n_extension_list_send_test.c
+s2n_extension_type_lists_test.c
+s2n_extensions_server_key_share_select_test.c
+s2n_server_psk_extension_test.c
+s2n_server_supported_versions_extension_test.c
+s2n_tls13_cert_verify_test.c
+s2n_tls13_handshake_state_machine_test.c
+s2n_certificate_extensions_test.c
+s2n_tls13_zero_length_payload_test.c
+
+s2n_client_key_share_extension_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_key_share_extension_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_key_share_extension_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_hello_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_hello_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_hello_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_hello_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_hello_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_hello_test.c:        POSIX_GUARD(s2n_enable_tls13_in_test());
+s2n_server_hello_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_tls13_server_cert_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_supported_groups_extension_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_supported_groups_extension_test.c:                EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_supported_groups_extension_test.c:                EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_supported_groups_extension_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_supported_groups_extension_test.c:                EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_config_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_config_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_config_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_encrypted_extensions_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_certificate_extensions_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_psk_extension_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_supported_versions_extension_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_supported_versions_extension_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_hello_recv_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_hello_recv_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_hello_recv_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_hello_recv_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_hello_recv_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_hello_recv_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_hello_recv_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_hello_recv_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_cert_request_context_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_cert_request_context_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_auth_handshake_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_extension_type_lists_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_extensions_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_extensions_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_extensions_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_extensions_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_extensions_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_extensions_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_extensions_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_extensions_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_extensions_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_extensions_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_supported_versions_extension_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_extension_list_send_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_key_share_extension_pq_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_extensions_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_hello_retry_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_tls13_cert_verify_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_connection_preferences_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_key_share_extension_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_key_share_extension_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_key_share_extension_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_tls13_support_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_tls13_support_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_hello_retry_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_tls13_cert_request_extensions_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_hello_test.c:        s2n_enable_tls13_in_test();
+s2n_client_hello_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_hello_test.c:                EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_hello_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_hello_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_client_hello_test.c:        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_tls13_cert_request_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_extension_list_process_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_extensions_server_key_share_select_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_tls13_handshake_state_machine_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_tls13_zero_length_payload_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_server_signature_algorithms_extension_test.c:    s2n_enable_tls13_in_test();
+s2n_send_key_update_test.c:    EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_cipher_suite_match_test.c:            EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_cipher_suite_match_test.c:                EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_handshake_test.c:                EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+s2n_handshake_test.c:            s2n_enable_tls13_in_test();

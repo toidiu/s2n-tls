@@ -1,0 +1,21 @@
+s2n_signature_algorithms_test.c
+s2n_client_hello_recv_test.c
+s2n_extension_type_test.c
+s2n_server_hello_test.c
+s2n_client_hello_test.c
+s2n_session_ticket_test.c
+s2n_async_pkey_test.c
+s2n_security_policies_test.c
+s2n_ecdsa_test.c
+s2n_server_hello_test.c:        EXPECT_SUCCESS(s2n_reset_tls13_in_test());
+s2n_server_hello_test.c:        EXPECT_SUCCESS(s2n_reset_tls13_in_test());
+s2n_client_hello_test.c:            EXPECT_SUCCESS(s2n_reset_tls13_in_test());
+s2n_client_hello_test.c:            EXPECT_SUCCESS(s2n_reset_tls13_in_test());
+s2n_client_hello_test.c:        EXPECT_SUCCESS(s2n_reset_tls13_in_test());
+s2n_signature_algorithms_test.c:    EXPECT_SUCCESS(s2n_reset_tls13_in_test());
+s2n_client_hello_recv_test.c:        EXPECT_SUCCESS(s2n_reset_tls13_in_test());
+s2n_extension_type_test.c:        EXPECT_SUCCESS(s2n_reset_tls13_in_test());
+s2n_session_ticket_test.c:    EXPECT_SUCCESS(s2n_reset_tls13_in_test());
+s2n_async_pkey_test.c:    EXPECT_SUCCESS(s2n_reset_tls13_in_test());
+s2n_security_policies_test.c:    EXPECT_SUCCESS(s2n_reset_tls13_in_test());
+s2n_ecdsa_test.c:    EXPECT_SUCCESS(s2n_reset_tls13_in_test());
