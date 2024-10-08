@@ -61,11 +61,97 @@ static S2N_RESULT s2n_test_client_hello(struct s2n_connection *client_conn, stru
     return S2N_RESULT_OK;
 }
 
+S2N_RESULT s2n_test_implicit_policy_usage(bool use_tls13_policy, uint8_t expected_protocol)
+{
+    struct s2n_cert_chain_and_key *chain_and_key = NULL;
+    EXPECT_SUCCESS(s2n_test_cert_chain_and_key_new(&chain_and_key,
+            S2N_DEFAULT_ECDSA_TEST_CERT_CHAIN, S2N_DEFAULT_ECDSA_TEST_PRIVATE_KEY));
+
+    DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(),
+            s2n_config_ptr_free);
+    EXPECT_SUCCESS(s2n_config_set_unsafe_for_testing(config));
+    EXPECT_SUCCESS(s2n_config_add_cert_chain_and_key_to_store(config, chain_and_key));
+
+    if (use_tls13_policy) {
+        EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "default_tls13"));
+    }
+
+    DEFER_CLEANUP(struct s2n_connection *server = s2n_connection_new(S2N_SERVER),
+            s2n_connection_ptr_free);
+    EXPECT_SUCCESS(s2n_connection_set_config(server, config));
+
+    DEFER_CLEANUP(struct s2n_connection *client = s2n_connection_new(S2N_CLIENT),
+            s2n_connection_ptr_free);
+    EXPECT_SUCCESS(s2n_connection_set_config(client, config));
+
+    DEFER_CLEANUP(struct s2n_test_io_pair io_pair = { 0 }, s2n_io_pair_close);
+    EXPECT_SUCCESS(s2n_io_pair_init_non_blocking(&io_pair));
+    EXPECT_SUCCESS(s2n_connections_set_io_pair(client, server, &io_pair));
+
+    /* Perform handshake */
+    EXPECT_SUCCESS(s2n_negotiate_test_server_and_client(server, client));
+
+    EXPECT_EQUAL(server->actual_protocol_version, expected_protocol);
+    EXPECT_EQUAL(client->actual_protocol_version, expected_protocol);
+
+    return S2N_RESULT_OK;
+}
+
 int main(int argc, char **argv)
 {
     BEGIN_TEST();
-    EXPECT_SUCCESS(s2n_disable_tls13_in_test());
 
+    // - assume that old tests were written poorly
+    // - assume new tests were written correctly (after https://github.com/aws/s2n-tls/pull/2346)
+    // - old TLS 1.2 tests will have `s2n_disable_tls13_in_test()` on them
+    //
+    // ## Question:
+    // Given that old tests start using a TLS 1.3 security policy..
+    // Can a TLS 1.2 test that has `s2n_highest_protocol_version = S2N_TLS12;`
+    // ever negotiate TLS 1.3?
+    //
+    // ## Verify steps:
+    // D- Add some tests to confirm behavior
+    //
+    // ## Answer:
+    // Old test with s2n_disable_tls13_in_test() will always negotiate TLS 1.2
+    // regardless of security policy. This is beacause
+    // s2n_disable_tls13_in_test() sets the highest protocol version:
+    //
+    // `s2n_highest_protocol_version = S2N_TLS12;`
+    //
+    //
+    //
+    //
+    // ## Question:
+    // Are there exceptions to the above behavior?
+    //
+    // ## Verify steps:
+    // - audit s2n_highest_protocol_version usage
+    //   - see how it interacts with security_policy
+
+    // mimic the behavior of new TLS 1.2 tests. call s2n_reset_tls13_in_test()
+    {
+        EXPECT_SUCCESS(s2n_reset_tls13_in_test());
+        EXPECT_OK(s2n_test_implicit_policy_usage(false, S2N_TLS12));
+        EXPECT_OK(s2n_test_implicit_policy_usage(true, S2N_TLS13));
+    };
+
+    // mimic the behavior of old TLS 1.2 tests. These test have s2n_disable_tls13_in_test()
+    {
+        EXPECT_SUCCESS(s2n_disable_tls13_in_test());
+        EXPECT_OK(s2n_test_implicit_policy_usage(false, S2N_TLS12));
+        EXPECT_OK(s2n_test_implicit_policy_usage(true, S2N_TLS12));
+    };
+
+    // mimics the behavior of old TLS 1.3 tests. These test have s2n_enable_tls13_in_test()
+    {
+        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+        EXPECT_OK(s2n_test_implicit_policy_usage(false, S2N_TLS13));
+        EXPECT_OK(s2n_test_implicit_policy_usage(true, S2N_TLS13));
+    };
+
+    EXPECT_SUCCESS(s2n_disable_tls13_in_test());
     struct s2n_cert_chain_and_key *chain_and_key = NULL;
     EXPECT_SUCCESS(s2n_test_cert_chain_and_key_new(&chain_and_key,
             S2N_DEFAULT_ECDSA_TEST_CERT_CHAIN, S2N_DEFAULT_ECDSA_TEST_PRIVATE_KEY));
