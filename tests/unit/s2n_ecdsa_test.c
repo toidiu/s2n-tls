@@ -69,6 +69,7 @@ int main(int argc, char **argv)
     BEGIN_TEST();
     EXPECT_SUCCESS(s2n_disable_tls13_in_test());
 
+    /* good: 1 */
     /* s2n_ecdsa_pkey_matches_curve */
     {
         struct s2n_ecdsa_key *p256_key = NULL, *p384_key = NULL;
@@ -156,6 +157,7 @@ int main(int argc, char **argv)
     EXPECT_SUCCESS(s2n_hash_new(&hash_one));
     EXPECT_SUCCESS(s2n_hash_new(&hash_two));
 
+    /* good: 1 */
     for (size_t i = 0; i < s2n_array_len(supported_hash_algorithms); i++) {
         int hash_alg = supported_hash_algorithms[i];
 
@@ -180,6 +182,7 @@ int main(int argc, char **argv)
         EXPECT_SUCCESS(s2n_hash_reset(&hash_two));
     }
 
+    /* good: 1 */
     /* Mismatched public/private key should fail verification */
     EXPECT_OK(s2n_pkey_size(&unmatched_priv_key, &maximum_signature_length));
     EXPECT_SUCCESS(s2n_alloc(&bad_signature, maximum_signature_length));
@@ -210,6 +213,7 @@ int main(int argc, char **argv)
 
     EXPECT_SUCCESS(s2n_reset_tls13_in_test());
 
+    /* good: 1 */
     /* Self-Talk test */
     {
         const char *ecdsa_certs[][2] = {

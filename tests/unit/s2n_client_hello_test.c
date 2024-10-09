@@ -62,6 +62,7 @@ int main(int argc, char **argv)
 
     EXPECT_SUCCESS(setenv("S2N_DONT_MLOCK", "1", 0));
 
+    /* good: 1 */
     /* Test s2n_client_hello_get_extension_by_id */
     {
         /* Test with invalid parsed extensions */
@@ -95,6 +96,7 @@ int main(int argc, char **argv)
         };
     };
 
+    /* good: 1 */
     /* Test s2n_client_hello_has_extension */
     {
         struct s2n_connection *conn = NULL;
@@ -132,6 +134,7 @@ int main(int argc, char **argv)
         EXPECT_SUCCESS(s2n_connection_free(conn));
     };
 
+    /* good: 1 */
     /* Test s2n_client_hello_has_extension with a zero-length extension */
     for (int send_sct = 0; send_sct <= 1; send_sct++) {
         DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(), s2n_config_ptr_free);
@@ -944,6 +947,7 @@ int main(int argc, char **argv)
         EXPECT_SUCCESS(s2n_io_pair_close(&io_pair));
     };
 
+    /* good: 1 */
     /* Minimal TLS 1.2 client hello. */
     {
         struct s2n_connection *server_conn = NULL;
@@ -1526,6 +1530,8 @@ int main(int argc, char **argv)
         EXPECT_SUCCESS(s2n_config_free(server_config));
         EXPECT_SUCCESS(s2n_config_free(client_config));
     };
+
+    /* ------  NEW tests after */
 
     /* s2n_client_hello_recv should fail when reading an SSLv2 client hello during a hello retry handshake */
     {

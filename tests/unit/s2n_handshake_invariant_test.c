@@ -63,6 +63,7 @@ int s2n_app_data_in_handshake_record_recv_fn(void *io_context, uint8_t *buf, uin
     return to_write;
 }
 
+/* good: 1 */
 int main(int argc, char **argv)
 {
     BEGIN_TEST();

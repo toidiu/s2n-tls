@@ -79,6 +79,11 @@ int main(int argc, char **argv)
     EXPECT_SUCCESS(s2n_config_set_verify_host_callback(config, verify_host_fn, &verify_data));
     EXPECT_SUCCESS(s2n_config_set_verification_ca_location(config, S2N_DEFAULT_TEST_CERT_CHAIN, NULL));
 
+    /* BAD default: 1
+     * the original test was trying to test the default policy, not an older
+     * default policy. It is pinned to '20170210' for reasons above but that was
+     * not the original intent of this test.
+     */
     /* Verify that a handshake succeeds for every cipher in the default list. */
     for (size_t cipher_idx = 0; cipher_idx < default_cipher_preferences->count; cipher_idx++) {
         verify_data.callback_invoked = 0;
@@ -139,6 +144,7 @@ int main(int argc, char **argv)
 
     EXPECT_SUCCESS(s2n_config_set_client_auth_type(config, S2N_CERT_AUTH_REQUIRED));
 
+    /* BAD default: 1 */
     /* Verify that a handshake succeeds for every cipher in the default list. */
     for (size_t cipher_idx = 0; cipher_idx < default_cipher_preferences->count; cipher_idx++) {
         struct s2n_cipher_preferences server_cipher_preferences;
@@ -193,6 +199,7 @@ int main(int argc, char **argv)
 
     EXPECT_SUCCESS(s2n_config_set_client_auth_type(config, S2N_CERT_AUTH_NONE));
 
+    /* BAD default: 1 */
     /* Verify that a handshake succeeds for every cipher in the default list. */
     for (size_t cipher_idx = 0; cipher_idx < default_cipher_preferences->count; cipher_idx++) {
         struct s2n_cipher_preferences server_cipher_preferences;
@@ -253,6 +260,7 @@ int main(int argc, char **argv)
 
     EXPECT_SUCCESS(s2n_config_set_client_auth_type(config, S2N_CERT_AUTH_NONE));
 
+    /* BAD default: 1 */
     /* Verify that a handshake succeeds for every cipher in the default list. */
     for (size_t cipher_idx = 0; cipher_idx < default_cipher_preferences->count; cipher_idx++) {
         struct s2n_cipher_preferences server_cipher_preferences;
@@ -306,6 +314,7 @@ int main(int argc, char **argv)
         EXPECT_SUCCESS(s2n_stuffer_free(&client_to_server));
     }
 
+    /* good: 1 */
     /* Ensure that the client's certificate is validated, regardless of how client auth was enabled */
     {
         typedef enum {

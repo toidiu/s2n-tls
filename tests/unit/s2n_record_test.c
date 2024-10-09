@@ -90,6 +90,7 @@ int main(int argc, char **argv)
     conn->server = conn->initial;
     conn->client = conn->initial;
 
+    /* good: 1 */
     /* test the null cipher. */
     conn->initial->cipher_suite = &s2n_null_cipher_suite;
     conn->actual_protocol_version = S2N_TLS11;
@@ -131,6 +132,7 @@ int main(int argc, char **argv)
         EXPECT_EQUAL(fragment_length, bytes_written);
     }
 
+    /* good: 1 */
     /* test a fake streaming cipher with a MAC */
     conn->initial->cipher_suite->record_alg = &mock_null_sha1_record_alg;
     EXPECT_SUCCESS(s2n_hmac_init(&conn->initial->client_record_mac, S2N_HMAC_SHA1, mac_key, sizeof(mac_key)));
@@ -216,6 +218,7 @@ int main(int argc, char **argv)
         EXPECT_FAILURE_WITH_ERRNO(s2n_record_parse(conn), S2N_ERR_BAD_MESSAGE);
     }
 
+    /* good: 1 */
     /* Test a mock block cipher with a mac - in TLS1.0 mode */
     EXPECT_SUCCESS(s2n_hmac_init(&conn->initial->client_record_mac, S2N_HMAC_SHA1, mac_key, sizeof(mac_key)));
     EXPECT_SUCCESS(s2n_hmac_init(&conn->initial->server_record_mac, S2N_HMAC_SHA1, mac_key, sizeof(mac_key)));
@@ -286,6 +289,7 @@ int main(int argc, char **argv)
         EXPECT_EQUAL(fragment_length, predicted_length);
     }
 
+    /* good: 1 */
     /* Test a mock block cipher with a mac - in TLS1.1+ mode */
     EXPECT_SUCCESS(s2n_hmac_init(&conn->initial->client_record_mac, S2N_HMAC_SHA1, mac_key, sizeof(mac_key)));
     EXPECT_SUCCESS(s2n_hmac_init(&conn->initial->server_record_mac, S2N_HMAC_SHA1, mac_key, sizeof(mac_key)));
@@ -354,6 +358,7 @@ int main(int argc, char **argv)
         EXPECT_EQUAL(fragment_length, predicted_length);
     }
 
+    /* good: 1 */
     /* Test TLS record limit */
     struct s2n_blob empty_blob = { 0 };
     EXPECT_SUCCESS(s2n_blob_init(&empty_blob, NULL, 0));
@@ -366,6 +371,7 @@ int main(int argc, char **argv)
     /* Sequence number should wrap around */
     EXPECT_ERROR_WITH_ERRNO(s2n_record_write(conn, TLS_ALERT, &empty_blob), S2N_ERR_RECORD_LIMIT);
 
+    /* good: 1 */
     /* Test TLS 1.3 Record should reflect as TLS 1.2 version on the wire */
     {
         EXPECT_SUCCESS(s2n_stuffer_wipe(&conn->out));
@@ -397,6 +403,7 @@ int main(int argc, char **argv)
         EXPECT_FAILURE_WITH_ERRNO(s2n_record_header_parse(conn, &content_type, &fragment_length), S2N_ERR_BAD_MESSAGE);
     };
 
+    /* good: 1 */
     /* Test: ApplicationData MUST be encrypted */
     {
         EXPECT_SUCCESS(s2n_connection_wipe(conn));
@@ -411,6 +418,7 @@ int main(int argc, char **argv)
         EXPECT_FAILURE_WITH_ERRNO(s2n_record_parse(conn), S2N_ERR_DECRYPT);
     };
 
+    /* good: 1 */
     /* Record version is recorded for the first message received (Client Hello) */
     {
         DEFER_CLEANUP(struct s2n_connection *server_conn = s2n_connection_new(S2N_SERVER),

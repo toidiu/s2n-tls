@@ -25,6 +25,7 @@ int main(int argc, char **argv)
 {
     BEGIN_TEST();
 
+    /* good: 1 */
     /* Test s2n_handshake_hashes_new */
     {
         /* Safety */
@@ -61,6 +62,7 @@ int main(int argc, char **argv)
         };
     };
 
+    /* good: 1 */
     /* Test s2n_handshake_hashes_wipe */
     {
         /* Safety */
@@ -99,6 +101,7 @@ int main(int argc, char **argv)
         };
     };
 
+    /* good: 1 */
     /* Test s2n_handshake_hashes_free */
     {
         /* Safety */
@@ -115,6 +118,7 @@ int main(int argc, char **argv)
         };
     };
 
+    /* good: 1 */
     /* Test s2n_handshake_hashes connection lifecycle */
     {
         uint8_t digest[SHA256_DIGEST_LENGTH] = { 0 };

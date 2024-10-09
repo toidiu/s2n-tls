@@ -40,8 +40,8 @@ int main(int argc, char **argv)
     struct s2n_blob out = { 0 };
     EXPECT_SUCCESS(s2n_blob_init(&out, output_pad, sizeof(output_pad)));
 
+    /* good: 1 */
     BEGIN_TEST();
-    EXPECT_SUCCESS(s2n_disable_tls13_in_test());
 
     EXPECT_SUCCESS(s2n_hmac_new(&hmac));
     EXPECT_SUCCESS(s2n_hmac_new(&copy));
