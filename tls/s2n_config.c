@@ -329,19 +329,19 @@ int s2n_config_defaults_init(void)
      * `s2n_config_load_system_certs` can be an expensive operation which can
      * affect initialization cost for applications.
      */
-    if (s2n_in_unit_test()) {
-        POSIX_GUARD(s2n_config_init(&s2n_testing_default_tls12_config));
-        POSIX_GUARD(s2n_config_setup_tls12(&s2n_testing_default_tls12_config));
-        POSIX_GUARD(s2n_config_load_system_certs(&s2n_testing_default_tls12_config));
+    /* if (s2n_in_unit_test()) { */
+    /*     POSIX_GUARD(s2n_config_init(&s2n_testing_default_tls12_config)); */
+    /*     POSIX_GUARD(s2n_config_setup_tls12(&s2n_testing_default_tls12_config)); */
+    /*     POSIX_GUARD(s2n_config_load_system_certs(&s2n_testing_default_tls12_config)); */
 
-        POSIX_GUARD(s2n_config_init(&s2n_testing_default_tls12_fips_config));
-        POSIX_GUARD(s2n_config_setup_tls12_fips(&s2n_testing_default_tls12_fips_config));
-        POSIX_GUARD(s2n_config_load_system_certs(&s2n_testing_default_tls12_fips_config));
+    /*     POSIX_GUARD(s2n_config_init(&s2n_testing_default_tls12_fips_config)); */
+    /*     POSIX_GUARD(s2n_config_setup_tls12_fips(&s2n_testing_default_tls12_fips_config)); */
+    /*     POSIX_GUARD(s2n_config_load_system_certs(&s2n_testing_default_tls12_fips_config)); */
 
-        POSIX_GUARD(s2n_config_init(&s2n_testing_default_tls13_config));
-        POSIX_GUARD(s2n_config_setup_tls13(&s2n_testing_default_tls13_config));
-        POSIX_GUARD(s2n_config_load_system_certs(&s2n_testing_default_tls13_config));
-    }
+    /*     POSIX_GUARD(s2n_config_init(&s2n_testing_default_tls13_config)); */
+    /*     POSIX_GUARD(s2n_config_setup_tls13(&s2n_testing_default_tls13_config)); */
+    /*     POSIX_GUARD(s2n_config_load_system_certs(&s2n_testing_default_tls13_config)); */
+    /* } */
 
     return S2N_SUCCESS;
 }
