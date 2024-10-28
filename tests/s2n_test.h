@@ -40,10 +40,10 @@ static struct s2n_config blas2n_testing_default_tls12_config = { 0 };
 static struct s2n_config s2n_testing_default_tls12_fips_config = { 0 };
 static struct s2n_config s2n_testing_default_tls13_config = { 0 };
 
-S2N_RESULT s2n_init_unit_test() {
-    /* RESULT_GUARD_POSIX(s2n_config_init(&blas2n_testing_default_tls12_config)); */
-    /* RESULT_GUARD_POSIX(s2n_config_setup_tls12(&blas2n_testing_default_tls12_config)); */
-    /* RESULT_GUARD_POSIX(s2n_config_load_system_certs(&blas2n_testing_default_tls12_config)); */
+int s2n_init_unit_test() {
+    POSIX_GUARD(s2n_config_init(&blas2n_testing_default_tls12_config));
+    POSIX_GUARD(s2n_config_setup_tls12(&blas2n_testing_default_tls12_config));
+    POSIX_GUARD(s2n_config_load_system_certs(&blas2n_testing_default_tls12_config));
 
     /*     POSIX_GUARD(s2n_config_init(&s2n_testing_default_tls12_fips_config)); */
     /*     POSIX_GUARD(s2n_config_setup_tls12_fips(&s2n_testing_default_tls12_fips_config)); */
@@ -53,7 +53,7 @@ S2N_RESULT s2n_init_unit_test() {
     /*     POSIX_GUARD(s2n_config_setup_tls13(&s2n_testing_default_tls13_config)); */
     /*     POSIX_GUARD(s2n_config_load_system_certs(&s2n_testing_default_tls13_config)); */
 
-  return S2N_RESULT_OK;
+  return S2N_SUCCESS;
 }
 
 /* Do NOT allow TLS1.3 to be negotiated, regardless of security policy.
@@ -68,8 +68,8 @@ int s2n_disable_tls13_in_test()
     s2n_highest_protocol_version = S2N_TLS12;
     s2n_testing_override = S2N_TESTING_POLICY_OVERRIDE_TLS12;
 
-    /* s2n_default_config_ptr = &blas2n_testing_default_tls12_config; */
-    /* POSIX_ENSURE_REF(s2n_default_config_ptr); */
+    s2n_default_config_ptr = &blas2n_testing_default_tls12_config;
+    POSIX_ENSURE_REF(s2n_default_config_ptr);
 
     return S2N_SUCCESS;
 }
@@ -124,7 +124,6 @@ int s2n_reset_tls13_in_test()
         test_count = 0;                                             \
         fprintf(stdout, "Running %-50s ... ", __FILE__);            \
         fflush(stdout);                                             \
-        EXPECT_SUCCESS_WITHOUT_COUNT(s2n_init_unit_test());         \
         EXPECT_SUCCESS_WITHOUT_COUNT(s2n_in_unit_test_set(true));   \
         S2N_TEST_OPTIONALLY_ENABLE_FIPS_MODE();                     \
     } while(0)
@@ -144,6 +143,7 @@ int s2n_reset_tls13_in_test()
     do {                                                            \
         BEGIN_TEST_NO_INIT();                                       \
         EXPECT_SUCCESS_WITHOUT_COUNT(s2n_init());                   \
+        EXPECT_SUCCESS_WITHOUT_COUNT(s2n_init_unit_test());         \
     } while(0)
 
 #define END_TEST()                                                  \
