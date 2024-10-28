@@ -65,6 +65,8 @@ static int wall_clock(void *data, uint64_t *nanoseconds)
 
 static struct s2n_config s2n_default_config = { 0 };
 static struct s2n_config s2n_default_fips_config = { 0 };
+static struct s2n_config *s2n_default_config_ptr = NULL;
+
 /* Dedicated configs for testing different protocols since tests can override the
  * default security policy behavior.
  */
@@ -78,7 +80,7 @@ static int s2n_config_setup_default(struct s2n_config *config)
     return S2N_SUCCESS;
 }
 
-static int s2n_config_setup_tls12(struct s2n_config *config)
+int s2n_config_setup_tls12(struct s2n_config *config)
 {
     POSIX_ENSURE(s2n_in_unit_test(), S2N_ERR_NOT_IN_UNIT_TEST);
     /* A TLS1.2 policy */
@@ -148,7 +150,7 @@ static S2N_RESULT s2n_config_get_default_security_policy_selection(s2n_default_s
     return S2N_RESULT_OK;
 }
 
-static int s2n_config_init(struct s2n_config *config)
+int s2n_config_init(struct s2n_config *config)
 {
     config->wall_clock = wall_clock;
     config->monotonic_clock = monotonic_clock;
@@ -287,7 +289,8 @@ struct s2n_config *s2n_fetch_default_config(void)
     PTR_GUARD_RESULT(s2n_config_get_default_security_policy_selection(&selection));
     switch (selection) {
         case S2N_SELECT_DEFAULT_POLICY:
-            return &s2n_default_config;
+            /* return &s2n_default_config; */
+    return s2n_default_config_ptr;
         case S2N_SELECT_DEFAULT_FIPS_POLICY:
             return &s2n_default_fips_config;
         case S2N_SELECT_TEST_OVERRIDE_POLICY_TLS12:
@@ -298,7 +301,8 @@ struct s2n_config *s2n_fetch_default_config(void)
             return &s2n_testing_default_tls13_config;
     }
 
-    return &s2n_default_config;
+    /* return &s2n_default_config; */
+    return s2n_default_config_ptr;
 }
 
 int s2n_config_set_unsafe_for_testing(struct s2n_config *config)
@@ -322,6 +326,8 @@ int s2n_config_defaults_init(void)
         POSIX_GUARD(s2n_config_init(&s2n_default_config));
         POSIX_GUARD(s2n_config_setup_default(&s2n_default_config));
         POSIX_GUARD(s2n_config_load_system_certs(&s2n_default_config));
+        s2n_default_config_ptr = &s2n_default_config;
+        POSIX_ENSURE_REF(s2n_default_config_ptr);
     }
 
     /* Initialize static test configs only when running tests.

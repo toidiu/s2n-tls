@@ -33,9 +33,9 @@ int main(int argc, char **argv)
     // This works for s2n_config_new() because we create a new s2n_config object
     // which is then configured based on (default, default_fips, testing_override)
     // Note, we still need a way to toggle to testing_override here.
-    EXPECT_SUCCESS(s2n_disable_tls13_in_test());
-    struct s2n_config *config = s2n_config_new();
-    EXPECT_NOT_NULL(config);
+    /* EXPECT_SUCCESS(s2n_disable_tls13_in_test()); */
+    /* struct s2n_config *config = s2n_config_new(); */
+    /* EXPECT_NOT_NULL(config); */
 
     // s2n_connection_new uses the static config objects.
     // when testing_override is set, it will attempt to use these configs objects
@@ -57,8 +57,8 @@ int main(int argc, char **argv)
     // this bool and toggle logic also needs to live in production scope.
     //
     /* EXPECT_SUCCESS(s2n_disable_tls13_in_test()); */
-    /* struct s2n_connection *conn = s2n_connection_new(S2N_SERVER); */
-    /* EXPECT_NOT_NULL(conn); */
+    struct s2n_connection *conn = s2n_connection_new(S2N_SERVER);
+    EXPECT_NOT_NULL(conn);
 
 
     END_TEST();

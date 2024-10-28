@@ -28,9 +28,33 @@
 #include "tls/s2n_alerts.h"
 #include "tls/s2n_tls13.h"
 
+int s2n_config_init(struct s2n_config *config);
+int s2n_config_setup_tls12(struct s2n_config *config);
+
 int test_count;
 
 bool s2n_use_color_in_output = true;
+
+static struct s2n_config s2n_testing_default_tls12_config = { 0 };
+static struct s2n_config s2n_testing_default_tls12_fips_config = { 0 };
+static struct s2n_config s2n_testing_default_tls13_config = { 0 };
+
+S2N_RESULT s2n_init_test() {
+
+    RESULT_GUARD_POSIX(s2n_config_init(&s2n_testing_default_tls12_config));
+    RESULT_GUARD_POSIX(s2n_config_setup_tls12(&s2n_testing_default_tls12_config));
+    RESULT_GUARD_POSIX(s2n_config_load_system_certs(&s2n_testing_default_tls12_config));
+
+    /*     POSIX_GUARD(s2n_config_init(&s2n_testing_default_tls12_fips_config)); */
+    /*     POSIX_GUARD(s2n_config_setup_tls12_fips(&s2n_testing_default_tls12_fips_config)); */
+    /*     POSIX_GUARD(s2n_config_load_system_certs(&s2n_testing_default_tls12_fips_config)); */
+
+    /*     POSIX_GUARD(s2n_config_init(&s2n_testing_default_tls13_config)); */
+    /*     POSIX_GUARD(s2n_config_setup_tls13(&s2n_testing_default_tls13_config)); */
+    /*     POSIX_GUARD(s2n_config_load_system_certs(&s2n_testing_default_tls13_config)); */
+
+  return S2N_RESULT_OK;
+}
 
 /* Macro definitions for calls that occur within BEGIN_TEST() and END_TEST() to preserve the SKIPPED test behavior
  * by ignoring the test_count, keeping it as 0 to indicate that a test was skipped. */
