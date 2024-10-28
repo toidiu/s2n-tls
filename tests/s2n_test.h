@@ -27,6 +27,7 @@
 #include "utils/s2n_result.h"
 #include "tls/s2n_alerts.h"
 #include "tls/s2n_tls13.h"
+#include "tls/s2n_tls.h"
 
 int s2n_config_init(struct s2n_config *config);
 int s2n_config_setup_tls12(struct s2n_config *config);
@@ -35,15 +36,14 @@ int test_count;
 
 bool s2n_use_color_in_output = true;
 
-static struct s2n_config s2n_testing_default_tls12_config = { 0 };
+static struct s2n_config blas2n_testing_default_tls12_config = { 0 };
 static struct s2n_config s2n_testing_default_tls12_fips_config = { 0 };
 static struct s2n_config s2n_testing_default_tls13_config = { 0 };
 
-S2N_RESULT s2n_init_test() {
-
-    RESULT_GUARD_POSIX(s2n_config_init(&s2n_testing_default_tls12_config));
-    RESULT_GUARD_POSIX(s2n_config_setup_tls12(&s2n_testing_default_tls12_config));
-    RESULT_GUARD_POSIX(s2n_config_load_system_certs(&s2n_testing_default_tls12_config));
+S2N_RESULT s2n_init_unit_test() {
+    /* RESULT_GUARD_POSIX(s2n_config_init(&blas2n_testing_default_tls12_config)); */
+    /* RESULT_GUARD_POSIX(s2n_config_setup_tls12(&blas2n_testing_default_tls12_config)); */
+    /* RESULT_GUARD_POSIX(s2n_config_load_system_certs(&blas2n_testing_default_tls12_config)); */
 
     /*     POSIX_GUARD(s2n_config_init(&s2n_testing_default_tls12_fips_config)); */
     /*     POSIX_GUARD(s2n_config_setup_tls12_fips(&s2n_testing_default_tls12_fips_config)); */
@@ -54,6 +54,37 @@ S2N_RESULT s2n_init_test() {
     /*     POSIX_GUARD(s2n_config_load_system_certs(&s2n_testing_default_tls13_config)); */
 
   return S2N_RESULT_OK;
+}
+
+/* Do NOT allow TLS1.3 to be negotiated, regardless of security policy.
+ * This is NOT the default behavior, and this method is deprecated.
+ *
+ * Please consider using the default behavior and configuring
+ * TLS1.2/TLS1.3 via explicit security policy instead.
+ */
+int s2n_disable_tls13_in_test()
+{
+    POSIX_ENSURE(s2n_in_unit_test(), S2N_ERR_NOT_IN_UNIT_TEST);
+    s2n_highest_protocol_version = S2N_TLS12;
+    s2n_testing_override = S2N_TESTING_POLICY_OVERRIDE_TLS12;
+
+    /* s2n_default_config_ptr = &blas2n_testing_default_tls12_config; */
+    /* POSIX_ENSURE_REF(s2n_default_config_ptr); */
+
+    return S2N_SUCCESS;
+}
+
+/* Reset S2N to the default protocol version behavior.
+ *
+ * This method is intended for use in existing unit tests when the APIs
+ * to enable/disable TLS1.3 have already been called.
+ */
+int s2n_reset_tls13_in_test()
+{
+    POSIX_ENSURE(s2n_in_unit_test(), S2N_ERR_NOT_IN_UNIT_TEST);
+    s2n_highest_protocol_version = S2N_TLS13;
+    s2n_testing_override = S2N_TESTING_POLICY_NO_OVERRIDE;
+    return S2N_SUCCESS;
 }
 
 /* Macro definitions for calls that occur within BEGIN_TEST() and END_TEST() to preserve the SKIPPED test behavior
@@ -93,6 +124,7 @@ S2N_RESULT s2n_init_test() {
         test_count = 0;                                             \
         fprintf(stdout, "Running %-50s ... ", __FILE__);            \
         fflush(stdout);                                             \
+        EXPECT_SUCCESS_WITHOUT_COUNT(s2n_init_unit_test());         \
         EXPECT_SUCCESS_WITHOUT_COUNT(s2n_in_unit_test_set(true));   \
         S2N_TEST_OPTIONALLY_ENABLE_FIPS_MODE();                     \
     } while(0)

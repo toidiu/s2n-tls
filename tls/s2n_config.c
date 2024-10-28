@@ -65,7 +65,7 @@ static int wall_clock(void *data, uint64_t *nanoseconds)
 
 static struct s2n_config s2n_default_config = { 0 };
 static struct s2n_config s2n_default_fips_config = { 0 };
-static struct s2n_config *s2n_default_config_ptr = NULL;
+struct s2n_config *s2n_default_config_ptr = NULL;
 
 /* Dedicated configs for testing different protocols since tests can override the
  * default security policy behavior.
@@ -290,11 +290,12 @@ struct s2n_config *s2n_fetch_default_config(void)
     switch (selection) {
         case S2N_SELECT_DEFAULT_POLICY:
             /* return &s2n_default_config; */
-    return s2n_default_config_ptr;
+            return s2n_default_config_ptr;
         case S2N_SELECT_DEFAULT_FIPS_POLICY:
             return &s2n_default_fips_config;
         case S2N_SELECT_TEST_OVERRIDE_POLICY_TLS12:
-            return &s2n_testing_default_tls12_config;
+            return s2n_default_config_ptr;
+            /* return &s2n_testing_default_tls12_config; */
         case S2N_SELECT_TEST_OVERRIDE_POLICY_TLS12_FIPS:
             return &s2n_testing_default_tls12_fips_config;
         case S2N_SELECT_TEST_OVERRIDE_POLICY_TLS13:

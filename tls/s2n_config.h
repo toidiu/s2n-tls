@@ -48,6 +48,8 @@
 
 struct s2n_cipher_preferences;
 
+extern struct s2n_config *s2n_default_config_ptr;
+
 /* The default security policy when creating a new config. */
 typedef enum {
     /* Use the "default" security policy */

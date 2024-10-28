@@ -88,33 +88,6 @@ int s2n_enable_tls13_in_test()
     return S2N_SUCCESS;
 }
 
-/* Do NOT allow TLS1.3 to be negotiated, regardless of security policy.
- * This is NOT the default behavior, and this method is deprecated.
- *
- * Please consider using the default behavior and configuring
- * TLS1.2/TLS1.3 via explicit security policy instead.
- */
-int s2n_disable_tls13_in_test()
-{
-    POSIX_ENSURE(s2n_in_unit_test(), S2N_ERR_NOT_IN_UNIT_TEST);
-    s2n_highest_protocol_version = S2N_TLS12;
-    s2n_testing_override = S2N_TESTING_POLICY_OVERRIDE_TLS12;
-    return S2N_SUCCESS;
-}
-
-/* Reset S2N to the default protocol version behavior.
- *
- * This method is intended for use in existing unit tests when the APIs
- * to enable/disable TLS1.3 have already been called.
- */
-int s2n_reset_tls13_in_test()
-{
-    POSIX_ENSURE(s2n_in_unit_test(), S2N_ERR_NOT_IN_UNIT_TEST);
-    s2n_highest_protocol_version = S2N_TLS13;
-    s2n_testing_override = S2N_TESTING_POLICY_NO_OVERRIDE;
-    return S2N_SUCCESS;
-}
-
 /* Returns whether a uint16 iana value is a valid TLS 1.3 cipher suite */
 bool s2n_is_valid_tls13_cipher(const uint8_t version[2])
 {

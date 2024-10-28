@@ -56,7 +56,7 @@ int main(int argc, char **argv)
     // s2n_use_testing_override: bool
     // this bool and toggle logic also needs to live in production scope.
     //
-    /* EXPECT_SUCCESS(s2n_disable_tls13_in_test()); */
+    EXPECT_SUCCESS(s2n_disable_tls13_in_test());
     struct s2n_connection *conn = s2n_connection_new(S2N_SERVER);
     EXPECT_NOT_NULL(conn);
 

@@ -43,6 +43,8 @@ typedef enum {
     S2N_TESTING_POLICY_NO_OVERRIDE,
 } s2n_testing_security_policy_override;
 
+extern s2n_testing_security_policy_override s2n_testing_override;
+
 S2N_RESULT s2n_get_testing_security_policy_override(s2n_testing_security_policy_override *override);
 bool s2n_use_default_tls13_config();
 bool s2n_is_tls13_fully_supported();
