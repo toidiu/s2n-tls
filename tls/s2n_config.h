@@ -255,9 +255,5 @@ S2N_RESULT s2n_config_wall_clock(struct s2n_config *config, uint64_t *output);
 S2N_RESULT s2n_config_validate_loaded_certificates(const struct s2n_config *config,
         const struct s2n_security_policy *security_policy);
 
-/* Function to initialize a s2n_config for testing. */
-typedef S2N_RESULT (*s2n_config_setup_fn_type_for_testing)(struct s2n_config *config);
-S2N_RESULT s2n_config_setup_noop(struct s2n_config *config);
 /* A pointer to a s2n_config used for testing */
-S2N_RESULT s2n_config_update_overrides_for_testing(struct s2n_config *override_config,
-        s2n_config_setup_fn_type_for_testing override_setup_fn);
+S2N_RESULT s2n_config_update_overrides_for_testing(struct s2n_config *override_config);

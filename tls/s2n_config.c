@@ -66,8 +66,7 @@ static int wall_clock(void *data, uint64_t *nanoseconds)
 static struct s2n_config s2n_default_config = { 0 };
 static struct s2n_config s2n_default_fips_config = { 0 };
 
-/* A function pointer used to initialize s2n_config for test overrides. */
-static s2n_config_setup_fn_type_for_testing s2n_config_setup_fn_for_testing = s2n_config_setup_noop;
+S2N_RESULT s2n_config_setup_for_testing(struct s2n_config *config);
 /* A pointer to a static s2n_config object used for test overrides. */
 static struct s2n_config *s2n_default_config_for_testing = NULL;
 
@@ -99,9 +98,8 @@ int s2n_config_init(struct s2n_config *config)
     config->client_hello_cb_mode = S2N_CLIENT_HELLO_CB_BLOCKING;
 
     POSIX_GUARD(s2n_config_setup_default(config));
-    if (s2n_use_default_tls13_config()) {
-        POSIX_ENSURE_REF(s2n_config_setup_fn_for_testing);
-        POSIX_GUARD_RESULT(s2n_config_setup_fn_for_testing(config));
+    if (s2n_use_override_config_in_testing()) {
+        POSIX_GUARD_RESULT(s2n_config_setup_for_testing(config));
     } else if (s2n_is_in_fips_mode()) {
         POSIX_GUARD(s2n_config_setup_fips(config));
     }
@@ -206,7 +204,7 @@ int s2n_config_build_domain_name_to_cert_map(struct s2n_config *config, struct s
 
 struct s2n_config *s2n_fetch_default_config(void)
 {
-    if (s2n_use_default_tls13_config()) {
+    if (s2n_use_override_config_in_testing()) {
         PTR_ENSURE_REF(s2n_default_config_for_testing);
         return s2n_default_config_for_testing;
     }
@@ -1267,22 +1265,29 @@ int s2n_config_set_max_blinding_delay(struct s2n_config *config, uint32_t second
     return S2N_SUCCESS;
 }
 
-S2N_RESULT s2n_config_setup_noop(struct s2n_config *config)
+S2N_RESULT s2n_config_setup_for_testing(struct s2n_config *config)
 {
+    switch (s2n_config_override_flag) {
+        case S2N_CONFIG_OVERRIDE_TLS_13:
+            /* Supports TLS 1.3 */
+            RESULT_GUARD_POSIX(s2n_config_set_cipher_preferences(config, "20240503"));
+            break;
+        case S2N_CONFIG_OVERRIDE_TLS_12:
+            /* Supports TLS 1.2 */
+            RESULT_GUARD_POSIX(s2n_config_set_cipher_preferences(config, "20240501"));
+            break;
+        case S2N_CONFIG_NO_OVERRIDE:
+            break;
+        default:
+            return S2N_RESULT_ERROR;
+    }
+
     return S2N_RESULT_OK;
 }
 
-S2N_RESULT s2n_config_update_overrides_for_testing(struct s2n_config *override_config,
-        s2n_config_setup_fn_type_for_testing override_setup_fn)
+S2N_RESULT s2n_config_update_overrides_for_testing(struct s2n_config *override_config)
 {
-    RESULT_ENSURE_REF(override_setup_fn);
-    /* `override_config` can be NULL if testing override is disabled */
-    if (s2n_use_default_tls13_config()) {
-        RESULT_ENSURE_REF(override_config);
-    }
-
+    RESULT_ENSURE_REF(override_config);
     s2n_default_config_for_testing = override_config;
-    s2n_config_setup_fn_for_testing = override_setup_fn;
-
     return S2N_RESULT_OK;
 }
