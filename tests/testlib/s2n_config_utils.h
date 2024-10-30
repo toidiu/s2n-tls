@@ -15,8 +15,8 @@
 
 #pragma once
 
-int s2n_init_for_testing(void);
-int s2n_cleanup_for_testing(void);
+int s2n_config_init_for_testing(void);
+int s2n_config_cleanup_for_testing(void);
 
 int s2n_enable_tls13_in_test();
 int s2n_disable_tls13_in_test();

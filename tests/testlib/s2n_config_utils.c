@@ -25,44 +25,24 @@ int s2n_config_cleanup(struct s2n_config *config);
 static struct s2n_config s2n_default_tls13_config = { 0 };
 static struct s2n_config s2n_default_tls12_config = { 0 };
 
-S2N_RESULT s2n_config_setup_for_testing(struct s2n_config *config)
-{
-    switch (s2n_config_override_flag) {
-        case S2N_CONFIG_OVERRIDE_TLS_13:
-            /* Supports TLS 1.3 */
-            RESULT_GUARD_POSIX(s2n_config_set_cipher_preferences(config, "20240503"));
-            break;
-        case S2N_CONFIG_OVERRIDE_TLS_12:
-            /* Supports TLS 1.2 */
-            RESULT_GUARD_POSIX(s2n_config_set_cipher_preferences(config, "20240501"));
-            break;
-        case S2N_CONFIG_NO_OVERRIDE:
-            break;
-        default:
-            return S2N_RESULT_ERROR;
-    }
-
-    return S2N_RESULT_OK;
-}
-
 /* Called from BEGIN_TEST */
-int s2n_init_for_testing(void)
+int s2n_config_init_for_testing(void)
 {
     /* Supports TLS 1.3 */
     POSIX_GUARD(s2n_config_init(&s2n_default_tls13_config));
-    POSIX_GUARD(s2n_config_set_cipher_preferences(&s2n_default_tls13_config, "20240503"));
+    POSIX_GUARD(s2n_config_set_cipher_preferences(&s2n_default_tls13_config, s2n_config_tls13_policy_for_testing));
     POSIX_GUARD(s2n_config_load_system_certs(&s2n_default_tls13_config));
 
     /* Supports TLS 1.2 */
     POSIX_GUARD(s2n_config_init(&s2n_default_tls12_config));
-    POSIX_GUARD(s2n_config_set_cipher_preferences(&s2n_default_tls12_config, "20240501"));
+    POSIX_GUARD(s2n_config_set_cipher_preferences(&s2n_default_tls12_config, s2n_config_tls12_policy_for_testing));
     POSIX_GUARD(s2n_config_load_system_certs(&s2n_default_tls12_config));
 
     return S2N_SUCCESS;
 }
 
 /* Called from END_TEST */
-int s2n_cleanup_for_testing(void)
+int s2n_config_cleanup_for_testing(void)
 {
     s2n_config_cleanup(&s2n_default_tls13_config);
     s2n_config_cleanup(&s2n_default_tls12_config);

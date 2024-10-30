@@ -35,12 +35,10 @@ bool s2n_use_default_tls13_config()
 bool s2n_use_override_config_in_testing()
 {
     switch (s2n_config_override_flag) {
-        case S2N_CONFIG_OVERRIDE_TLS_13:
-            return true;
-        case S2N_CONFIG_OVERRIDE_TLS_12:
-            return true;
-        default:
+        case S2N_CONFIG_NO_OVERRIDE:
             return false;
+        default:
+            return true;
     }
 }
 

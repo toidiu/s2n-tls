@@ -39,6 +39,8 @@
 
 #define S2N_CLOCK_SYS CLOCK_REALTIME
 
+static S2N_RESULT s2n_config_setup_for_testing(struct s2n_config *config);
+
 static int monotonic_clock(void *data, uint64_t *nanoseconds)
 {
     struct timespec current_time = { 0 };
@@ -65,10 +67,11 @@ static int wall_clock(void *data, uint64_t *nanoseconds)
 
 static struct s2n_config s2n_default_config = { 0 };
 static struct s2n_config s2n_default_fips_config = { 0 };
-
-S2N_RESULT s2n_config_setup_for_testing(struct s2n_config *config);
 /* A pointer to a static s2n_config object used for test overrides. */
 static struct s2n_config *s2n_default_config_for_testing = NULL;
+/* Specify an immutable numbered policy for tests. */
+const char s2n_config_tls13_policy_for_testing[] = "20240503";
+const char s2n_config_tls12_policy_for_testing[] = "20240501";
 
 static int s2n_config_setup_default(struct s2n_config *config)
 {
@@ -1265,16 +1268,16 @@ int s2n_config_set_max_blinding_delay(struct s2n_config *config, uint32_t second
     return S2N_SUCCESS;
 }
 
-S2N_RESULT s2n_config_setup_for_testing(struct s2n_config *config)
+static S2N_RESULT s2n_config_setup_for_testing(struct s2n_config *config)
 {
     switch (s2n_config_override_flag) {
         case S2N_CONFIG_OVERRIDE_TLS_13:
             /* Supports TLS 1.3 */
-            RESULT_GUARD_POSIX(s2n_config_set_cipher_preferences(config, "20240503"));
+            RESULT_GUARD_POSIX(s2n_config_set_cipher_preferences(config, s2n_config_tls13_policy_for_testing));
             break;
         case S2N_CONFIG_OVERRIDE_TLS_12:
             /* Supports TLS 1.2 */
-            RESULT_GUARD_POSIX(s2n_config_set_cipher_preferences(config, "20240501"));
+            RESULT_GUARD_POSIX(s2n_config_set_cipher_preferences(config, s2n_config_tls12_policy_for_testing));
             break;
         case S2N_CONFIG_NO_OVERRIDE:
             break;

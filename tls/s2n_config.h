@@ -48,6 +48,9 @@
 
 struct s2n_cipher_preferences;
 
+extern const char s2n_config_tls12_policy_for_testing[];
+extern const char s2n_config_tls13_policy_for_testing[];
+
 typedef enum {
     S2N_NOT_OWNED = 0,
     S2N_APP_OWNED,
@@ -255,5 +258,4 @@ S2N_RESULT s2n_config_wall_clock(struct s2n_config *config, uint64_t *output);
 S2N_RESULT s2n_config_validate_loaded_certificates(const struct s2n_config *config,
         const struct s2n_security_policy *security_policy);
 
-/* A pointer to a s2n_config used for testing */
 S2N_RESULT s2n_config_update_overrides_for_testing(struct s2n_config *override_config);
