@@ -13,32 +13,44 @@
  * permissions and limitations under the License.
  */
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <unistd.h>
+#include "testlib/s2n_config_utils.h"
 
 #include "testlib/s2n_testlib.h"
-#include "tls/s2n_connection.h"
 #include "tls/s2n_tls.h"
-#include "utils/s2n_safety.h"
-#include "utils/s2n_socket.h"
 
 /* Forward declarations for testing */
 int s2n_config_init(struct s2n_config *config);
 int s2n_config_cleanup(struct s2n_config *config);
 
-/* A static s2n_config which supports TLS 1.3. */
 static struct s2n_config s2n_default_tls13_config = { 0 };
+static struct s2n_config s2n_default_tls12_config = { 0 };
+
+S2N_RESULT s2n_config_setup_tls13_for_testing(struct s2n_config *config)
+{
+    /* Supports TLS 1.3 */
+    RESULT_GUARD_POSIX(s2n_config_set_cipher_preferences(config, "20240503"));
+    return S2N_RESULT_OK;
+}
+
+S2N_RESULT s2n_config_setup_tls12_for_testing(struct s2n_config *config)
+{
+    /* Supports TLS 1.3 */
+    RESULT_GUARD_POSIX(s2n_config_set_cipher_preferences(config, "20240501"));
+    return S2N_RESULT_OK;
+}
 
 /* Called from BEGIN_TEST */
 int s2n_init_for_testing(void)
 {
-    POSIX_GUARD(s2n_config_init(&s2n_default_tls13_config));
     /* Supports TLS 1.3 */
-    POSIX_GUARD(s2n_config_set_cipher_preferences(&s2n_default_tls13_config, "20240503"));
+    POSIX_GUARD(s2n_config_init(&s2n_default_tls13_config));
+    POSIX_GUARD_RESULT(s2n_config_setup_tls13_for_testing(&s2n_default_tls13_config));
     POSIX_GUARD(s2n_config_load_system_certs(&s2n_default_tls13_config));
+
+    /* Supports TLS 1.2 */
+    POSIX_GUARD(s2n_config_init(&s2n_default_tls12_config));
+    POSIX_GUARD_RESULT(s2n_config_setup_tls12_for_testing(&s2n_default_tls12_config));
+    POSIX_GUARD(s2n_config_load_system_certs(&s2n_default_tls12_config));
 
     return S2N_SUCCESS;
 }
@@ -47,15 +59,9 @@ int s2n_init_for_testing(void)
 int s2n_cleanup_for_testing(void)
 {
     s2n_config_cleanup(&s2n_default_tls13_config);
+    s2n_config_cleanup(&s2n_default_tls12_config);
 
     return S2N_SUCCESS;
-}
-
-S2N_RESULT s2n_config_setup_tls13_for_testing(struct s2n_config *config)
-{
-    /* Supports TLS 1.3 */
-    RESULT_GUARD_POSIX(s2n_config_set_cipher_preferences(config, "20240503"));
-    return S2N_RESULT_OK;
 }
 
 /* Allow TLS1.3 to be negotiated, and use the default TLS1.3 security policy.
@@ -95,7 +101,7 @@ int s2n_disable_tls13_in_test()
     s2n_use_default_tls13_config_flag = false;
 
     /* Revert setup function and static config used for testing */
-    POSIX_GUARD_RESULT(s2n_config_update_overrides_for_testing(NULL, s2n_config_setup_noop));
+    POSIX_GUARD_RESULT(s2n_config_update_overrides_for_testing(&s2n_default_tls12_config, s2n_config_setup_tls12_for_testing));
 
     return S2N_SUCCESS;
 }
