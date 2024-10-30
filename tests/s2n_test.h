@@ -23,6 +23,7 @@
 #include <openssl/crypto.h>
 
 #include "error/s2n_errno.h"
+#include "testlib/s2n_config_utils.h"
 #include "utils/s2n_safety.h"
 #include "utils/s2n_result.h"
 #include "tls/s2n_alerts.h"

@@ -67,9 +67,9 @@ static struct s2n_config s2n_default_config = { 0 };
 static struct s2n_config s2n_default_fips_config = { 0 };
 
 /* A function pointer used to initialize s2n_config for test overrides. */
-s2n_config_setup_fn_type_for_testing s2n_config_setup_fn_for_testing = s2n_config_setup_noop;
+static s2n_config_setup_fn_type_for_testing s2n_config_setup_fn_for_testing = s2n_config_setup_noop;
 /* A pointer to a static s2n_config object used for test overrides. */
-struct s2n_config *s2n_default_config_for_testing = NULL;
+static struct s2n_config *s2n_default_config_for_testing = NULL;
 
 static int s2n_config_setup_default(struct s2n_config *config)
 {
@@ -207,6 +207,7 @@ int s2n_config_build_domain_name_to_cert_map(struct s2n_config *config, struct s
 struct s2n_config *s2n_fetch_default_config(void)
 {
     if (s2n_use_default_tls13_config()) {
+        PTR_ENSURE_REF(s2n_default_config_for_testing);
         return s2n_default_config_for_testing;
     }
     if (s2n_is_in_fips_mode()) {
@@ -1274,12 +1275,11 @@ S2N_RESULT s2n_config_setup_noop(struct s2n_config *config)
 S2N_RESULT s2n_config_update_overrides_for_testing(struct s2n_config *override_config,
         s2n_config_setup_fn_type_for_testing override_setup_fn)
 {
+    RESULT_ENSURE_REF(override_setup_fn);
     /* `override_config` can be NULL if testing override is disabled */
     if (s2n_use_default_tls13_config()) {
         RESULT_ENSURE_REF(override_config);
     }
-
-    RESULT_ENSURE_REF(override_setup_fn);
 
     s2n_default_config_for_testing = override_config;
     s2n_config_setup_fn_for_testing = override_setup_fn;
