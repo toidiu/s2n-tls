@@ -88,10 +88,12 @@ bool s2n_use_color_in_output = true;
     do {                                                            \
         BEGIN_TEST_NO_INIT();                                       \
         EXPECT_SUCCESS_WITHOUT_COUNT(s2n_init());                   \
+        EXPECT_SUCCESS_WITHOUT_COUNT(s2n_init_for_testing());       \
     } while(0)
 
 #define END_TEST()                                                  \
     do {                                                            \
+        EXPECT_SUCCESS_WITHOUT_COUNT(s2n_cleanup_for_testing());    \
         EXPECT_SUCCESS_WITHOUT_COUNT(s2n_cleanup());                \
         END_TEST_NO_INIT();                                         \
     } while(0)

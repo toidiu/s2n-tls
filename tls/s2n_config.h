@@ -239,7 +239,6 @@ struct s2n_config {
 S2N_CLEANUP_RESULT s2n_config_ptr_free(struct s2n_config **config);
 
 int s2n_config_defaults_init(void);
-S2N_RESULT s2n_config_testing_defaults_init_tls13_certs(void);
 struct s2n_config *s2n_fetch_default_config(void);
 int s2n_config_set_unsafe_for_testing(struct s2n_config *config);
 
@@ -255,3 +254,12 @@ S2N_RESULT s2n_config_wall_clock(struct s2n_config *config, uint64_t *output);
  * in `security_policy` */
 S2N_RESULT s2n_config_validate_loaded_certificates(const struct s2n_config *config,
         const struct s2n_security_policy *security_policy);
+
+/* Function pointer to initialize a s2n_config for testing. */
+typedef S2N_RESULT (*s2n_config_setup_fn_type_for_testing)(struct s2n_config *config);
+extern s2n_config_setup_fn_type_for_testing s2n_config_setup_fn_for_testing;
+S2N_RESULT s2n_config_setup_noop(struct s2n_config *config);
+/* A static s2n_config used for testing */
+extern struct s2n_config *s2n_default_config_for_testing;
+S2N_RESULT s2n_config_update_overrides_for_testing(struct s2n_config *override_config,
+        s2n_config_setup_fn_type_for_testing override_setup_fn);

@@ -49,11 +49,8 @@ static uint8_t verify_host_accept_everything(const char *host_name, size_t host_
 /* This test is for TLS versions 1.3 and up only */
 static const uint8_t TLS_VERSIONS[] = {S2N_TLS13};
 
-int s2n_fuzz_init(int *argc, char **argv[])
+int s2n_fuzz_init_noop(int *argc, char **argv[])
 {
-    /* Initialize the trust store */
-    POSIX_GUARD_RESULT(s2n_config_testing_defaults_init_tls13_certs());
-    POSIX_GUARD(s2n_enable_tls13_in_test());
     return S2N_SUCCESS;
 }
 
@@ -69,6 +66,7 @@ int s2n_fuzz_test(const uint8_t *buf, size_t len)
 
     struct s2n_connection *client_conn = s2n_connection_new(S2N_CLIENT);
     POSIX_ENSURE_REF(client_conn);
+    POSIX_GUARD(s2n_connection_set_cipher_preferences(client_conn, "20240503"));
 
     /* Pull a byte off the libfuzzer input and use it to set parameters */
     uint8_t randval = 0;
@@ -115,4 +113,4 @@ int s2n_fuzz_test(const uint8_t *buf, size_t len)
     return S2N_SUCCESS;
 }
 
-S2N_FUZZ_TARGET(s2n_fuzz_init, s2n_fuzz_test, NULL)
+S2N_FUZZ_TARGET(s2n_fuzz_init_noop, s2n_fuzz_test, NULL)
