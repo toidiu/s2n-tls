@@ -39,7 +39,7 @@ typedef enum {
     S2N_CONFIG_NO_OVERRIDE,
 } s2n_config_override_for_testing;
 
-extern s2n_config_override_for_testing s2n_config_override_flag;
+extern s2n_security_policy_override_for_testing s2n_policy_override_flag;
 
 /* from RFC: https://tools.ietf.org/html/rfc8446#section-4.1.3*/
 extern uint8_t hello_retry_req_random[S2N_TLS_RANDOM_DATA_LEN];

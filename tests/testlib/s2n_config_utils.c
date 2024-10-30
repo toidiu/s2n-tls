@@ -84,7 +84,7 @@ int s2n_enable_tls13_in_test()
 int s2n_disable_tls13_in_test()
 {
     s2n_highest_protocol_version = S2N_TLS12;
-    s2n_config_override_flag = S2N_CONFIG_OVERRIDE_TLS_12;
+    s2n_config_override_flag = S2N_POLICY_OVERRIDE_TLS_12;
 
     /* Revert setup function and static config used for testing */
     POSIX_GUARD_RESULT(s2n_config_update_overrides_for_testing(&s2n_default_tls12_config));
@@ -100,7 +100,7 @@ int s2n_disable_tls13_in_test()
 int s2n_reset_tls13_in_test()
 {
     s2n_highest_protocol_version = S2N_TLS13;
-    s2n_config_override_flag = S2N_CONFIG_NO_OVERRIDE;
+    s2n_config_override_flag = S2N_POLICY_NO_OVERRIDE;
 
     return S2N_SUCCESS;
 }

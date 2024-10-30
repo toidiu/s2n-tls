@@ -1270,16 +1270,16 @@ int s2n_config_set_max_blinding_delay(struct s2n_config *config, uint32_t second
 
 static S2N_RESULT s2n_config_setup_for_testing(struct s2n_config *config)
 {
-    switch (s2n_config_override_flag) {
-        case S2N_CONFIG_OVERRIDE_TLS_13:
+    switch (s2n_policy_override_flag) {
+        case S2N_POLICY_OVERRIDE_TLS_13:
             /* Supports TLS 1.3 */
             RESULT_GUARD_POSIX(s2n_config_set_cipher_preferences(config, s2n_config_tls13_policy_for_testing));
             break;
-        case S2N_CONFIG_OVERRIDE_TLS_12:
+        case S2N_POLICY_OVERRIDE_TLS_12:
             /* Supports TLS 1.2 */
             RESULT_GUARD_POSIX(s2n_config_set_cipher_preferences(config, s2n_config_tls12_policy_for_testing));
             break;
-        case S2N_CONFIG_NO_OVERRIDE:
+        case S2N_POLICY_NO_OVERRIDE:
             break;
         default:
             return S2N_RESULT_ERROR;

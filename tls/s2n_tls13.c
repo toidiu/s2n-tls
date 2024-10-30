@@ -20,12 +20,12 @@
 #include "crypto/s2n_rsa_signing.h"
 #include "tls/s2n_tls.h"
 
-s2n_config_override_for_testing s2n_config_override_flag = S2N_CONFIG_NO_OVERRIDE;
+s2n_security_policy_override_for_testing s2n_policy_override_flag = S2N_POLICY_NO_OVERRIDE;
 
 bool s2n_use_default_tls13_config()
 {
-    switch (s2n_config_override_flag) {
-        case S2N_CONFIG_OVERRIDE_TLS_13:
+    switch (s2n_policy_override_flag) {
+        case S2N_POLICY_OVERRIDE_TLS_13:
             return true;
         default:
             return false;
@@ -34,8 +34,8 @@ bool s2n_use_default_tls13_config()
 
 bool s2n_use_override_config_in_testing()
 {
-    switch (s2n_config_override_flag) {
-        case S2N_CONFIG_NO_OVERRIDE:
+    switch (s2n_policy_override_flag) {
+        case S2N_POLICY_NO_OVERRIDE:
             return false;
         default:
             return true;
@@ -62,7 +62,7 @@ int s2n_get_highest_fully_supported_tls_version()
 int s2n_enable_tls13()
 {
     s2n_highest_protocol_version = S2N_TLS13;
-    s2n_config_override_flag = S2N_CONFIG_OVERRIDE_TLS_13;
+    s2n_policy_override_flag = S2N_POLICY_OVERRIDE_TLS_13;
 
     return S2N_SUCCESS;
 }
