@@ -402,3 +402,14 @@ batch:
         privileged-mode: true
         variables:
             S2N_CMAKE_OPTIONS: "-DASAN=ON"
+    - identifier: DefaultTls12Policy
+      buildspec: codebuild/spec/buildspec_ubuntu.yml
+      env:
+        compute-type: BUILD_GENERAL1_LARGE
+        image: 024603541914.dkr.ecr.us-west-2.amazonaws.com/docker:ubuntu22codebuild
+        privileged-mode: true
+        variables:
+          BUILD_S2N: 'true'
+          GCC_VERSION: '6'
+          S2N_LIBCRYPTO: 'openssl-1.0.2'
+          TESTS: default_tls12_policy
