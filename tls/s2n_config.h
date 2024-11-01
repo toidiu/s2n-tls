@@ -254,3 +254,4 @@ S2N_RESULT s2n_config_wall_clock(struct s2n_config *config, uint64_t *output);
  * in `security_policy` */
 S2N_RESULT s2n_config_validate_loaded_certificates(const struct s2n_config *config,
         const struct s2n_security_policy *security_policy);
+S2N_RESULT s2n_config_override_config_for_test(struct s2n_config *override);

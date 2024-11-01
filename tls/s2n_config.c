@@ -65,6 +65,7 @@ static int wall_clock(void *data, uint64_t *nanoseconds)
 
 static struct s2n_config s2n_default_config = { 0 };
 static struct s2n_config s2n_default_fips_config = { 0 };
+struct s2n_config *s2n_default_tls12_config_for_tests = NULL;
 
 /* TODO temporary for POC */
 struct s2n_config s2n_testing_default_tls12_config = { 0 };
@@ -1283,4 +1284,13 @@ int s2n_config_set_max_blinding_delay(struct s2n_config *config, uint32_t second
     config->max_blinding = seconds;
 
     return S2N_SUCCESS;
+}
+
+S2N_RESULT s2n_config_override_config_for_test(struct s2n_config *override)
+{
+    RESULT_ENSURE_REF(override);
+
+    s2n_default_tls12_config_for_tests = override;
+
+    return S2N_RESULT_OK;
 }

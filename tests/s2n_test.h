@@ -28,6 +28,8 @@
 #include "tls/s2n_alerts.h"
 #include "tls/s2n_tls13.h"
 
+#include "testlib/s2n_config_test_utils.h"
+
 int test_count;
 
 bool s2n_use_color_in_output = true;
