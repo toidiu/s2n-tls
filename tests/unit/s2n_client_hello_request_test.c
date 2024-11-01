@@ -189,6 +189,8 @@ int main(int argc, char **argv)
 
         /* Complete the handshake */
         EXPECT_SUCCESS(s2n_negotiate_test_server_and_client(server_conn, client_conn));
+        EXPECT_EQUAL(client_conn->actual_protocol_version, S2N_TLS12);
+        EXPECT_EQUAL(server_conn->actual_protocol_version, S2N_TLS12);
         EXPECT_TRUE(client_conn->secure_renegotiation);
 
         /* Send some data */
