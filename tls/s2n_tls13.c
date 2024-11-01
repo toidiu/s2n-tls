@@ -85,7 +85,7 @@ int s2n_reset_tls13_in_test()
 {
     POSIX_ENSURE(s2n_in_unit_test(), S2N_ERR_NOT_IN_UNIT_TEST);
     s2n_highest_protocol_version = S2N_TLS13;
-    s2n_use_default_tls13_config_flag = false;
+    s2n_use_default_tls13_config_flag = true;
     return S2N_SUCCESS;
 }
 
