@@ -28,14 +28,15 @@
 int main(int argc, char **argv)
 {
     BEGIN_TEST();
+
+    /* TLS 1.3 is used by default */
+    EXPECT_TRUE(s2n_use_default_tls13_config());
+
     EXPECT_SUCCESS(s2n_disable_tls13_in_test());
 
-    /* TLS 1.3 is not used by default */
-    EXPECT_FALSE(s2n_use_default_tls13_config());
-
-    /* TLS1.3 is not supported or configured by default */
+    /* TLS1.3 is supported or configured by default */
     {
-        /* Client does not support or configure TLS 1.3 */
+        /* Client does support and configure TLS 1.3 */
         {
             struct s2n_connection *conn = NULL;
             EXPECT_NOT_NULL(conn = s2n_connection_new(S2N_CLIENT));
@@ -44,12 +45,12 @@ int main(int argc, char **argv)
 
             const struct s2n_security_policy *security_policy = NULL;
             EXPECT_SUCCESS(s2n_connection_get_security_policy(conn, &security_policy));
-            EXPECT_FALSE(s2n_security_policy_supports_tls13(security_policy));
+            EXPECT_TRUE(s2n_security_policy_supports_tls13(security_policy));
 
             EXPECT_SUCCESS(s2n_connection_free(conn));
         };
 
-        /* Server does not support or configure TLS 1.3 */
+        /* Server does support or configure TLS 1.3 */
         {
             struct s2n_connection *conn = NULL;
             EXPECT_NOT_NULL(conn = s2n_connection_new(S2N_SERVER));
@@ -58,7 +59,7 @@ int main(int argc, char **argv)
 
             const struct s2n_security_policy *security_policy = NULL;
             EXPECT_SUCCESS(s2n_connection_get_security_policy(conn, &security_policy));
-            EXPECT_FALSE(s2n_security_policy_supports_tls13(security_policy));
+            EXPECT_TRUE(s2n_security_policy_supports_tls13(security_policy));
 
             EXPECT_SUCCESS(s2n_connection_free(conn));
         };

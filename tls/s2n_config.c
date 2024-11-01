@@ -67,9 +67,7 @@ static struct s2n_config s2n_default_config = { 0 };
 static struct s2n_config s2n_default_fips_config = { 0 };
 
 /* TODO temporary for POC */
-/* Create dedicated configs for testing the different protocols. */
-static struct s2n_config s2n_testing_default_tls12_config = { 0 };
-static struct s2n_config s2n_testing_default_tls12_fips_config = { 0 };
+struct s2n_config s2n_testing_default_tls12_config = { 0 };
 
 static int s2n_config_setup_default(struct s2n_config *config)
 {
@@ -85,16 +83,14 @@ static int s2n_config_setup_fips(struct s2n_config *config)
 
 static int s2n_config_setup_test_tls12(struct s2n_config *config)
 {
-      /* A TLS1.2 policy */
-      POSIX_GUARD(s2n_config_set_cipher_preferences(config, "20240501"));
-      return S2N_SUCCESS;
-}
-
-static int s2n_config_setup_test_tls12_fips(struct s2n_config *config)
-{
-      /* A FIPS TLS1.2 policy */
-      POSIX_GUARD(s2n_config_set_cipher_preferences(config, "20240502"));
-      return S2N_SUCCESS;
+    if (s2n_is_in_fips_mode()) {
+        /* A FIPS TLS1.2 policy */
+        POSIX_GUARD(s2n_config_set_cipher_preferences(config, "20240502"));
+    } else {
+        /* A TLS1.2 policy */
+        POSIX_GUARD(s2n_config_set_cipher_preferences(config, "20240501"));
+    }
+    return S2N_SUCCESS;
 }
 
 static int s2n_config_init(struct s2n_config *config)
@@ -115,7 +111,7 @@ static int s2n_config_init(struct s2n_config *config)
     if (s2n_is_in_fips_mode()) {
         POSIX_GUARD(s2n_config_setup_fips(config));
     } else {
-      POSIX_GUARD(s2n_config_setup_default(config));
+        POSIX_GUARD(s2n_config_setup_default(config));
     }
 
     POSIX_GUARD_PTR(config->domain_name_to_cert_map = s2n_map_new_with_initial_capacity(1));
@@ -219,20 +215,7 @@ int s2n_config_build_domain_name_to_cert_map(struct s2n_config *config, struct s
 struct s2n_config *s2n_fetch_default_config(void)
 {
     if (!s2n_use_default_tls13_config()) {
-      /* // QUESTION: how do we clean this up? */
-      // I believe we would need to do it in s2n_connection_free, but gated around
-      // s2n_in_unit_test(). That has many sharp edges.
-      //
-      /* create a new config obj */
-      /* struct s2n_config *config = s2n_config_new(); */
-      /* PTR_ENSURE_REF(config); */
-      /* return config; */
-
-      if (s2n_is_in_fips_mode()) {
-        return &s2n_testing_default_tls12_fips_config;
-      } else {
         return &s2n_testing_default_tls12_config;
-      }
     }
 
     if (s2n_is_in_fips_mode()) {
@@ -268,9 +251,6 @@ int s2n_config_defaults_init(void)
     POSIX_GUARD(s2n_config_init(&s2n_testing_default_tls12_config));
     POSIX_GUARD(s2n_config_setup_test_tls12(&s2n_testing_default_tls12_config));
     POSIX_GUARD(s2n_config_load_system_certs(&s2n_testing_default_tls12_config));
-    POSIX_GUARD(s2n_config_init(&s2n_testing_default_tls12_fips_config));
-    POSIX_GUARD(s2n_config_setup_test_tls12_fips(&s2n_testing_default_tls12_fips_config));
-    POSIX_GUARD(s2n_config_load_system_certs(&s2n_testing_default_tls12_fips_config));
 
     return S2N_SUCCESS;
 }
@@ -286,7 +266,6 @@ void s2n_wipe_static_configs(void)
     s2n_config_cleanup(&s2n_default_config);
     /* TODO temporary for POC */
     s2n_config_cleanup(&s2n_testing_default_tls12_config);
-    s2n_config_cleanup(&s2n_testing_default_tls12_fips_config);
 }
 
 int s2n_config_load_system_certs(struct s2n_config *config)

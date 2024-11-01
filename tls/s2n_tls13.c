@@ -19,14 +19,14 @@
 #include "crypto/s2n_fips.h"
 #include "crypto/s2n_rsa_pss.h"
 #include "crypto/s2n_rsa_signing.h"
-#include "tls/s2n_tls.h"
 #include "tls/s2n_security_policies.h"
+#include "tls/s2n_tls.h"
 
 /* TODO dont love this */
 const int default_idx = 0;
 const int default_fips_idx = 1;
 
-bool s2n_use_default_tls13_config_flag = false;
+bool s2n_use_default_tls13_config_flag = true;
 
 bool s2n_use_default_tls13_config()
 {
@@ -101,7 +101,6 @@ int s2n_disable_tls13_in_test()
     } else {
         s2n_override_default_policies_in_test(&security_policy_20240501, default_idx);
     }
-
 
     return S2N_SUCCESS;
 }

@@ -94,7 +94,6 @@ struct s2n_security_policy_selection {
 
 extern struct s2n_security_policy_selection security_policy_selection[];
 
-
 /* TODO update the date before merge */
 /* Defaults as of 07/01 */
 extern const struct s2n_security_policy security_policy_20240701;
