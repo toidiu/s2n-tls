@@ -215,6 +215,11 @@ int s2n_config_build_domain_name_to_cert_map(struct s2n_config *config, struct s
 struct s2n_config *s2n_fetch_default_config(void)
 {
     if (!s2n_use_default_tls13_config()) {
+        struct s2n_x509_trust_store *store = &s2n_testing_default_tls12_config.trust_store;
+        if (!store->loaded_system_certs) {
+            /* Loading system certs can be expensive so load it lazily. */
+            PTR_GUARD_POSIX(s2n_config_load_system_certs(&s2n_testing_default_tls12_config));
+        }
         return &s2n_testing_default_tls12_config;
     }
 
@@ -247,17 +252,10 @@ int s2n_config_defaults_init(void)
         POSIX_GUARD(s2n_config_load_system_certs(&s2n_default_config));
     }
 
-    /* TODO temporary for POC */
     POSIX_GUARD(s2n_config_init(&s2n_testing_default_tls12_config));
     POSIX_GUARD(s2n_config_setup_test_tls12(&s2n_testing_default_tls12_config));
-    POSIX_GUARD(s2n_config_load_system_certs(&s2n_testing_default_tls12_config));
 
     return S2N_SUCCESS;
-}
-
-S2N_RESULT s2n_config_testing_defaults_init_tls13_certs(void)
-{
-    return S2N_RESULT_OK;
 }
 
 void s2n_wipe_static_configs(void)
