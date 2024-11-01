@@ -97,19 +97,6 @@ static int s2n_config_setup_test_tls12_fips(struct s2n_config *config)
       return S2N_SUCCESS;
 }
 
-static int s2n_config_setup_for_testing(struct s2n_config *config)
-{
-    if (!s2n_use_default_tls13_config()) {
-      if (s2n_is_in_fips_mode()) {
-        POSIX_GUARD(s2n_config_setup_test_tls12_fips(config));
-      } else {
-        POSIX_GUARD(s2n_config_setup_test_tls12(config));
-      }
-    }
-
-    return S2N_SUCCESS;
-}
-
 static int s2n_config_init(struct s2n_config *config)
 {
     config->wall_clock = wall_clock;
@@ -130,8 +117,6 @@ static int s2n_config_init(struct s2n_config *config)
     } else {
       POSIX_GUARD(s2n_config_setup_default(config));
     }
-
-    POSIX_GUARD(s2n_config_setup_for_testing(config));
 
     POSIX_GUARD_PTR(config->domain_name_to_cert_map = s2n_map_new_with_initial_capacity(1));
     POSIX_GUARD_RESULT(s2n_map_complete(config->domain_name_to_cert_map));

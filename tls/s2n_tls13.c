@@ -16,9 +16,15 @@
 #include "tls/s2n_tls13.h"
 
 #include "api/s2n.h"
+#include "crypto/s2n_fips.h"
 #include "crypto/s2n_rsa_pss.h"
 #include "crypto/s2n_rsa_signing.h"
 #include "tls/s2n_tls.h"
+#include "tls/s2n_security_policies.h"
+
+/* TODO dont love this */
+const int default_idx = 0;
+const int default_fips_idx = 1;
 
 bool s2n_use_default_tls13_config_flag = false;
 
@@ -36,6 +42,15 @@ bool s2n_is_tls13_fully_supported()
 int s2n_get_highest_fully_supported_tls_version()
 {
     return s2n_is_tls13_fully_supported() ? S2N_TLS13 : S2N_TLS12;
+}
+
+static int s2n_override_default_policies_in_test(const struct s2n_security_policy *override_policy, int idx)
+{
+    POSIX_ENSURE(s2n_in_unit_test(), S2N_ERR_NOT_IN_UNIT_TEST);
+    struct s2n_security_policy_selection *default_policy = &security_policy_selection[idx];
+
+    default_policy->security_policy = override_policy;
+    return S2N_SUCCESS;
 }
 
 /* Allow TLS1.3 to be negotiated, and use the default TLS1.3 security policy.
@@ -59,6 +74,13 @@ int s2n_enable_tls13_in_test()
 {
     s2n_highest_protocol_version = S2N_TLS13;
     s2n_use_default_tls13_config_flag = true;
+    // replace "default" with a tls13 policy
+    if (s2n_is_in_fips_mode()) {
+        s2n_override_default_policies_in_test(&security_policy_20240702, default_fips_idx);
+    } else {
+        s2n_override_default_policies_in_test(&security_policy_20240701, default_idx);
+    }
+
     return S2N_SUCCESS;
 }
 
@@ -73,6 +95,14 @@ int s2n_disable_tls13_in_test()
     POSIX_ENSURE(s2n_in_unit_test(), S2N_ERR_NOT_IN_UNIT_TEST);
     s2n_highest_protocol_version = S2N_TLS12;
     s2n_use_default_tls13_config_flag = false;
+    // replace "default" with a tls12 policy
+    if (s2n_is_in_fips_mode()) {
+        s2n_override_default_policies_in_test(&security_policy_20240502, default_fips_idx);
+    } else {
+        s2n_override_default_policies_in_test(&security_policy_20240501, default_idx);
+    }
+
+
     return S2N_SUCCESS;
 }
 
@@ -86,6 +116,12 @@ int s2n_reset_tls13_in_test()
     POSIX_ENSURE(s2n_in_unit_test(), S2N_ERR_NOT_IN_UNIT_TEST);
     s2n_highest_protocol_version = S2N_TLS13;
     s2n_use_default_tls13_config_flag = true;
+    // replace "default" with a tls13 policy
+    if (s2n_is_in_fips_mode()) {
+        s2n_override_default_policies_in_test(&security_policy_20240702, default_fips_idx);
+    } else {
+        s2n_override_default_policies_in_test(&security_policy_20240701, default_idx);
+    }
     return S2N_SUCCESS;
 }
 
