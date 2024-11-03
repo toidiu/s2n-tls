@@ -65,17 +65,10 @@ static int wall_clock(void *data, uint64_t *nanoseconds)
 
 static struct s2n_config s2n_default_config = { 0 };
 static struct s2n_config s2n_default_fips_config = { 0 };
-static struct s2n_config s2n_default_tls13_config = { 0 };
 
 static int s2n_config_setup_default(struct s2n_config *config)
 {
     POSIX_GUARD(s2n_config_set_cipher_preferences(config, "default"));
-    return S2N_SUCCESS;
-}
-
-static int s2n_config_setup_tls13(struct s2n_config *config)
-{
-    POSIX_GUARD(s2n_config_set_cipher_preferences(config, "default_tls13"));
     return S2N_SUCCESS;
 }
 
@@ -100,11 +93,10 @@ static int s2n_config_init(struct s2n_config *config)
 
     config->client_hello_cb_mode = S2N_CLIENT_HELLO_CB_BLOCKING;
 
-    POSIX_GUARD(s2n_config_setup_default(config));
-    if (s2n_use_default_tls13_config()) {
-        POSIX_GUARD(s2n_config_setup_tls13(config));
-    } else if (s2n_is_in_fips_mode()) {
+    if (s2n_is_in_fips_mode()) {
         POSIX_GUARD(s2n_config_setup_fips(config));
+    } else {
+        POSIX_GUARD(s2n_config_setup_default(config));
     }
 
     POSIX_GUARD_PTR(config->domain_name_to_cert_map = s2n_map_new_with_initial_capacity(1));
@@ -207,9 +199,6 @@ int s2n_config_build_domain_name_to_cert_map(struct s2n_config *config, struct s
 
 struct s2n_config *s2n_fetch_default_config(void)
 {
-    if (s2n_use_default_tls13_config()) {
-        return &s2n_default_tls13_config;
-    }
     if (s2n_is_in_fips_mode()) {
         return &s2n_default_fips_config;
     }
@@ -239,24 +228,13 @@ int s2n_config_defaults_init(void)
         POSIX_GUARD(s2n_config_load_system_certs(&s2n_default_config));
     }
 
-    /* TLS 1.3 default config is only used in tests so avoid initialization costs in applications */
-    POSIX_GUARD(s2n_config_init(&s2n_default_tls13_config));
-    POSIX_GUARD(s2n_config_setup_tls13(&s2n_default_tls13_config));
-
     return S2N_SUCCESS;
-}
-
-S2N_RESULT s2n_config_testing_defaults_init_tls13_certs(void)
-{
-    RESULT_GUARD_POSIX(s2n_config_load_system_certs(&s2n_default_tls13_config));
-    return S2N_RESULT_OK;
 }
 
 void s2n_wipe_static_configs(void)
 {
     s2n_config_cleanup(&s2n_default_fips_config);
     s2n_config_cleanup(&s2n_default_config);
-    s2n_config_cleanup(&s2n_default_tls13_config);
 }
 
 int s2n_config_load_system_certs(struct s2n_config *config)
