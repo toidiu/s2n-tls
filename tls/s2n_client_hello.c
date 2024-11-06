@@ -521,6 +521,7 @@ struct s2n_client_hello *s2n_client_hello_parse_message(const uint8_t *raw_messa
 
 int s2n_process_client_hello(struct s2n_connection *conn)
 {
+    printf(" process ch 1 -------- \n");
     POSIX_ENSURE_REF(conn);
     POSIX_ENSURE_REF(conn->secure);
     POSIX_ENSURE_REF(conn->secure->cipher_suite);
@@ -572,6 +573,7 @@ int s2n_process_client_hello(struct s2n_connection *conn)
         POSIX_GUARD(s2n_extensions_server_key_share_select(conn));
     }
 
+    printf(" process ch 2 -------- \n");
     /* for pre TLS 1.3 connections, protocol selection is not done in supported_versions extensions, so do it here */
     if (conn->actual_protocol_version < S2N_TLS13) {
         conn->actual_protocol_version = MIN(conn->server_protocol_version, conn->client_protocol_version);
@@ -589,6 +591,7 @@ int s2n_process_client_hello(struct s2n_connection *conn)
     /* Find potential certificate matches before we choose the cipher. */
     POSIX_GUARD(s2n_conn_find_name_matching_certs(conn));
 
+    printf(" process ch 3 -------- \n");
     /* Save the previous cipher suite */
     uint8_t previous_cipher_suite_iana[S2N_TLS_CIPHER_SUITE_LEN] = { 0 };
     POSIX_CHECKED_MEMCPY(previous_cipher_suite_iana, conn->secure->cipher_suite->iana_value, S2N_TLS_CIPHER_SUITE_LEN);
@@ -597,6 +600,7 @@ int s2n_process_client_hello(struct s2n_connection *conn)
     POSIX_GUARD(s2n_set_cipher_as_tls_server(conn, client_hello->cipher_suites.data,
             client_hello->cipher_suites.size / 2));
 
+    printf(" process ch 4 -------- \n");
     /* Check if this is the second client hello in a hello retry handshake */
     if (s2n_is_hello_retry_handshake(conn) && conn->handshake.message_number > 0) {
         /**

@@ -213,7 +213,8 @@ int main(int argc, char **argv)
 
     /* Test setting cert chain on recv */
     {
-        s2n_enable_tls13_in_test();
+    printf(" ch test 1 -------- \n");
+        EXPECT_SUCCESS(s2n_enable_tls13_in_test());
         struct s2n_config *config = NULL;
         EXPECT_NOT_NULL(config = s2n_config_new());
 
@@ -224,6 +225,9 @@ int main(int argc, char **argv)
             EXPECT_SUCCESS(s2n_connection_set_config(conn, config));
             conn->client_protocol_version = conn->server_protocol_version;
             conn->actual_protocol_version = conn->client_protocol_version;
+
+            EXPECT_TRUE(conn->client_protocol_version >= S2N_TLS13);
+            EXPECT_TRUE(conn->server_protocol_version >= S2N_TLS13);
 
             EXPECT_SUCCESS(s2n_client_hello_send(conn));
             EXPECT_TRUE(s2n_stuffer_data_available(&conn->handshake.io) > 0);

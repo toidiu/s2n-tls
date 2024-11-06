@@ -23,6 +23,7 @@
 /* TODO update the date before merge */
 /* default as of 07/01. Supports TLS 1.3 */
 const struct s2n_security_policy security_policy_20240701 = {
+    .id = 71,
     .minimum_protocol_version = S2N_TLS12,
     .cipher_preferences = &cipher_preferences_20240701,
     .kem_preferences = &kem_preferences_null,
@@ -36,6 +37,7 @@ const struct s2n_security_policy security_policy_20240701 = {
 /* TODO update the date before merge */
 /* FIPS default as of 07/01. Supports TLS 1.3 */
 const struct s2n_security_policy security_policy_20240702 = {
+    .id = 72,
     .minimum_protocol_version = S2N_TLS12,
     .cipher_preferences = &cipher_preferences_20240701,
     .kem_preferences = &kem_preferences_null,
@@ -75,6 +77,7 @@ const struct s2n_security_policy security_policy_20240730 = {
 };
 
 const struct s2n_security_policy security_policy_20240501 = {
+    .id = 51,
     .minimum_protocol_version = S2N_TLS12,
     .cipher_preferences = &cipher_preferences_20240331,
     .kem_preferences = &kem_preferences_null,
@@ -86,6 +89,7 @@ const struct s2n_security_policy security_policy_20240501 = {
 };
 
 const struct s2n_security_policy security_policy_20240502 = {
+    .id = 52,
     .minimum_protocol_version = S2N_TLS12,
     .cipher_preferences = &cipher_preferences_20240331,
     .kem_preferences = &kem_preferences_null,
@@ -1244,9 +1248,9 @@ const struct s2n_security_policy security_policy_null = {
 };
 
 struct s2n_security_policy_selection security_policy_selection[] = {
-    { .version = "default", .security_policy = &security_policy_20240701, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
+    { .version = "default", .security_policy = &security_policy_20240501, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
     { .version = "default_tls13", .security_policy = &security_policy_20240503, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
-    { .version = "default_fips", .security_policy = &security_policy_20240702, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
+    { .version = "default_fips", .security_policy = &security_policy_20240502, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
     { .version = "default_pq", .security_policy = &security_policy_20241001, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
     { .version = "20240701", .security_policy = &security_policy_20240701, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },
     { .version = "20240702", .security_policy = &security_policy_20240702, .ecc_extension_required = 0, .pq_kem_extension_required = 0 },

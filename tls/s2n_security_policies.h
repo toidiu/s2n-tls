@@ -38,6 +38,7 @@
  * security policy.
  */
 struct s2n_security_policy {
+    uint8_t id;
     uint8_t minimum_protocol_version;
     /* TLS 1.0 - 1.2 - cipher preference includes multiple elements such
      * as signature algorithms, record algorithms, and key exchange algorithms

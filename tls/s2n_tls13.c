@@ -16,9 +16,28 @@
 #include "tls/s2n_tls13.h"
 
 #include "api/s2n.h"
+#include "crypto/s2n_fips.h"
 #include "crypto/s2n_rsa_pss.h"
 #include "crypto/s2n_rsa_signing.h"
 #include "tls/s2n_tls.h"
+
+/* TODO dont love this */
+const int default_idx = 0;
+const int default_fips_idx = 1;
+
+static int s2n_override_default_policies_in_test(const struct s2n_security_policy *override_policy, int idx)
+{
+    printf("b4-------- %d \n", security_policy_selection[idx].security_policy->id);
+
+    POSIX_ENSURE(s2n_in_unit_test(), S2N_ERR_NOT_IN_UNIT_TEST);
+    struct s2n_security_policy_selection *default_policy = &security_policy_selection[idx];
+
+    default_policy->security_policy = override_policy;
+
+    printf("aft-------- %d \n", security_policy_selection[idx].security_policy->id);
+
+    return S2N_SUCCESS;
+}
 
 bool s2n_is_tls13_fully_supported()
 {
@@ -51,6 +70,11 @@ int s2n_enable_tls13()
 int s2n_enable_tls13_in_test()
 {
     s2n_highest_protocol_version = S2N_TLS13;
+    if (s2n_is_in_fips_mode()) {
+        POSIX_GUARD(s2n_override_default_policies_in_test(&security_policy_20240702, default_fips_idx));
+    } else {
+        POSIX_GUARD(s2n_override_default_policies_in_test(&security_policy_20240701, default_idx));
+    }
     return S2N_SUCCESS;
 }
 
@@ -64,6 +88,11 @@ int s2n_disable_tls13_in_test()
 {
     POSIX_ENSURE(s2n_in_unit_test(), S2N_ERR_NOT_IN_UNIT_TEST);
     s2n_highest_protocol_version = S2N_TLS12;
+    if (s2n_is_in_fips_mode()) {
+        POSIX_GUARD(s2n_override_default_policies_in_test(&security_policy_20240502, default_fips_idx));
+    } else {
+        POSIX_GUARD(s2n_override_default_policies_in_test(&security_policy_20240501, default_idx));
+    }
     return S2N_SUCCESS;
 }
 
@@ -75,7 +104,12 @@ int s2n_disable_tls13_in_test()
 int s2n_reset_tls13_in_test()
 {
     POSIX_ENSURE(s2n_in_unit_test(), S2N_ERR_NOT_IN_UNIT_TEST);
-    s2n_highest_protocol_version = S2N_TLS13;
+    s2n_highest_protocol_version = S2N_TLS12;
+    if (s2n_is_in_fips_mode()) {
+        POSIX_GUARD(s2n_override_default_policies_in_test(&security_policy_20240502, default_fips_idx));
+    } else {
+        POSIX_GUARD(s2n_override_default_policies_in_test(&security_policy_20240501, default_idx));
+    }
     return S2N_SUCCESS;
 }
 
