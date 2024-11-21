@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html lang="en" class="light" dir="ltr">
+<html lang="en" class="light sidebar-visible" dir="ltr">
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
@@ -8,7 +8,7 @@
 
 
         <!-- Custom HTML head -->
-        
+
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="theme-color" content="#ffffff">
@@ -31,15 +31,17 @@
 
         <!-- Custom theme stylesheets -->
 
-    </head>
-    <body class="sidebar-visible no-js">
-    <div id="body-container">
+
         <!-- Provide site root to javascript -->
         <script>
             var path_to_root = "";
             var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
         </script>
-
+        <!-- Start loading toc.js asap -->
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
         <!-- Work around some values being stored in localStorage wrapped in quotes -->
         <script>
             try {
@@ -61,19 +63,16 @@
             var theme;
             try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
             if (theme === null || theme === undefined) { theme = default_theme; }
-            var html = document.querySelector('html');
+            const html = document.documentElement;
             html.classList.remove('light')
             html.classList.add(theme);
-            var body = document.querySelector('body');
-            body.classList.remove('no-js')
-            body.classList.add('js');
+            html.classList.add("js");
         </script>
 
         <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
 
         <!-- Hide / unhide sidebar before it is displayed -->
         <script>
-            var body = document.querySelector('body');
             var sidebar = null;
             var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
             if (document.body.clientWidth >= 1080) {
@@ -83,45 +82,25 @@
                 sidebar = 'hidden';
             }
             sidebar_toggle.checked = sidebar === 'visible';
-            body.classList.remove('sidebar-visible');
-            body.classList.add("sidebar-" + sidebar);
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
         </script>
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
-            <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="ch00-introduction.html">Introduction</a></li><li class="chapter-item expanded "><a href="ch01-api.html"><strong aria-hidden="true">1.</strong> s2n-tls API</a></li><li class="chapter-item expanded "><a href="ch02-initialization.html"><strong aria-hidden="true">2.</strong> Initialization and Teardown</a></li><li class="chapter-item expanded "><a href="ch03-error-handling.html"><strong aria-hidden="true">3.</strong> Error Handling</a></li><li class="chapter-item expanded "><a href="ch04-connection.html"><strong aria-hidden="true">4.</strong> TLS Connections</a></li><li class="chapter-item expanded "><a href="ch05-config.html"><strong aria-hidden="true">5.</strong> Configuring the Connection</a></li><li class="chapter-item expanded "><a href="ch06-security-policies.html"><strong aria-hidden="true">6.</strong> Security Policies</a></li><li class="chapter-item expanded "><a href="ch07-io.html"><strong aria-hidden="true">7.</strong> IO</a></li><li class="chapter-item expanded "><a href="ch08-record-sizes.html"><strong aria-hidden="true">8.</strong> TLS Record Sizes</a></li><li class="chapter-item expanded "><a href="ch09-certificates.html"><strong aria-hidden="true">9.</strong> Certificates and Authentication</a></li><li class="chapter-item expanded "><a href="ch10-client-hello.html"><strong aria-hidden="true">10.</strong> Examining the Client Hello</a></li><li class="chapter-item expanded "><a href="ch11-resumption.html"><strong aria-hidden="true">11.</strong> Session Resumption</a></li><li class="chapter-item expanded "><a href="ch12-private-key-ops.html"><strong aria-hidden="true">12.</strong> Offloading Private Key Operations</a></li><li class="chapter-item expanded "><a href="ch13-preshared-keys.html"><strong aria-hidden="true">13.</strong> Pre-shared Keys</a></li><li class="chapter-item expanded "><a href="ch14-early-data.html"><strong aria-hidden="true">14.</strong> Early Data</a></li><li class="chapter-item expanded "><a href="ch15-post-quantum.html"><strong aria-hidden="true">15.</strong> Post Quantum Support</a></li></ol>
-            </div>
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
             </div>
         </nav>
 
-        <!-- Track and set sidebar scroll position -->
-        <script>
-            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
-            sidebarScrollbox.addEventListener('click', function(e) {
-                if (e.target.tagName === 'A') {
-                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
-                }
-            }, { passive: true });
-            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
-            sessionStorage.removeItem('sidebar-scroll');
-            if (sidebarScrollTop) {
-                // preserve sidebar scroll position when navigating via links within sidebar
-                sidebarScrollbox.scrollTop = sidebarScrollTop;
-            } else {
-                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
-                var activeSection = document.querySelector('#sidebar .active');
-                if (activeSection) {
-                    activeSection.scrollIntoView({ block: 'center' });
-                }
-            }
-        </script>
-
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky">
                     <div class="left-buttons">
                         <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -182,6 +161,7 @@ are in the <a href="https://github.com/aws/s2n-tls/blob/main/api/s2n.h">s2n.h</a
 are intended to be stable (API and ABI) within major version numbers of s2n-tls releases. Other functions
 and structures used in s2n-tls internally can not be considered stable and their parameters, names, and
 sizes may change.</p>
+<p>In general, s2n-tls APIs are not thread safe unless explicitly specified otherwise.</p>
 <p>Read <a href="./ch03-error-handling.html">Error Handling</a> for information on processing API return values safely.</p>
 <p>The <a href="https://github.com/aws/s2n-tls/blob/main/VERSIONING.rst">VERSIONING.rst</a> document contains more details about s2n's approach to versions and API changes.</p>
 <h2 id="api-reference"><a class="header" href="#api-reference">API Reference</a></h2>
@@ -192,10 +172,16 @@ sizes may change.</p>
 includes an example client (<code>s2nc</code>) and server (<code>s2nd</code>).</p>
 <p><strong>Note:</strong> <code>s2nc</code> and <code>s2nd</code> are intended for testing purposes only, and should not be used in production.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="initialization-and-teardown"><a class="header" href="#initialization-and-teardown">Initialization and Teardown</a></h1>
-<p>The s2n-tls library must be initialized with <code>s2n_init()</code> before calling most library functions. <code>s2n_init()</code> MUST NOT be called more than once, even when an application uses multiple threads or processes. s2n attempts to clean up its thread-local memory at thread-exit and all other memory at process-exit. However, this may not work if you are using a thread library other than pthreads. In that case you should call <code>s2n_cleanup()</code> from every thread or process created after <code>s2n_init()</code>.</p>
+<h2 id="initialization"><a class="header" href="#initialization">Initialization</a></h2>
+<p>The s2n-tls library must be initialized with <code>s2n_init()</code> before calling most library functions. <code>s2n_init()</code> will error if it is called more than once, even when an application uses multiple threads.</p>
 <p>Initialization can be modified by calling <code>s2n_crypto_disable_init()</code> or <code>s2n_disable_atexit()</code> before <code>s2n_init()</code>.</p>
-<p>An application can override s2n-tls’s internal memory management by calling <code>s2n_mem_set_callbacks</code> before calling s2n_init.</p>
+<p>An application can override s2n-tls’s internal memory management by calling <code>s2n_mem_set_callbacks()</code> before calling <code>s2n_init()</code>.</p>
 <p>If you are trying to use FIPS mode, you must enable FIPS in your libcrypto library (probably by calling <code>FIPS_mode_set(1)</code>) before calling <code>s2n_init()</code>.</p>
+<h2 id="teardown"><a class="header" href="#teardown">Teardown</a></h2>
+<h3 id="thread-local-memory"><a class="header" href="#thread-local-memory">Thread-local Memory</a></h3>
+<p>We recommend calling <code>s2n_cleanup()</code> from every thread created after <code>s2n_init()</code> to ensure there are no memory leaks. s2n-tls has thread-local memory that it attempts to clean up automatically at thread-exit. However, this is done using pthread destructors and may not work if you are using a threads library other than pthreads.</p>
+<h3 id="library-cleanup"><a class="header" href="#library-cleanup">Library Cleanup</a></h3>
+<p>A full cleanup and de-initialization of the library can be done by calling <code>s2n_cleanup_final()</code>. s2n-tls allocates some memory at initialization that is intended to live for the duration of the process, but can be cleaned up earlier with <code>s2n_cleanup_final()</code>. Not calling this method may cause tools like ASAN or valgrind to detect memory leaks, as the memory will still be allocated when the process exits.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="error-handling"><a class="header" href="#error-handling">Error Handling</a></h1>
 <p>s2n-tls functions that return 'int' return 0 to indicate success and -1 to indicate
 failure. s2n-tls functions that return pointer types return NULL in the case of
@@ -259,7 +245,8 @@ It can be enabled globally by setting the environment variable <code>S2N_PRINT_S
 <p>Call <code>s2n_print_stacktrace()</code> to print your stacktrace.</p>
 <p><strong>Note:</strong> Enabling stacktraces can significantly slow down unit tests, causing failures on tests (such as <code>s2n_cbc_verify</code>) that measure the timing of events.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="tls-connections"><a class="header" href="#tls-connections">TLS Connections</a></h1>
-<p>Users will need to create a <code>s2n_connection</code> struct to store all of the state necessary for a TLS connection. Call <code>s2n_connection_new()</code> to create a new server or client connection. Call <code>s2n_connection_free()</code> to free the memory allocated for this struct when no longer needed.</p>
+<p>In general, s2n-tls works by operating on <code>s2n_connection</code> structs. A user should first create a connection by calling <code>s2n_connection_new()</code>. Then a <a href="./ch07-io.html#performing-the-tls-handshake">TLS handshake can be performed</a> on the connection. Finally, the connection can be used to <a href="./ch07-io.html#application-data">send and receive encrypted data</a>. An <code>s2n_config</code> struct can be associated with a connection to <a href="./ch05-config.html">configure additional options</a>.</p>
+<p>Call <code>s2n_connection_free()</code> to free the memory allocated for connection when no longer needed.</p>
 <h2 id="connection-memory"><a class="header" href="#connection-memory">Connection Memory</a></h2>
 <p>The connection struct is roughly 4KB with some variation depending on how it is configured. Maintainers of the s2n-tls library carefully consider increases to the size of the connection struct as they are aware some users are memory-constrained.</p>
 <p>A connection struct has memory allocated specifically for the TLS handshake. Memory-constrained users can free that memory by calling <code>s2n_connection_free_handshake()</code> after the handshake is successfully negotiated. Note that the handshake memory can be reused for another connection if <code>s2n_connection_wipe()</code> is called, so freeing it may result in more memory allocations later. Additionally some functions that print information about the handshake may not produce meaningful results after the handshake memory is freed.</p>
@@ -276,7 +263,7 @@ It can be enabled globally by setting the environment variable <code>S2N_PRINT_S
 <li><code>s2n_connection_get_client_protocol_version()</code>: The highest TLS protocol version the client advertised.</li>
 </ul>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="configuring-the-connection"><a class="header" href="#configuring-the-connection">Configuring the Connection</a></h1>
-<p><code>s2n_config</code> objects are used to change the default settings of a s2n-tls connection. Use <code>s2n_config_new()</code> to create a new config object. To associate a config with a connection call <code>s2n_connection_set_config()</code>. A config should not be altered once it is associated with a connection as this will produce undefined behavior. It is not necessary to create a config object per connection; one config object should be used for many connections. Call <code>s2n_config_free()</code> to free the object when no longer needed. <em>Only</em> free the config object when all connections using it have been freed.</p>
+<p><code>s2n_config</code> objects are used to change the default settings of a s2n-tls connection. Use <code>s2n_config_new()</code> to create a new config object. To associate a config with a connection call <code>s2n_connection_set_config()</code>. A config should not be altered once it is set on a connection as this will produce undefined behavior. It is not necessary to create a config object per connection; one config object should be used for many connections. Call <code>s2n_config_free()</code> to free the object when no longer needed. <em>Only</em> free the config object when all connections using it have been freed.</p>
 <p>Calling <code>s2n_config_new()</code> can have a performance cost during config creation due to loading
 default system certificates into the trust store (see <a href="./ch09-certificates.html#configuring-the-trust-store">Configuring the Trust Store</a>).
 For increased performance, use <code>s2n_config_new_minimal()</code> when system certificates are not needed
@@ -288,8 +275,13 @@ for certificate validation.</p>
 <p>s2n-tls uses pre-made security policies to help avoid common misconfiguration mistakes for TLS.</p>
 <p><code>s2n_config_set_cipher_preferences()</code> sets a security policy, which includes the cipher/kem/signature/ecc preferences and protocol version.</p>
 <h2 id="supported-tls-versions"><a class="header" href="#supported-tls-versions">Supported TLS Versions</a></h2>
-<p>Currently TLS 1.2 is our default version, but we recommend TLS 1.3 where possible. To use TLS 1.3 you need a security policy that supports TLS 1.3.
-<strong>Note:</strong> s2n-tls does not support SSL2.0 for sending and receiving encrypted data, but does accept SSL2.0 hello messages.</p>
+<p>Currently TLS 1.2 is our default version, but we recommend TLS 1.3 where possible. To use TLS 1.3 you need a security policy that supports TLS 1.3.</p>
+<h3 id="ssl-30-tls-10-and-tls-11"><a class="header" href="#ssl-30-tls-10-and-tls-11">SSL 3.0, TLS 1.0, and TLS 1.1</a></h3>
+<p>s2n-tls supports older versions, but their use is not recommended.</p>
+<p>Compatibility with older versions of TLS may also require support for older ciphersuites. Although it is possible to negotiate older versions of TLS with more modern options like SHA256, AES, ECDSA, and ECDHE, older clients and servers may only support older options like SHA1, 3DES, RSA certs, and either RSA or DHE key exchange. If a security policy allows older TLS versions but does not allow older ciphersuites, handshakes with older clients and servers may fail.</p>
+<h3 id="ssl-20"><a class="header" href="#ssl-20">SSL 2.0</a></h3>
+<p>s2n-tls will not negotiate SSL 2.0, but will accept SSLv2 ClientHellos advertising a higher protocol version like TLS1.2. See the <a href="https://datatracker.ietf.org/doc/html/rfc5246#appendix-E.2">"Compatibility with SSL 2.0"</a> section in the TLS 1.2 RFC.</p>
+<p>Compatibility with SSLv2 ClientHellos advertising TLS1.2 may require similar support for older ciphersuites as compatibility with older versions of TLS does. In particular, SSLv2 ClientHellos are likely to require support for SHA1 and either RSA or DHE key exchange. This is due to technical limitations of the SSLv2 ClientHello, which does not include TLS extensions.</p>
 <h3 id="chart-security-policy-version-to-protocol-version-and-ciphersuites"><a class="header" href="#chart-security-policy-version-to-protocol-version-and-ciphersuites">Chart: Security Policy Version To Protocol Version And Ciphersuites</a></h3>
 <p>The following chart maps the security policy version to protocol version and ciphersuites supported.</p>
 <div class="table-wrapper"><table><thead><tr><th>version</th><th>TLS1.0</th><th>TLS1.1</th><th>TLS1.2</th><th>TLS1.3</th><th>AES-CBC</th><th>AES-GCM</th><th>CHACHAPOLY</th><th>3DES</th><th>RC4</th><th>DHE</th><th>ECDHE</th><th>RSA kx</th></tr></thead><tbody>
@@ -494,7 +486,7 @@ write. Partial writes are possible not just for non-blocking I/O, but also for
 connections aborted while active.</p>
 <p>A single call to <code>s2n_send()</code> may involve multiple system calls to write the
 provided application data. s2n-tls breaks the application data into fixed-sized
-records before encryption, and calls write for each record.
+records before encryption, then calls write for each record.
 <a href="./ch08-record-sizes.html">See the record size documentation for how record size may impact performance</a>.</p>
 <p>In non-blocking mode, <code>s2n_send()</code> will send data from the provided buffer and return the number of
 bytes sent, as long as the socket was able to send at least 1 byte. If no bytes could be sent on the
@@ -506,7 +498,9 @@ error is returned, applications should call <code>s2n_send()</code> again only a
 able to send more data. This can be determined by using methods like
 <a href="https://linux.die.net/man/2/poll"><code>poll</code></a> or <a href="https://linux.die.net/man/2/select"><code>select</code></a>.</p>
 <p>Unlike OpenSSL, repeated calls to <code>s2n_send()</code> should not duplicate the original
-parameters, but should update the inputs per the indication of size written.</p>
+parameters, but should update the inputs per the indication of size written. s2n-tls
+will attempt to sanity check that the inputs are properly updated between calls.
+Because of those sanity checks, a zero-length send call cannot be used as a flushing mechanism.</p>
 <p><code>s2n_sendv_with_offset()</code> behaves like <code>s2n_send()</code>, but supports vectorized buffers.
 The offset input should be updated between calls to reflect the data already written.</p>
 <p><code>s2n_sendv()</code> also supports vectorized buffers, but assumes an offset of 0.
@@ -653,9 +647,17 @@ certificates trusted via an unexpected default system certificate.</p>
 <p>Configs created with <code>s2n_config_new_minimal()</code> are initialized with empty trust stores. To add
 default system certificates to these configs, call <code>s2n_config_load_system_certs()</code>.</p>
 <h2 id="server-authentication"><a class="header" href="#server-authentication">Server Authentication</a></h2>
-<p>A server must have a certificate and private key pair to prove its identity. s2n-tls supports RSA, RSA-PSS, and ECDSA certificates, and allows one of each type to be added to a config.</p>
+<p>A server must have a certificate and private key pair to prove its identity. s2n-tls supports RSA, RSA-PSS, and ECDSA certificates, and allows one of each type to be added to a config for a given domain name.</p>
 <p>Create a new certificate and key pair by calling <code>s2n_cert_chain_and_key_new()</code>, then load the pem-encoded data with <code>s2n_cert_chain_and_key_load_pem_bytes()</code>.  Call <code>s2n_config_add_cert_chain_and_key_to_store()</code> to add the certificate and key pair to the config. When a certificate and key pair is no longer needed, it must be cleaned up with <code>s2n_cert_chain_and_key_free()</code>.</p>
 <p>A client can add restrictions on the certificate’s hostname by setting a custom <code>s2n_verify_host_fn</code> with <code>s2n_config_set_verify_host_callback()</code> or <code>s2n_connection_set_verify_host_callback()</code>. The default behavior is to require that the hostname match the server name set with <code>s2n_set_server_name()</code>.</p>
+<h3 id="sni"><a class="header" href="#sni">SNI</a></h3>
+<p>TLS servers will often serve multiple domains from a single IP address, with each domain potentially requiring its own certificate. When a TLS client receives a server's certificate, it will check to ensure that it was issued for the domain that the client is connecting to. As such, the server needs to know which domain the client is connecting to in order to send the correct certificate. This information is communicated to the server via the Server Name Indication (SNI) extension.</p>
+<h4 id="client-configuration"><a class="header" href="#client-configuration">Client configuration</a></h4>
+<p><code>s2n_set_server_name()</code> is used on client connections to specify a domain name in the SNI extension.</p>
+<h4 id="server-configuration"><a class="header" href="#server-configuration">Server configuration</a></h4>
+<p>Each certificate loaded with <code>s2n_config_add_cert_chain_and_key_to_store()</code> is automatically associated with every domain name listed in its Subject Alternative Name (SAN) field. The domain names listed in the Common Name (CN) field are used instead if the certificate doesn't contain an SAN field. s2n-tls servers automatically send a certificate that matches the value of the client's SNI extension during the TLS handshake.</p>
+<p>s2n-tls servers allow a maximum of 1 certificate to be loaded per domain, per certificate type (RSA, RSA-PSS, ECDSA). By default, a newly loaded certificate with an overlapping domain name will not replace the existing certificate associated with that domain. The <code>s2n_cert_tiebreak_callback</code> may be implemented to customize which certificate is selected when an overlapping domain is encountered.</p>
+<p>When selecting a certificate to send to the client, s2n-tls servers prefer an exact SNI match before falling back to a certificate with an associated wildcard domain (a domain starting with "*.", covering all subdomains). A default certificate is selected if no SNI match exists, or if the client doesn't send an SNI extension. A default certificate is set when <code>s2n_config_add_cert_chain_and_key_to_store()</code> is called for the first time for a given certificate type (RSA, RSA-PSS, ECDSA). <code>s2n_config_set_cert_chain_and_key_defaults()</code> may be used to override the default certificates.</p>
 <h2 id="client--mutual-authentication"><a class="header" href="#client--mutual-authentication">Client / Mutual Authentication</a></h2>
 <p>Client authentication is not enabled by default. However, the server can require that the client also provide a certificate, if the server needs to authenticate clients before accepting connections.</p>
 <p>Client authentication can be configured by calling <code>s2n_config_set_client_auth_type()</code> or <code>s2n_connection_set_client_auth_type()</code> for both the client and server. Additionally, the client will need to load a certificate and key pair as described for the server in <a href="ch09-certificates.html#server-authentication">Server Authentication</a> and the server will need to configure its trust store as described in <a href="ch09-certificates.html#configuring-the-trust-store">Configuring the Trust Store</a>.</p>
@@ -735,7 +737,7 @@ for details about proper SSLv2 ClientHello parsing.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="session-resumption"><a class="header" href="#session-resumption">Session Resumption</a></h1>
 <p>TLS handshake sessions are CPU-heavy due to the calculations involved in authenticating a certificate. These calculations can be skipped after the first connection by turning on session resumption. This mechanism stores state from the previous session and uses it to establish the next session, allowing the handshake to skip the costly authentication step while keeping the same cryptographic guarantees. The authentication step can be skipped because both the server and client will use their possession of the key from the previous session to prove who they are. We usually refer to the stored session state as a "session ticket". Note that this session ticket is encrypted by the server, so a server will have to set up an external key in order to do session resumption.</p>
 <h2 id="session-ticket-key"><a class="header" href="#session-ticket-key">Session Ticket Key</a></h2>
-<p>The key that encrypts and decrypts the session state is not related to the keys negotiated as part of the TLS handshake and has to be set by the server by calling <code>s2n_config_add_ticket_crypto_key()</code>. See <a href="https://www.rfc-editor.org/rfc/rfc5077#section-5.5">RFC5077</a> for guidelines on securely generating keys.</p>
+<p>The key that encrypts and decrypts the session state is not related to the keys negotiated as part of the TLS handshake and has to be set by the server by calling <code>s2n_config_add_ticket_crypto_key()</code>. Unlike other methods that modify <code>s2n_config</code> objects, <code>s2n_config_add_ticket_crypto_key()</code> can be called after setting an <code>s2n_config</code> object on a connection. See <a href="https://www.rfc-editor.org/rfc/rfc5077#section-5.5">RFC5077</a> for guidelines on securely generating keys.</p>
 <p>Each key has two different expiration dates. The first expiration date signifies the time that the key can be used for both encryption and decryption. The second expiration date signifies the time that the key can be used only for decryption. This mechanism is to ensure that a session ticket can be successfully decrypted if it was encrypted by a key that was about to expire. The full lifetime of the key is therefore the encrypt-decrypt lifetime plus the decrypt-only lifetime. To alter the default key lifetime call <code>s2n_config_set_ticket_encrypt_decrypt_key_lifetime()</code> and <code>s2n_config_set_ticket_decrypt_key_lifetime()</code>.</p>
 <p>The server will stop issuing session resumption tickets if a user doesn't set up a new key before the previous key passes through its encrypt-decrypt lifetime. Therefore it is recommended to add a new key when half of the previous key's encrypt-decrypt lifetime has passed.</p>
 <h2 id="stateless-session-resumption"><a class="header" href="#stateless-session-resumption">Stateless Session Resumption</a></h2>
@@ -746,6 +748,7 @@ for details about proper SSLv2 ClientHello parsing.</p>
 <p>In stateful session resumption, also known as session caching, the server caches the session state per client and resumes a session based on the client's session ID. Note that session caching has not been implemented for &gt; TLS1.2. If stateful session resumption is turned on and a TLS1.3 handshake is negotiated, the caching mechanism will not store that session and resumption will not be available the next time the client connects.</p>
 <p>Servers should set the three caching callback functions: <code>s2n_config_set_cache_store_callback()</code>, <code>s2n_config_set_cache_retrieve_callback()</code>, and <code>s2n_config_set_cache_delete_callback()</code> and then call <code>s2n_config_set_session_cache_onoff()</code> to enable stateful session resumption. Session caching will not be turned on unless all three session cache callbacks are set prior to calling <code>s2n_config_set_session_cache_onoff()</code>. Additionally, the server needs to set up an encryption key using <code>s2n_config_add_ticket_crypto_key()</code>.</p>
 <p>Clients should call <code>s2n_connection_get_session()</code> to retrieve some serialized state about the session. Then <code>s2n_connection_set_session()</code> should be called with that saved state when attempting to resume a new connection.</p>
+<p>The <code>cache_delete_callback</code> is called when a connection encounters a fatal error. This allows a server to delete a potentially corrupted or faulty session from its cache. Because an unexpected end-of-stream is considered a fatal error, an application should ensure that it performs a graceful TLS shutdown when using session caching. For more information on how to close connections, see <a href="./ch07-io.html#closing-the-connection">Closing the Connection</a>.</p>
 <h2 id="session-resumption-in-tls12-and-tls13"><a class="header" href="#session-resumption-in-tls12-and-tls13">Session Resumption in TLS1.2 and TLS1.3</a></h2>
 <p>In TLS1.2, session ticket messages are sent during the handshake and are automatically received as part of calling <code>s2n_negotiate()</code>. They will be available as soon as negotiation is complete.</p>
 <p>In TLS1.3, session ticket messages are sent after the handshake as "post-handshake" messages, and may not be received as part of calling <code>s2n_negotiate()</code>. A s2n-tls server will send tickets immediately after the handshake, so clients can receive them by calling <code>s2n_recv()</code> immediately after the handshake completes. However, other server implementations may send their session tickets later, at any time during the connection.</p>
