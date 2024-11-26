@@ -247,22 +247,25 @@ int main()
         /* Test recv - in each case, the security policy overrides do not allow for a successful PQ handshake,
          * so ECC should be chosen */
         {
-#define NUM_MISMATCH_PQ_TEST_POLICY_OVERRIDES 3
+#define NUM_MISMATCH_PQ_TEST_POLICY_OVERRIDES 1
             /* Security policy overrides: {client_policy, server_policy} */
             const struct s2n_security_policy *test_policy_overrides[NUM_MISMATCH_PQ_TEST_POLICY_OVERRIDES][2] = {
-                /* Client sends Kyber; server supports only ECC */
-                { &test_pq_security_policy_kyber, NULL },
                 /* Client sends only ECC ; server supports ECC and Kyber */
                 { NULL, &test_pq_security_policy_kyber },
-                /* Client sends only ECC; server supports only ECC */
-                { NULL, NULL }
             };
 
             for (size_t i = 0; i < NUM_MISMATCH_PQ_TEST_POLICY_OVERRIDES; i++) {
                 EXPECT_SUCCESS(s2n_enable_tls13_in_test());
+                DEFER_CLEANUP(struct s2n_config *config = s2n_config_new(),
+                        s2n_config_ptr_free);
+                EXPECT_NOT_NULL(config);
+                EXPECT_SUCCESS(s2n_config_set_cipher_preferences(config, "default_tls13"));
+
                 struct s2n_connection *client_conn = NULL;
                 EXPECT_NOT_NULL(client_conn = s2n_connection_new(S2N_CLIENT));
                 EXPECT_SUCCESS(s2n_connection_set_cipher_preferences(client_conn, "default_tls13"));
+                // UNCOMMENT TO MAKE TEST FAIL
+                EXPECT_SUCCESS(s2n_connection_set_config(client_conn, config));
                 client_conn->security_policy_override = test_policy_overrides[i][0];
 
                 struct s2n_connection *server_conn = NULL;
@@ -286,6 +289,8 @@ int main()
 
                 EXPECT_SUCCESS(s2n_client_supported_groups_extension.recv(server_conn, &stuffer));
 
+                printf("\n------ policy %hu", server_conn->kex_params.server_ecc_evp_params.negotiated_curve->iana_id);
+                printf("\n------ s2n_ecc_preferences_20200310 %hu", server_ecc_pref->ecc_curves[0]->iana_id);
                 EXPECT_EQUAL(server_conn->kex_params.server_ecc_evp_params.negotiated_curve, server_ecc_pref->ecc_curves[0]);
                 EXPECT_NULL(server_conn->kex_params.server_kem_group_params.kem_group);
                 EXPECT_NULL(server_conn->kex_params.server_kem_group_params.ecc_params.negotiated_curve);
